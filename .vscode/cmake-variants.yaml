@@ -1,0 +1,144 @@
+target:
+  default: none
+  description: Target type
+  choices:
+    none:
+      short: None
+      long: No specification
+    linux-llvm:
+      short: Linux-LLVM
+      long: Linux with LLVM compilers
+      settings:
+        VCPKG_TARGET_TRIPLET: "x64-linux-llvm"
+        VCPKG_HOST_TRIPLET: "x64-linux-llvm"
+        CMAKE_CXX_FLAGS: "-stdlib=libc++"
+        CMAKE_C_FLAGS: "-stdlib=libc++"
+
+buildType:
+  default: clang-asan-ubsan-unit-dox
+  choices:
+    none:
+      short: None
+      long: Don't set any test options
+    clang-asan-ubsan-unit:
+      short: ClangAUSan-Unit
+      long: ASan and USan in Clang + Unit Tests
+      buildType: Debug
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: ON
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    clang-asan-ubsan-unit-dox:
+      short: ClangAUSan-Unit-Dox
+      long: ASan and USan in Clang + Unit Tests + Doxygen
+      buildType: Debug
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: ON
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: ON
+        MSGPACK_RPC_BUILD_DOC_SPHINX: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    clang-asan-ubsan-unit-docs:
+      short: ClangAUSan-Unit-Documents
+      long: ASan and USan in Clang + Unit Tests + All documents
+      buildType: Debug
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: ON
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: ON
+        MSGPACK_RPC_BUILD_DOC_SPHINX: ON
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    debug-unit:
+      short: Debug-Unit
+      long: Debug build + Unit Tests
+      buildType: Debug
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: OFF
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    relwithdebinfo-unit:
+      short: RelWithDebInfo-Unit
+      long: Release build with debug info + Unit Tests
+      buildType: RelWithDebInfo
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: OFF
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    relwithdebinfo-unit-profiling:
+      short: RelWithDebInfo-Unit-Prof
+      long: Release build with debug info + Unit Tests + Profiling
+      buildType: RelWithDebInfo
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: OFF
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: ON
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    release-unit:
+      short: Release-Unit
+      long: Release build + Unit Tests
+      buildType: Release
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: OFF
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: OFF
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+    release-bench:
+      short: Release-Bench
+      long: Release build + Benchmarks execution
+      buildType: Release
+      settings:
+        MSGPACK_RPC_ENABLE_AUSAN: OFF
+        MSGPACK_RPC_TESTING: ON
+        MSGPACK_RPC_WRITE_JUNIT: OFF
+        MSGPACK_RPC_ENABLE_BENCH: ON
+        MSGPACK_RPC_TEST_BENCHMARKS: ON
+        MSGPACK_RPC_BUILD_EXAMPLES: ON
+        MSGPACK_RPC_BUILD_DOC: OFF
+        MSGPACK_RPC_ENABLE_PROFILING: OFF
+        MSGPACK_RPC_ENABLE_CCACHE: ON
+        MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
