@@ -1,0 +1,35 @@
+@startuml session
+
+enum MessageType {
+    REQUEST
+    RESPONSE
+    NOTIFICATION
+}
+
+class MessageID
+
+class SerializedParameters {
+    + as<T...>() : tuple<T...>
+}
+
+class ParsedMessage {
+    + type() : MessageType
+    + name() : string
+    + id() : MessageID
+    + params() : SerializedParameters
+}
+ParsedMessage ..> MessageType
+ParsedMessage ..> MessageID
+ParsedMessage ..> SerializedParameters
+
+interface IMessageSerializer {
+    + serialize_to(packer: Packer)
+}
+
+interface ISession {
+    {abstract} + send_message(message: IMessageSerializer&)
+}
+ISession ..> IMessageSerializer
+ISession ..> ParsedMessage
+
+@enduml

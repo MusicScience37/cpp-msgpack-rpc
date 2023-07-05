@@ -1,0 +1,44 @@
+@startuml server
+
+class SerializedParameters {
+    + as<T...>() : tuple<T...>
+}
+
+class ResultSender {
+    + send<T>(result: T)
+    + used() : bool
+}
+
+interface IMethod {
+    {abstract} + name() : string
+    {abstract} + call(params: const SerializedParameters&, result_sender: ResultSender&)
+    {abstract} + notify(params: const SerializedParameters&)
+}
+IMethod ..> SerializedParameters
+IMethod ..> ResultSender
+
+interface IMethodDict {
+    {abstract} + get(name: string) : IMethod&
+}
+IMethodDict ..> IMethod
+
+interface IServerImpl {
+    {abstract} + start()
+    {abstract} + stop()
+}
+IServerImpl ..> IMethodDict
+
+class Server {
+    + start()
+    + stop()
+}
+Server o-- IServerImpl
+
+class ServerBuilder {
+    + listen_to_tcp(host: string, port: uint32_t)
+    + add_method<Signature, Function>(name: string, function: Function)
+    + build() : Server
+}
+ServerBuilder ..> Server
+
+@enduml
