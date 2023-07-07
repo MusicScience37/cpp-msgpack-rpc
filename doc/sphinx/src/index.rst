@@ -26,3 +26,4 @@ API reference can be viewed `here <api/index.html>`_.
 
     how_to_build_in_repository
     convention
+    design/index
