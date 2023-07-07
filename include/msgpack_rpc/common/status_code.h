@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Kenta Kabashima.
+ * Copyright 2023 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,26 @@
  */
 /*!
  * \file
- * \brief Dummy test.
+ * \brief Definition of StatusCode enumeration.
  */
-#include <catch2/catch_test_macros.hpp>
+#pragma once
 
-TEST_CASE("dummy test") {
-    //
-}
+namespace msgpack_rpc {
+inline namespace common {
+
+/*!
+ * \brief Enumeration of status codes.
+ */
+enum class StatusCode {
+    //! Success.
+    SUCCESS = 0,
+
+    //! Invalid arguments in functions.
+    INVALID_ARGUMENT,
+
+    //! Failure in parsing a message.
+    INVALID_MESSAGE,
+};
+
+}  // namespace common
+}  // namespace msgpack_rpc

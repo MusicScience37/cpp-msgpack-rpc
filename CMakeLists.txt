@@ -29,6 +29,11 @@ option(${UPPER_PROJECT_NAME}_BUILD_DOC
        "build documentation of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
 
+# TODO: Support of shared libraries.
+set(BUILD_SHARED_LIBS
+    OFF
+    CACHE BOOL "Build shared libraries." FORCE)
+
 set(CMAKE_CXX_STANDARD
     "17"
     CACHE STRING "C++ standard")
@@ -53,10 +58,7 @@ include(poetry)
 
 set(${UPPER_PROJECT_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(
-    ${PROJECT_NAME} INTERFACE ${${UPPER_PROJECT_NAME}_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_cpp_warnings)
+add_subdirectory(src)
 
 if(${UPPER_PROJECT_NAME}_BUILD_DOC)
     add_subdirectory(doc)

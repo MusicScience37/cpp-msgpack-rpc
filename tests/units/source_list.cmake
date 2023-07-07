@@ -1,3 +1,3 @@
 set(SOURCE_FILES
-    dummy_test.cpp
+    common/status_test.cpp
 )
