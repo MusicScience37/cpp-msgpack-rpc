@@ -4,6 +4,7 @@ set(SOURCE_FILES
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
     messages/message_parser_test.cpp
+    messages/message_serializer_test.cpp
     messages/message_type_test.cpp
     messages/parsed_parameters_test.cpp
 )

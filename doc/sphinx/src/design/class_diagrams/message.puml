@@ -10,10 +10,10 @@ class MessageID
 note bottom: Alias of uint32_t.
 
 class MessageSerializer {
-    + serializer_send_request<Params...>(name: string, request_id: MessageID, params...: Params...) : Bytes
-    + serializer_send_success_response<T>(request_id: MessageID, result: T) : Bytes
-    + serializer_send_error_response<T>(request_id: MessageID, error: T) : Bytes
-    + serializer_send_notification<Params...>(name: string, params...: Params...) : Bytes
+    + serialize_request<Params...>(name: string, request_id: MessageID, params...: Params...) : Bytes
+    + serialize_success_response<T>(request_id: MessageID, result: T) : Bytes
+    + serialize_error_response<T>(request_id: MessageID, error: T) : Bytes
+    + serialize_notification<Params...>(name: string, params...: Params...) : Bytes
 }
 MessageSerializer ..> MessageID
 
