@@ -23,6 +23,7 @@
 #include <string_view>
 
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc {
 inline namespace common {
@@ -30,7 +31,7 @@ inline namespace common {
 /*!
  * \brief Class of statuses.
  */
-class Status {
+class MSGPACK_RPC_EXPORT Status {
 public:
     /*!
      * \brief Constructor. (Set to success.)

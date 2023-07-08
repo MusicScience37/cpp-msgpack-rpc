@@ -23,7 +23,7 @@
 #define MSGPACK_RPC_VERSION_MAJOR 0
 
 //! Minor version of this project.
-#define MSGPACK_RPC_VERSION_MINOR 9
+#define MSGPACK_RPC_VERSION_MINOR 1
 
 //! Patch version of this project.
 #define MSGPACK_RPC_VERSION_PATCH 0

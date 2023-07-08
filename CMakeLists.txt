@@ -29,10 +29,9 @@ option(${UPPER_PROJECT_NAME}_BUILD_DOC
        "build documentation of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
 
-# TODO: Support of shared libraries.
 set(BUILD_SHARED_LIBS
-    OFF
-    CACHE BOOL "Build shared libraries." FORCE)
+    ON
+    CACHE BOOL "Build shared libraries.")
 
 set(CMAKE_CXX_STANDARD
     "17"
@@ -57,6 +56,7 @@ include(ConfigureCcache)
 include(poetry)
 
 set(${UPPER_PROJECT_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR ${CMAKE_BINARY_DIR}/include)
 
 add_subdirectory(src)
 
