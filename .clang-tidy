@@ -7,6 +7,7 @@ Checks: >
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-bounds-constant-array-index,
     -cppcoreguidelines-avoid-non-const-global-variables,
+    -cppcoreguidelines-pro-type-union-access,
   google-*,
     -google-runtime-references,
     -google-readability-todo,
@@ -40,6 +41,7 @@ Checks: >
 # - cert-err58-cpp produces warnings in all tests due to Catch2 library.
 # - cppcoreguidelines-avoid-non-const-global-variables produces warnings in all tests due to Catch2 library.
 # - readability-identifier-length prevent traditional codes.
+# - cppcoreguidelines-pro-type-union-access generates warnings for msgpack library.
 
 CheckOptions:
   # Naming Conventions
