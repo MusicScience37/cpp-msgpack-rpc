@@ -30,6 +30,10 @@ std::string_view format_status_code(StatusCode code) noexcept {
         return "INVALID_ARGUMENT";
     case StatusCode::INVALID_MESSAGE:
         return "INVALID_MESSAGE";
+    case StatusCode::TYPE_ERROR:
+        return "TYPE_ERROR";
+    case StatusCode::PRECONDITION_NOT_MET:
+        return "PRECONDITION_NOT_MET";
     }
     return "INVALID_STATUS_CODE";
 }

@@ -15,33 +15,28 @@
  */
 /*!
  * \file
- * \brief Definition of ParsedRequest class.
+ * \brief Definition of ParsedResponse class.
  */
 #pragma once
 
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
-#include "msgpack_rpc/messages/method_name_view.h"
-#include "msgpack_rpc/messages/parsed_parameters.h"
 
 namespace msgpack_rpc::messages {
 
 /*!
- * \brief Class of parsed requests.
+ * \brief Class of parsed responses.
  */
-class ParsedRequest {
+class ParsedResponse {
 public:
     /*!
      * \brief Constructor.
      *
      * \param[in] id Message ID.
-     * \param[in] method_name Method name.
-     * \param[in] parameters Parameters.
+     * \param[in] result Result.
      */
-    ParsedRequest(MessageID id, MethodNameView method_name,
-        ParsedParameters parameters) noexcept
-        : id_(id),
-          method_name_(method_name),
-          parameters_(std::move(parameters)) {}
+    ParsedResponse(MessageID id, CallResult result)
+        : id_(id), result_(std::move(result)) {}
 
     /*!
      * \brief Get the message ID.
@@ -51,32 +46,18 @@ public:
     [[nodiscard]] MessageID id() const noexcept { return id_; }
 
     /*!
-     * \brief Get the method name.
+     * \brief Get the result.
      *
-     * \return Method name.
+     * \return Result.
      */
-    [[nodiscard]] MethodNameView method_name() const noexcept {
-        return method_name_;
-    }
-
-    /*!
-     * \brief Get the parameters.
-     *
-     * \return Parameters.
-     */
-    [[nodiscard]] const ParsedParameters& parameters() const noexcept {
-        return parameters_;
-    }
+    [[nodiscard]] const CallResult& result() const noexcept { return result_; }
 
 private:
     //! Message ID.
     MessageID id_;
 
-    //! Method name.
-    MethodNameView method_name_;
-
-    //! Parameters.
-    ParsedParameters parameters_;
+    //! Result.
+    CallResult result_;
 };
 
 }  // namespace msgpack_rpc::messages

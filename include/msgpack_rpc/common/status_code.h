@@ -38,6 +38,12 @@ enum class StatusCode {
 
     //! Failure in parsing a message.
     INVALID_MESSAGE,
+
+    //! Invalid types in a message.
+    TYPE_ERROR,
+
+    //! Pre-condition for a process is not met.
+    PRECONDITION_NOT_MET,
 };
 
 /*!

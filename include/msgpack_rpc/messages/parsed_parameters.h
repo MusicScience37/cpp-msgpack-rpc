@@ -42,7 +42,7 @@ public:
      * \param[in] zone Zone in msgpack library.
      */
     explicit ParsedParameters(
-        msgpack::object object, std::unique_ptr<msgpack::zone> zone)
+        msgpack::object object, std::shared_ptr<msgpack::zone> zone)
         : object_(object), zone_(std::move(zone)) {
         if (object.type != msgpack::type::ARRAY) {
             throw MsgpackRPCException(
@@ -65,9 +65,9 @@ public:
                     "Invalid number of parameters.");
             }
             return object_.as<std::tuple<Parameters...>>();
-        } catch (const msgpack::type_error& e) {
+        } catch (const msgpack::type_error&) {
             throw MsgpackRPCException(
-                StatusCode::INVALID_MESSAGE, "Invalid types of parameters.");
+                StatusCode::TYPE_ERROR, "Invalid types of parameters.");
         }
     }
 
@@ -76,7 +76,7 @@ private:
     msgpack::object object_;
 
     //! Zone in msgpack library.
-    std::unique_ptr<msgpack::zone> zone_;
+    std::shared_ptr<msgpack::zone> zone_;
 };
 
 }  // namespace msgpack_rpc::messages

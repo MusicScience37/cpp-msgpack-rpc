@@ -34,8 +34,10 @@ TEST_CASE("using msgpack_rpc::format_status_code") {
                 {StatusCode::SUCCESS, "SUCCESS"},
                 {StatusCode::INVALID_ARGUMENT, "INVALID_ARGUMENT"},
                 {StatusCode::INVALID_MESSAGE, "INVALID_MESSAGE"},
+                {StatusCode::TYPE_ERROR, "TYPE_ERROR"},
+                {StatusCode::PRECONDITION_NOT_MET, "PRECONDITION_NOT_MET"},
                 {static_cast<StatusCode>(
-                     static_cast<int>(StatusCode::INVALID_MESSAGE) + 1),
+                     static_cast<int>(StatusCode::PRECONDITION_NOT_MET) + 1),
                     "INVALID_STATUS_CODE"}};
     }
 }
