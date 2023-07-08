@@ -72,6 +72,7 @@
     "pylint",
     "realpath",
     "SAST",
+    "sbuffer",
     "sphinxcontrib",
     "startsub",
     "startuml",

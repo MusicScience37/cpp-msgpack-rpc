@@ -8,6 +8,7 @@ Checks: >
     -cppcoreguidelines-pro-bounds-constant-array-index,
     -cppcoreguidelines-avoid-non-const-global-variables,
     -cppcoreguidelines-pro-type-union-access,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   google-*,
     -google-runtime-references,
     -google-readability-todo,
@@ -26,6 +27,7 @@ Checks: >
     -cert-err58-cpp,
   bugprone-*,
     -bugprone-easily-swappable-parameters,
+    -bugprone-unchecked-optional-access,
   concurrency-*,
   boost-*,
   openmp-*,
@@ -42,6 +44,8 @@ Checks: >
 # - cppcoreguidelines-avoid-non-const-global-variables produces warnings in all tests due to Catch2 library.
 # - readability-identifier-length prevent traditional codes.
 # - cppcoreguidelines-pro-type-union-access generates warnings for msgpack library.
+# - cppcoreguidelines-pro-bounds-pointer-arithmetic generates warnings for msgpack library.
+# - bugprone-unchecked-optional-access generates false positives.
 
 CheckOptions:
   # Naming Conventions

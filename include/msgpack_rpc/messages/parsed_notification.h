@@ -24,6 +24,9 @@
 
 namespace msgpack_rpc::messages {
 
+/*!
+ * \brief Class of parsed notification.
+ */
 class ParsedNotification {
 public:
     /*!
