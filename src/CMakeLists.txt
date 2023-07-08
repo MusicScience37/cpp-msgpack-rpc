@@ -28,11 +28,11 @@ generate_export_header(
 
 add_library(${PROJECT_NAME}_unity EXCLUDE_FROM_ALL unity_source.cpp)
 target_include_directories(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}_unity
     PUBLIC $<BUILD_INTERFACE:${${UPPER_PROJECT_NAME}_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
            $<BUILD_INTERFACE:${${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR}>
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}_unity
                       PUBLIC $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_compile_features(${PROJECT_NAME}_unity PUBLIC cxx_std_17)
