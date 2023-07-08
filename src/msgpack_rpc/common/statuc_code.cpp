@@ -15,39 +15,24 @@
  */
 /*!
  * \file
- * \brief Definition of StatusCode enumeration.
+ * \brief Implementation of format_status_code.
  */
-#pragma once
-
-#include <string_view>
-
-#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/common/status_code.h"
 
 namespace msgpack_rpc {
 inline namespace common {
 
-/*!
- * \brief Enumeration of status codes.
- */
-enum class StatusCode {
-    //! Success.
-    SUCCESS = 0,
-
-    //! Invalid arguments in functions.
-    INVALID_ARGUMENT,
-
-    //! Failure in parsing a message.
-    INVALID_MESSAGE,
-};
-
-/*!
- * \brief Format a status code.
- *
- * \param[in] code Status code.
- * \return Formatted string.
- */
-[[nodiscard]] MSGPACK_RPC_EXPORT std::string_view format_status_code(
-    StatusCode code) noexcept;
+std::string_view format_status_code(StatusCode code) noexcept {
+    switch (code) {
+    case StatusCode::SUCCESS:
+        return "SUCCESS";
+    case StatusCode::INVALID_ARGUMENT:
+        return "INVALID_ARGUMENT";
+    case StatusCode::INVALID_MESSAGE:
+        return "INVALID_MESSAGE";
+    }
+    return "INVALID_STATUS_CODE";
+}
 
 }  // namespace common
 }  // namespace msgpack_rpc
