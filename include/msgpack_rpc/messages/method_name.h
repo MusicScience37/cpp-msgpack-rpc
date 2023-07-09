@@ -21,6 +21,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace msgpack_rpc::messages {
 
@@ -33,8 +34,56 @@ public:
      * \brief Constructor.
      *
      * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
      */
-    explicit MethodName(std::string_view name) noexcept : name_(name) {
+    MethodName(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        std::string name)
+        : name_(std::move(name)) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodName(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        std::string_view name)
+        : name_(name) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     * \param[in] size Number of bytes in the name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodName(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        const char* name, std::size_t size)
+        : name_(name, size) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodName(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        const char* name)
+        : name_(name) {
         // TODO Add a validation of UTF-8.
     }
 

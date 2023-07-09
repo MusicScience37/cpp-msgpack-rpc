@@ -6,5 +6,7 @@ set(SOURCE_FILES
     messages/message_parser_test.cpp
     messages/message_serializer_test.cpp
     messages/message_type_test.cpp
+    messages/method_name_test.cpp
+    messages/method_name_view_test.cpp
     messages/parsed_parameters_test.cpp
 )

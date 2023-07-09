@@ -19,7 +19,10 @@
  */
 #pragma once
 
+#include <string>
 #include <string_view>
+
+#include "msgpack_rpc/messages/method_name.h"
 
 namespace msgpack_rpc::messages {
 
@@ -36,9 +39,73 @@ public:
      * \note This class saves pointer to the give buffer, and doesn't manage
      * memory.
      */
-    explicit MethodNameView(std::string_view name) noexcept : name_(name) {
+    MethodNameView(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        const MethodName& name) noexcept
+        : name_(name.name()) {
+        // Validation is done in MethodName.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodNameView(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        const std::string& name)
+        : name_(name) {
         // TODO Add a validation of UTF-8.
     }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodNameView(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        std::string_view name)
+        : name_(name) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     * \param[in] size Number of bytes in the name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodNameView(const char* name, std::size_t size) : name_(name, size) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] name Method name.
+     *
+     * \note This class saves pointer to the give buffer, and doesn't manage
+     * memory.
+     */
+    MethodNameView(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        const char* name)
+        : name_(name) {
+        // TODO Add a validation of UTF-8.
+    }
+
+    /*!
+     * \brief Convert to MethodName.
+     *
+     * \return MethodName object.
+     */
+    explicit operator MethodName() const { return MethodName(name_); }
 
     /*!
      * \brief Get the method name.
