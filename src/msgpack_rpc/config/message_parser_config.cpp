@@ -19,8 +19,28 @@
  */
 #include "msgpack_rpc/config/message_parser_config.h"
 
+#include <msgpack.hpp>
+
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
+
 namespace msgpack_rpc::config {
 
-MessageParserConfig::MessageParserConfig() = default;
+MessageParserConfig::MessageParserConfig()
+    : read_buffer_size_(
+          static_cast<std::size_t>(MSGPACK_UNPACKER_RESERVE_SIZE)) {}
+
+MessageParserConfig& MessageParserConfig::read_buffer_size(std::size_t value) {
+    if (value <= 0U) {
+        throw MsgpackRPCException(
+            StatusCode::INVALID_ARGUMENT, "Buffer size must be at least one.");
+    }
+    read_buffer_size_ = value;
+    return *this;
+}
+
+std::size_t MessageParserConfig::read_buffer_size() const noexcept {
+    return read_buffer_size_;
+}
 
 }  // namespace msgpack_rpc::config

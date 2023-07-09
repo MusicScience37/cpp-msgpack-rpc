@@ -49,6 +49,9 @@ public:
     MessageParser& operator=(const MessageParser&) = delete;
     MessageParser& operator=(MessageParser&&) = delete;
 
+    /*!
+     * \brief Destructor.
+     */
     ~MessageParser();
 
     /*!
@@ -77,8 +80,8 @@ private:
     //! Parser.
     msgpack::unpacker parser_;
 
-    //! Buffer size to read.
-    std::size_t read_buffer_size_{MSGPACK_UNPACKER_RESERVE_SIZE};  // NOLINT
+    //! Buffer size to read at once.
+    std::size_t read_buffer_size_;
 };
 
 }  // namespace msgpack_rpc::messages

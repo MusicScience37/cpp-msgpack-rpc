@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <cstddef>
+
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::config {
@@ -33,7 +35,24 @@ public:
      */
     MessageParserConfig();
 
-    // TODO implementation.
+    /*!
+     * \brief Set the buffer size to read at once.
+     *
+     * \param[in] value Buffer size to read at once.
+     * \return This.
+     */
+    MessageParserConfig& read_buffer_size(std::size_t value);
+
+    /*!
+     * \brief Get the buffer size to read at once.
+     *
+     * \return Buffer size to read at once.
+     */
+    [[nodiscard]] std::size_t read_buffer_size() const noexcept;
+
+private:
+    //! Buffer size to read at once.
+    std::size_t read_buffer_size_;
 };
 
 }  // namespace msgpack_rpc::config

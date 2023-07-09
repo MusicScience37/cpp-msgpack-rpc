@@ -27,7 +27,8 @@
 
 namespace msgpack_rpc::messages {
 
-MessageParser::MessageParser(const config::MessageParserConfig& /*config*/) {}
+MessageParser::MessageParser(const config::MessageParserConfig& config)
+    : read_buffer_size_(config.read_buffer_size()) {}
 
 MessageParser::~MessageParser() = default;
 
