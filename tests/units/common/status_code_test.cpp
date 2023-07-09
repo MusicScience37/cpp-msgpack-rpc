@@ -39,5 +39,10 @@ TEST_CASE("using msgpack_rpc::format_status_code") {
                 {static_cast<StatusCode>(
                      static_cast<int>(StatusCode::PRECONDITION_NOT_MET) + 1),
                     "INVALID_STATUS_CODE"}};
+
+        for (const auto& [value, string] : result_map) {
+            INFO("string: " << string);
+            CHECK(format_status_code(value) == string);
+        }
     }
 }

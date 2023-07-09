@@ -38,5 +38,10 @@ TEST_CASE("msgpack_rpc::messages::format_message_type") {
                      static_cast<int>(MessageType::NOTIFICATION) + 1),
                     "INVALID_MESSAGE_TYPE"},
             };
+
+        for (const auto& [value, string] : result_map) {
+            INFO("string: " << string);
+            CHECK(format_message_type(value) == string);
+        }
     }
 }
