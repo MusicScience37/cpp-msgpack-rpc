@@ -1,6 +1,7 @@
 set(SOURCE_FILES
     common/status_code_test.cpp
     common/status_test.cpp
+    config/message_parser_config_test.cpp
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
     messages/message_parser_test.cpp
