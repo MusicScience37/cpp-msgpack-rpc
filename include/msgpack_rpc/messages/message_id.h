@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Kenta Kabashima.
+ * Copyright 2023 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,15 @@
  */
 /*!
  * \file
- * \brief Dummy test.
+ * \brief Definition of MessageID type.
  */
-#include <catch2/catch_test_macros.hpp>
+#pragma once
 
-TEST_CASE("dummy test") {
-    //
-}
+#include <cstdint>
+
+namespace msgpack_rpc::messages {
+
+//! Type of message IDs.
+using MessageID = std::uint32_t;
+
+}  // namespace msgpack_rpc::messages

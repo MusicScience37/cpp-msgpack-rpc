@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Kenta Kabashima.
+ * Copyright 2023 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,22 @@
  */
 /*!
  * \file
- * \brief Definition of macros of the version of this project.
+ * \brief Definition of ParsedMessage type.
  */
 #pragma once
 
-//! Major version of this project.
-#define MSGPACK_RPC_VERSION_MAJOR 0
+#include <variant>
 
-//! Minor version of this project.
-#define MSGPACK_RPC_VERSION_MINOR 1
+#include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_request.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 
-//! Patch version of this project.
-#define MSGPACK_RPC_VERSION_PATCH 0
+namespace msgpack_rpc::messages {
+
+/*!
+ * \brief Type of parsed messages.
+ */
+using ParsedMessage =
+    std::variant<ParsedRequest, ParsedResponse, ParsedNotification>;
+
+}  // namespace msgpack_rpc::messages

@@ -29,6 +29,10 @@ option(${UPPER_PROJECT_NAME}_BUILD_DOC
        "build documentation of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
 
+set(BUILD_SHARED_LIBS
+    ON
+    CACHE BOOL "Build shared libraries.")
+
 set(CMAKE_CXX_STANDARD
     "17"
     CACHE STRING "C++ standard")
@@ -38,6 +42,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 
+find_package(msgpack-cxx REQUIRED)
 if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
 endif()
@@ -52,11 +57,9 @@ include(ConfigureCcache)
 include(poetry)
 
 set(${UPPER_PROJECT_NAME}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR ${CMAKE_BINARY_DIR}/include)
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(
-    ${PROJECT_NAME} INTERFACE ${${UPPER_PROJECT_NAME}_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} INTERFACE ${PROJECT_NAME}_cpp_warnings)
+add_subdirectory(src)
 
 if(${UPPER_PROJECT_NAME}_BUILD_DOC)
     add_subdirectory(doc)

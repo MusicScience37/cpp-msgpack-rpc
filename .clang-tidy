@@ -7,6 +7,8 @@ Checks: >
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-bounds-constant-array-index,
     -cppcoreguidelines-avoid-non-const-global-variables,
+    -cppcoreguidelines-pro-type-union-access,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   google-*,
     -google-runtime-references,
     -google-readability-todo,
@@ -19,11 +21,13 @@ Checks: >
     -readability-suspicious-call-argument,
   modernize-*,
     -modernize-return-braced-init-list,
+    -modernize-use-trailing-return-type,
   hicpp-*,
   cert-*,
     -cert-err58-cpp,
   bugprone-*,
     -bugprone-easily-swappable-parameters,
+    -bugprone-unchecked-optional-access,
   concurrency-*,
   boost-*,
   openmp-*,
@@ -39,32 +43,35 @@ Checks: >
 # - cert-err58-cpp produces warnings in all tests due to Catch2 library.
 # - cppcoreguidelines-avoid-non-const-global-variables produces warnings in all tests due to Catch2 library.
 # - readability-identifier-length prevent traditional codes.
+# - cppcoreguidelines-pro-type-union-access generates warnings for msgpack library.
+# - cppcoreguidelines-pro-bounds-pointer-arithmetic generates warnings for msgpack library.
+# - bugprone-unchecked-optional-access generates false positives.
 
 CheckOptions:
   # Naming Conventions
   # for these parameters of the naming convention,
-  # see https://clang.llvm.org/extra/clang-tidy/checks/readability-identifier-naming.html
+  # see https://clang.llvm.org/extra/clang-tidy/checks/readability/identifier-naming.html
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
 
   - key: readability-identifier-naming.ClassCase
-    value: lower_case
+    value: CamelCase
   - key: readability-identifier-naming.StructCase
-    value: lower_case
+    value: CamelCase
   - key: readability-identifier-naming.EnumCase
-    value: lower_case
+    value: CamelCase
 
   - key: readability-identifier-naming.FunctionCase
     value: lower_case
 
   - key: readability-identifier-naming.VariableCase
     value: lower_case
-  - key: readability-identifier-naming.ConstantCase
-    value: lower_case
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
   - key: readability-identifier-naming.ParameterCase
     value: lower_case
   - key: readability-identifier-naming.EnumConstantCase
-    value: lower_case
+    value: UPPER_CASE
   - key: readability-identifier-naming.MemberCase
     value: lower_case
   - key: readability-identifier-naming.PrivateMemberSuffix

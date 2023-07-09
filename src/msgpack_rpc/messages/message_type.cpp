@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Kenta Kabashima.
+ * Copyright 2023 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,22 @@
  */
 /*!
  * \file
- * \brief Definition of macros of the version of this project.
+ * \brief Implementation of functions for message types.
  */
-#pragma once
+#include "msgpack_rpc/messages/message_type.h"
 
-//! Major version of this project.
-#define MSGPACK_RPC_VERSION_MAJOR 0
+namespace msgpack_rpc::messages {
 
-//! Minor version of this project.
-#define MSGPACK_RPC_VERSION_MINOR 1
+std::string_view format_message_type(MessageType type) noexcept {
+    switch (type) {
+    case MessageType::REQUEST:
+        return "REQUEST";
+    case MessageType::RESPONSE:
+        return "RESPONSE";
+    case MessageType::NOTIFICATION:
+        return "NOTIFICATION";
+    }
+    return "INVALID_MESSAGE_TYPE";
+}
 
-//! Patch version of this project.
-#define MSGPACK_RPC_VERSION_PATCH 0
+}  // namespace msgpack_rpc::messages
