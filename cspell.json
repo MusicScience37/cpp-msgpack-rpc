@@ -8,6 +8,7 @@
   "words": [
     "alloc",
     "asan",
+    "asio",
     "ausan",
     "autobuild",
     "bugprone",
@@ -42,6 +43,7 @@
     "fcoverage",
     "fprofile",
     "fsanitize",
+    "FUNCSIG",
     "genhtml",
     "gitmessage",
     "Graphviz",
@@ -75,6 +77,7 @@
     "rpcd",
     "SAST",
     "sbuffer",
+    "spdlog",
     "sphinxcontrib",
     "startsub",
     "startuml",
