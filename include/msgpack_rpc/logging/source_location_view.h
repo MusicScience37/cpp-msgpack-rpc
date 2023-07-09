@@ -105,7 +105,7 @@ private:
 
 //! Macro to get the current location in source codes.
 #define MSGPACK_RPC_CURRENT_SOURCE_LOCATION()                      \
-    SourceLocationView(                                            \
+    ::msgpack_rpc::logging::SourceLocationView(                    \
         std::string_view(MSGPACK_RPC_CURRENT_FILEPATH), /*NOLINT*/ \
         static_cast<std::uint32_t>(MSGPACK_RPC_CURRENT_LINE),      \
         std::string_view(MSGPACK_RPC_CURRENT_FUNCTION)) /*NOLINT*/

@@ -1,6 +1,7 @@
 #include "common/status_code_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "common/status_test.cpp"       // NOLINT(bugprone-suspicious-include)
 #include "config/message_parser_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "logging/source_location_view_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/call_result_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/impl/parse_message_from_object_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/message_parser_test.cpp"  // NOLINT(bugprone-suspicious-include)
