@@ -50,4 +50,20 @@ TEST_CASE("msgpack_rpc::messages::CallResult") {
         CHECK(result.error_as<std::string>() == "abc");
         CHECK_THROWS(result.result_as<std::string>());
     }
+
+    SECTION("try to get a result as a wrong type") {
+        const auto zone = std::make_shared<msgpack::zone>();
+        const auto object = msgpack::object("abc", *zone);
+        const auto result = CallResult::create_result(object, zone);
+
+        CHECK_THROWS(result.result_as<int>());
+    }
+
+    SECTION("try to get an error as a wrong type") {
+        const auto zone = std::make_shared<msgpack::zone>();
+        const auto object = msgpack::object("abc", *zone);
+        const auto result = CallResult::create_error(object, zone);
+
+        CHECK_THROWS(result.error_as<int>());
+    }
 }
