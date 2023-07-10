@@ -98,7 +98,7 @@ private:
  */
 inline void configure_spdlog_logger_format_for_consoles(
     const std::shared_ptr<spdlog::logger>& logger) {
-    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%l] %v (%s:%#)");
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%l] %v (%s:%#, %!)");
 }
 
 /*!

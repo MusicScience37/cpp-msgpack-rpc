@@ -12,6 +12,52 @@ files = [
 ]
 
 [[package]]
+name = "allpairspy"
+version = "2.5.1"
+description = "Pairwise test combinations generator"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "allpairspy-2.5.1-py3-none-any.whl", hash = "sha256:3f97cbac2bbee86f4bfceffd0fd91dca740a120c78e9368af2bad81a2b3426e2"},
+    {file = "allpairspy-2.5.1.tar.gz", hash = "sha256:f69d31a3b56eee119d1ec6063e9c732dd44fbba352ef738cb22d9699fc4009fe"},
+]
+
+[package.extras]
+test = ["pytest (>=6.0.1)", "pytest-md-report (>=0.3)"]
+
+[[package]]
+name = "approval-utilities"
+version = "8.3.1"
+description = "Utilities for your production code that work well with approvaltests"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "approval_utilities-8.3.1-py3-none-any.whl", hash = "sha256:d3390e1bb9ecdb0b72633bed3089a7fcae95042cac4d7f3fcc211e90037b8bd7"},
+    {file = "approval_utilities-8.3.1.tar.gz", hash = "sha256:eb2027c99590d795d616ff86f3aeca87ca400990868b5385e9a45581e9520198"},
+]
+
+[[package]]
+name = "approvaltests"
+version = "8.3.1"
+description = "Assertion/verification library to aid testing"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "approvaltests-8.3.1-py3-none-any.whl", hash = "sha256:3c408ddcc4cd4cd730ebf2923807ec04b655053af86128e6e5301e7538902f2b"},
+    {file = "approvaltests-8.3.1.tar.gz", hash = "sha256:46d298314c70713e2cfd5a4dc106a78b9def00f81610c5362a56684f8bad360e"},
+]
+
+[package.dependencies]
+allpairspy = ">=2.1.0"
+approval-utilities = "8.3.1"
+beautifulsoup4 = ">=4.4.0"
+empty-files = ">=0.0.3"
+mrjob = ">=0.7.4"
+pyperclip = ">=1.5.29"
+pytest = ">=4.0.0"
+typing-extensions = ">=3.6.2"
+
+[[package]]
 name = "astroid"
 version = "2.15.5"
 description = "An abstract syntax tree for Python with inference support."
@@ -40,6 +86,24 @@ files = [
     {file = "Babel-2.12.1-py3-none-any.whl", hash = "sha256:b4246fb7677d3b98f501a39d43396d3cafdc8eadb045f4a31be01863f655c610"},
     {file = "Babel-2.12.1.tar.gz", hash = "sha256:cc2d99999cd01d44420ae725a21c9e3711b3aadc7976d6147f622d8581963455"},
 ]
+
+[[package]]
+name = "beautifulsoup4"
+version = "4.12.2"
+description = "Screen-scraping library"
+optional = false
+python-versions = ">=3.6.0"
+files = [
+    {file = "beautifulsoup4-4.12.2-py3-none-any.whl", hash = "sha256:bd2520ca0d9d7d12694a53d44ac482d181b4ec1888909b035a3dbf40d0f57d4a"},
+    {file = "beautifulsoup4-4.12.2.tar.gz", hash = "sha256:492bbc69dca35d12daac71c4db1bfff0c876c00ef4a2ffacce226d4638eb72da"},
+]
+
+[package.dependencies]
+soupsieve = ">1.2"
+
+[package.extras]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
 
 [[package]]
 name = "black"
@@ -323,6 +387,34 @@ files = [
 ]
 
 [[package]]
+name = "empty-files"
+version = "0.0.4"
+description = "Serves empty files of many types"
+optional = false
+python-versions = ">=3.7.1"
+files = [
+    {file = "empty-files-0.0.4.tar.gz", hash = "sha256:e1a0862d79f9143343cc8623e39a4612ef39a23e2e6049fe443a78b51b4e74a5"},
+    {file = "empty_files-0.0.4-py3-none-any.whl", hash = "sha256:74be100837ada478409ccb613f2a4429847f12d7f96651ae9e093c0d46917cfe"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
+name = "exceptiongroup"
+version = "1.1.2"
+description = "Backport of PEP 654 (exception groups)"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "exceptiongroup-1.1.2-py3-none-any.whl", hash = "sha256:e346e69d186172ca7cf029c8c1d16235aa0e04035e5750b4b95039e65204328f"},
+    {file = "exceptiongroup-1.1.2.tar.gz", hash = "sha256:12c3e887d6485d16943a309616de20ae5582633e0a2eda17f4e10fd61c1e8af5"},
+]
+
+[package.extras]
+test = ["pytest (>=6)"]
+
+[[package]]
 name = "filelock"
 version = "3.12.2"
 description = "A platform independent file lock."
@@ -371,6 +463,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 files = [
     {file = "imagesize-1.4.1-py2.py3-none-any.whl", hash = "sha256:0d8d18d08f840c19d0ee7ca1fd82490fdc3729b7ac93f49870406ddde8ef8d8b"},
     {file = "imagesize-1.4.1.tar.gz", hash = "sha256:69150444affb9cb0d5cc5a92b3676f0b2fb7cd9ae39e947a5e11a36b4497cd4a"},
+]
+
+[[package]]
+name = "iniconfig"
+version = "2.0.0"
+description = "brain-dead simple config-ini parsing"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
+    {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
 
 [[package]]
@@ -609,6 +712,27 @@ files = [
 ]
 
 [[package]]
+name = "mrjob"
+version = "0.7.4"
+description = "Python MapReduce framework"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mrjob-0.7.4-py2.py3-none-any.whl", hash = "sha256:d8fa1bafcada0ffe3e7166896a27e996815e2cb835088aec025e3dd12c7146ce"},
+    {file = "mrjob-0.7.4.tar.gz", hash = "sha256:2c8d8dc8aa4b354a97de18d0260f551f018693af74af104b3d41daf165eebdd4"},
+]
+
+[package.dependencies]
+PyYAML = ">=3.10"
+
+[package.extras]
+aws = ["boto3 (>=1.10.0)", "botocore (>=1.13.26)"]
+google = ["google-cloud-dataproc (>=0.3.0,<=1.1.0)", "google-cloud-logging (>=1.9.0)", "google-cloud-storage (>=1.13.1)"]
+rapidjson = ["python-rapidjson"]
+simplejson = ["simplejson"]
+ujson = ["ujson"]
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -708,6 +832,21 @@ docs = ["furo (>=2023.5.20)", "proselint (>=0.13)", "sphinx (>=7.0.1)", "sphinx-
 test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.3.1)", "pytest-cov (>=4.1)", "pytest-mock (>=3.10)"]
 
 [[package]]
+name = "pluggy"
+version = "1.2.0"
+description = "plugin and hook calling mechanisms for python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pluggy-1.2.0-py3-none-any.whl", hash = "sha256:c2fd55a7d7a3863cba1a013e4e2414658b1d07b6bc57b3919e0c63c9abb99849"},
+    {file = "pluggy-1.2.0.tar.gz", hash = "sha256:d12f0c4b579b15f5e054301bb226ee85eeeba08ffec228092f8defbaa3a4c4b3"},
+]
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+testing = ["pytest", "pytest-benchmark"]
+
+[[package]]
 name = "pre-commit"
 version = "3.3.3"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -766,6 +905,53 @@ tomlkit = ">=0.10.1"
 [package.extras]
 spelling = ["pyenchant (>=3.2,<4.0)"]
 testutils = ["gitpython (>3)"]
+
+[[package]]
+name = "pyperclip"
+version = "1.8.2"
+description = "A cross-platform clipboard module for Python. (Only handles plain text for now.)"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyperclip-1.8.2.tar.gz", hash = "sha256:105254a8b04934f0bc84e9c24eb360a591aaf6535c9def5f29d92af107a9bf57"},
+]
+
+[[package]]
+name = "pytest"
+version = "7.4.0"
+description = "pytest: simple powerful testing with Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-7.4.0-py3-none-any.whl", hash = "sha256:78bf16451a2eb8c7a2ea98e32dc119fd2aa758f1d5d66dbf0a59d69a3969df32"},
+    {file = "pytest-7.4.0.tar.gz", hash = "sha256:b4bf8c45bd59934ed84001ad51e11b4ee40d40a1229d2c79f9c592b0a3f6bd8a"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+exceptiongroup = {version = ">=1.0.0rc8", markers = "python_version < \"3.11\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=0.12,<2.0"
+tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
+
+[package.extras]
+testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+
+[[package]]
+name = "pytest-approvaltests"
+version = "0.2.4"
+description = "A plugin to use approvaltests with pytest"
+optional = false
+python-versions = ">=3.6.1"
+files = [
+    {file = "pytest-approvaltests-0.2.4.tar.gz", hash = "sha256:325fafdc1ed49d10f88f072c3305b3d35557cbc15748d835be3020db4092e9a6"},
+    {file = "pytest_approvaltests-0.2.4-py3-none-any.whl", hash = "sha256:199ad1cac8ebcbf681f4876d07bf3bbb8bdfa49396e16747027f6bac2fa0a075"},
+]
+
+[package.dependencies]
+approvaltests = "*"
+pytest = ">=7.0.1"
 
 [[package]]
 name = "pyyaml"
@@ -886,6 +1072,17 @@ python-versions = "*"
 files = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
     {file = "snowballstemmer-2.2.0.tar.gz", hash = "sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1"},
+]
+
+[[package]]
+name = "soupsieve"
+version = "2.4.1"
+description = "A modern CSS selector implementation for Beautiful Soup."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "soupsieve-2.4.1-py3-none-any.whl", hash = "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8"},
+    {file = "soupsieve-2.4.1.tar.gz", hash = "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"},
 ]
 
 [[package]]
@@ -1290,4 +1487,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "adfc0c53421b170425016502bbce1e0cd8e44cd69430888cc5b0c65c11bfbba8"
+content-hash = "a899ebb9acddc3bdca98d0f77f0601d7eb00945290881ba77fa54280675c4ab8"

@@ -27,6 +27,7 @@
 
 #include "msgpack_rpc/logging/i_log_sink.h"
 #include "msgpack_rpc/logging/log_level.h"
+#include "msgpack_rpc/logging/log_sinks.h"
 #include "msgpack_rpc/logging/source_location_view.h"
 
 namespace msgpack_rpc::logging {
@@ -46,7 +47,7 @@ public:
      * \return Logger.
      */
     [[nodiscard]] static std::shared_ptr<Logger> create(
-        std::shared_ptr<ILogSink> sink,
+        std::shared_ptr<ILogSink> sink = create_stdout_log_sink(),
         LogLevel output_log_level = LogLevel::INFO) {
         return std::make_shared<Logger>(std::move(sink), output_log_level);
     }
