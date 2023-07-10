@@ -1,5 +1,5 @@
 set(SOURCE_FILES
-    catch_event_listner.cpp
+    catch_event_listener.cpp
     common/status_code_test.cpp
     common/status_test.cpp
     config/message_parser_config_test.cpp
