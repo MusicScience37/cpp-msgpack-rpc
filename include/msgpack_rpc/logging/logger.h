@@ -73,8 +73,9 @@ public:
     template <typename Body>
     void write(SourceLocationView location, LogLevel level, Body&& body) {
         if (sink_) {
-            sink_->write(
-                location, level, std::string_view(std::forward<Body>(body)));
+            sink_->write(location, level,
+                // NOLINTNEXTLINE
+                std::string_view(std::forward<Body>(body)));
         }
     }
 
