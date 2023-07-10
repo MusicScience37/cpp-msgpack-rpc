@@ -92,6 +92,17 @@ private:
 
 /*!
  * \brief Configure the log format of a logger in spdlog library for output to
+ * consoles.
+ *
+ * \param[in] logger Logger in spdlog library.
+ */
+inline void configure_spdlog_logger_format_for_consoles(
+    const std::shared_ptr<spdlog::logger>& logger) {
+    logger->set_pattern("[%Y-%m-%d %H:%M:%S.%f] [%l] %v (%s:%#)");
+}
+
+/*!
+ * \brief Configure the log format of a logger in spdlog library for output to
  * files.
  *
  * \param[in] logger Logger in spdlog library.

@@ -29,6 +29,14 @@
 namespace msgpack_rpc::logging {
 
 /*!
+ * \brief Create a log sink to write to standard output.
+ *
+ * \return Log sink.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ILogSink>
+create_stdout_log_sink();
+
+/*!
  * \brief Create a log sink to write to a file with rotation.
  *
  * \param[in] filepath Filepath.
