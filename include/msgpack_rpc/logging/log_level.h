@@ -37,10 +37,10 @@ enum class LogLevel {
     //! Warnings. (Unexpected conditions which don't stop operations.)
     WARN,
 
-    //! Error. (Unexpected conditions which stop operations.)
+    //! Error. (Unexpected conditions which stop some operations in communication.)
     ERROR,
 
-    //! Critical. (Not used in this library.)
+    //! Critical. (Unexpected conditions which can stop all operations in communication.)
     CRITICAL
 };
 
