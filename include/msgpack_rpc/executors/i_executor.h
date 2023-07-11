@@ -40,6 +40,17 @@ public:
     virtual void run() = 0;
 
     /*!
+     * \brief Run internal event loops to process asynchronous tasks.
+     *
+     * \note This function stops
+     * - when SIGTERM or SIGINT is received,
+     * - when a task throws an exception, which will be thrown to caller of this
+     * function,
+     * - when stop function is called.
+     */
+    virtual void run_until_interruption() = 0;
+
+    /*!
      * \brief Stops operation.
      *
      * \note This function returns without waiting stop of operations.

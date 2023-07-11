@@ -20,6 +20,8 @@
 #include <memory>
 #include <utility>
 
+#include <asio/signal_set.hpp>
+
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_executor.h"
@@ -47,6 +49,20 @@ public:
                 logger_, "Executor stops due to an exception: {}", e.what());
             throw;
         }
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::run_until_interruption
+    void run_until_interruption() override {
+        asio::signal_set signal_set(context_, SIGINT, SIGTERM);
+        signal_set.async_wait(
+            [this](const asio::error_code& error, int signal_number) {
+                if (!error) {
+                    MSGPACK_RPC_TRACE(logger_,
+                        "Stop executor because of a signal {}.", signal_number);
+                    context_.stop();
+                }
+            });
+        run();
     }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::stop
