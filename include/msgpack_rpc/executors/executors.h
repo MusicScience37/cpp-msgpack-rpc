@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Declaration of functions to create executors..
+ * \brief Declaration of functions to create executors.
  */
 #pragma once
 
