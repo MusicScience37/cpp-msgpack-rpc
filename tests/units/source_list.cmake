@@ -2,8 +2,10 @@ set(SOURCE_FILES
     catch_event_listener.cpp
     common/status_code_test.cpp
     common/status_test.cpp
+    config/executor_config_test.cpp
     config/message_parser_config_test.cpp
     create_test_logger.cpp
+    executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp

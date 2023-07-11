@@ -15,36 +15,44 @@
  */
 /*!
  * \file
- * \brief Test of SingleThreadExecutor class.
+ * \brief Test of GeneralExecutor class.
  */
 #include <atomic>
 #include <stdexcept>
 
 #include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include "../create_test_logger.h"
+#include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/logging/logger.h"
 
-TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
-    using msgpack_rpc::executors::create_single_thread_executor;
+TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
+    using msgpack_rpc::config::ExecutorConfig;
+    using msgpack_rpc::executors::create_executor;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc_test::create_test_logger;
 
     const auto logger = create_test_logger();
-    const auto executor = create_single_thread_executor(logger);
-
-    SECTION("run without a task") {
-        // This will return soon.
-        CHECK_NOTHROW(executor->run());
-    }
+    const auto executor_config = ExecutorConfig();
+    const auto executor = create_executor(logger, executor_config);
 
     SECTION("run with a task") {
         std::atomic<bool> is_called{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::MAIN),
-            [&is_called] { is_called.store(true); }));
+        const OperationType operation_type = GENERATE(OperationType::TRANSPORT,
+            OperationType::CALLBACK, OperationType::MAIN);
+        INFO("Operation type: " << static_cast<int>(operation_type));
+        MSGPACK_RPC_DEBUG(
+            logger, "Operation type: {}", static_cast<int>(operation_type));
+        CHECK_NOTHROW(asio::post(
+            executor->context(operation_type), [&is_called, &executor] {
+                is_called.store(true);
+                executor->stop();
+            }));
 
         CHECK_NOTHROW(executor->run());
 
@@ -52,37 +60,21 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
     }
 
     SECTION("run with a task throwing an exception") {
-        std::atomic<bool> is_called1{false};
+        std::atomic<bool> is_called{false};
         const std::string message = "Test exception message.";
+        const OperationType operation_type = GENERATE(OperationType::TRANSPORT,
+            OperationType::CALLBACK, OperationType::MAIN);
+        INFO("Operation type: " << static_cast<int>(operation_type));
+        MSGPACK_RPC_DEBUG(
+            logger, "Operation type: {}", static_cast<int>(operation_type));
         CHECK_NOTHROW(asio::post(
-            executor->context(OperationType::MAIN), [&is_called1, &message] {
-                is_called1.store(true);
+            executor->context(operation_type), [&is_called, &message] {
+                is_called.store(true);
                 throw std::runtime_error(message);
             }));
-        std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::MAIN),
-            [&is_called2] { is_called2.store(true); }));
 
         CHECK_THROWS_WITH(executor->run(), message);
 
-        CHECK(is_called1.load());
-        CHECK_FALSE(is_called2.load());
-    }
-
-    SECTION("run with a task stopping the executor") {
-        std::atomic<bool> is_called1{false};
-        CHECK_NOTHROW(asio::post(
-            executor->context(OperationType::MAIN), [&is_called1, &executor] {
-                is_called1.store(true);
-                executor->stop();
-            }));
-        std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::MAIN),
-            [&is_called2] { is_called2.store(true); }));
-
-        CHECK_NOTHROW(executor->run());
-
-        CHECK(is_called1.load());
-        CHECK_FALSE(is_called2.load());
+        CHECK(is_called.load());
     }
 }

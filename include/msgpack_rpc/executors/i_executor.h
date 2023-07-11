@@ -20,6 +20,7 @@
 #pragma once
 
 #include "msgpack_rpc/executors/asio_context_type.h"
+#include "msgpack_rpc/executors/operation_type.h"
 
 namespace msgpack_rpc::executors {
 
@@ -34,8 +35,7 @@ public:
      * \note This function stops
      * - when a task throws an exception, which will be thrown to caller of this
      * function,
-     * - when stop function is called,
-     * - or when no task exists.
+     * - when stop function is called.
      */
     virtual void run() = 0;
 
@@ -60,12 +60,13 @@ public:
     /*!
      * \brief Get the context in asio library.
      *
+     * \param[in] type Operation type.
      * \return Context.
      *
      * \note Implementation can return different objects for multiple function
-     * calls.
+     * calls and different operation types.
      */
-    virtual AsioContextType& context() noexcept = 0;
+    virtual AsioContextType& context(OperationType type) noexcept = 0;
 
     IExecutor(const IExecutor&) = delete;
     IExecutor(IExecutor&&) = delete;

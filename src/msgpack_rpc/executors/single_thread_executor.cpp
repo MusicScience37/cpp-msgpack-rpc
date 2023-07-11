@@ -46,7 +46,7 @@ public:
             MSGPACK_RPC_TRACE(logger_, "Executor run stopped normally.");
         } catch (const std::exception& e) {
             MSGPACK_RPC_CRITICAL(
-                logger_, "Executor stops due to an exception: {}", e.what());
+                logger_, "Executor stopped due to an exception: {}", e.what());
             throw;
         }
     }
@@ -72,7 +72,10 @@ public:
     }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::context
-    AsioContextType& context() noexcept override { return context_; }
+    AsioContextType& context(OperationType type) noexcept override {
+        (void)type;
+        return context_;
+    }
 
 private:
     //! Context.
