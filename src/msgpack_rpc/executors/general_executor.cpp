@@ -187,7 +187,7 @@ private:
         try {
             context.run();
         } catch (const std::exception& e) {
-            MSGPACK_RPC_ERROR(logger_, "Exception thrown in a thread {}: {}.",
+            MSGPACK_RPC_ERROR(logger_, "Exception thrown in a thread {}: {}",
                 thread_id, e.what());
             {
                 std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
