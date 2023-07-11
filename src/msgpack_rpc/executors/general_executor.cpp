@@ -20,10 +20,12 @@
 #include <atomic>
 #include <exception>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <thread>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <asio/executor_work_guard.hpp>
 #include <asio/signal_set.hpp>
