@@ -96,7 +96,7 @@ private:
  */
 #define MSGPACK_RPC_CURRENT_FUNCTION <implementation defined strings>
 #elif __GNUC__  // GCC and Clang
-#define MSGPACK_RPC_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#define MSGPACK_RPC_CURRENT_FUNCTION __func__
 #elif _MSC_VER  // MSVC
 #define MSGPACK_RPC_CURRENT_FUNCTION __FUNCSIG__
 #else  // fallback (C++ standard)
