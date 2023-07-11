@@ -24,7 +24,7 @@
 #include <string_view>
 
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "msgpack_rpc/logging/i_log_sink.h"
 #include "msgpack_rpc/logging/impl/spdlog_log_sink.h"
@@ -32,7 +32,7 @@
 namespace msgpack_rpc::logging {
 
 std::shared_ptr<ILogSink> create_stdout_log_sink_impl() {
-    auto spdlog_logger = spdlog::stdout_logger_mt("stdout");
+    auto spdlog_logger = spdlog::stdout_color_mt("stdout");
     impl::spdlog_backend::configure_spdlog_logger_format_for_consoles(
         spdlog_logger);
     return std::make_shared<impl::spdlog_backend::SpdlogLogSink>(
