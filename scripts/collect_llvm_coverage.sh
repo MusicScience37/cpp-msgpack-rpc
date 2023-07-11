@@ -8,7 +8,7 @@ DIR=$1
 
 # make a file for codecov
 llvm-profdata merge -o $DIR/coverage/coverage.profdata $DIR/coverage/coverage_*.profraw
-for a in $(find $DIR/bin/msgpack_rpc_test_* $DIR/lib/libmsgpack_rpcd.so.*); do
+for a in $(find $DIR/bin/msgpack_rpc_test_* $DIR/bin/integ_* $DIR/lib/libmsgpack_rpcd.so.*); do
     opts="$opts -object $a"
 done
 llvm-cov show -ignore-filename-regex='(tests)/*' -instr-profile=$DIR/coverage/coverage.profdata $opts \
