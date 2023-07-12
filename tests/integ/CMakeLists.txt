@@ -1,0 +1,2 @@
+add_subdirectory(logging_test)
+add_subdirectory(executor_interruption)

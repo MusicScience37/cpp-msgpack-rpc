@@ -42,7 +42,7 @@ endif()
 option(${UPPER_PROJECT_NAME}_ENABLE_INTEG_TESTS
        "enable integration tests of ${FULL_PROJECT_NAME}" ON)
 if(${UPPER_PROJECT_NAME}_ENABLE_INTEG_TESTS)
-    # add_subdirectory(integ)
+    add_subdirectory(integ)
 endif()
 
 option(${UPPER_PROJECT_NAME}_ENABLE_BENCH

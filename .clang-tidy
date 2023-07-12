@@ -9,6 +9,8 @@ Checks: >
     -cppcoreguidelines-avoid-non-const-global-variables,
     -cppcoreguidelines-pro-type-union-access,
     -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -cppcoreguidelines-macro-usage,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   google-*,
     -google-runtime-references,
     -google-readability-todo,
@@ -23,6 +25,7 @@ Checks: >
     -modernize-return-braced-init-list,
     -modernize-use-trailing-return-type,
   hicpp-*,
+    -hicpp-no-array-decay,
   cert-*,
     -cert-err58-cpp,
   bugprone-*,
@@ -46,6 +49,8 @@ Checks: >
 # - cppcoreguidelines-pro-type-union-access generates warnings for msgpack library.
 # - cppcoreguidelines-pro-bounds-pointer-arithmetic generates warnings for msgpack library.
 # - bugprone-unchecked-optional-access generates false positives.
+# - cppcoreguidelines-macro-usage generates false positives.
+# - cppcoreguidelines-pro-bounds-array-to-pointer-decay and hicpp-no-array-decay force use of an external library.
 
 CheckOptions:
   # Naming Conventions

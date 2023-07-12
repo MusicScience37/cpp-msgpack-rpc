@@ -7,8 +7,9 @@ target_include_directories(
            $<BUILD_INTERFACE:${${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR}>
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC msgpack-cxx
-                           $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
+    ${PROJECT_NAME}
+    PUBLIC asio::asio msgpack-cxx spdlog::spdlog fmt::fmt Threads::Threads
+           $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_add_ausan(${PROJECT_NAME})
 
@@ -36,5 +37,6 @@ target_include_directories(
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(
     ${PROJECT_NAME}_unity
-    PUBLIC msgpack-cxx $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
+    PUBLIC asio::asio msgpack-cxx spdlog::spdlog fmt::fmt
+           $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME}_unity PUBLIC cxx_std_17)

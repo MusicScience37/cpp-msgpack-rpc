@@ -1,4 +1,4 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-  "dependencies": ["msgpack", "catch2"]
+  "dependencies": ["asio", "spdlog", "msgpack", "fmt", "catch2", "bfgroup-lyra"]
 }
