@@ -1,6 +1,7 @@
 set(SOURCE_FILES
     addresses/address_test.cpp
     addresses/tcp_address_test.cpp
+    addresses/uri_test.cpp
     catch_event_listener.cpp
     common/status_code_test.cpp
     common/status_test.cpp

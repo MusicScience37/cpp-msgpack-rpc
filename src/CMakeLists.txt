@@ -8,7 +8,12 @@ target_include_directories(
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(
     ${PROJECT_NAME}
-    PUBLIC asio::asio msgpack-cxx spdlog::spdlog fmt::fmt Threads::Threads
+    PUBLIC asio::asio
+           msgpack-cxx
+           spdlog::spdlog
+           fmt::fmt
+           re2::re2
+           Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_add_ausan(${PROJECT_NAME})

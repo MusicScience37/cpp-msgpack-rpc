@@ -5,6 +5,7 @@
     "spdlog",
     "msgpack",
     "fmt",
+    "re2",
     "catch2",
     "approval-tests-cpp",
     "bfgroup-lyra"

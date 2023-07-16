@@ -114,7 +114,7 @@ public:
         const msgpack_rpc::addresses::TCPAddress& val,
         format_context& context) const {
         return fmt::format_to(
-            context.out(), "{}", fmt::streamed(val.asio_address()));
+            context.out(), "tcp://{}", fmt::streamed(val.asio_address()));
     }
 };
 
