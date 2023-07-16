@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -45,7 +46,8 @@ public:
      * \note For protocols without port numbers, port_number can be omitted.
      */
     URI(std::string_view schema, std::string_view host,
-        std::uint16_t port_number = static_cast<std::uint16_t>(0));
+        std::optional<std::uint16_t> port_number =
+            std::optional<std::uint16_t>());
 
     /*!
      * \brief Get the schema.
@@ -66,7 +68,7 @@ public:
      *
      * \return Port number.
      */
-    [[nodiscard]] std::uint16_t port_number() const noexcept;
+    [[nodiscard]] std::optional<std::uint16_t> port_number() const noexcept;
 
     /*!
      * \brief Parse a string to create a URI.
@@ -84,7 +86,7 @@ private:
     std::string host_;
 
     //! Port.
-    std::uint16_t port_number_;
+    std::optional<std::uint16_t> port_number_;
 };
 
 }  // namespace msgpack_rpc::addresses

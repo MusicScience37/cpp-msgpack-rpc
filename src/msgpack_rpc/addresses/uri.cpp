@@ -27,15 +27,17 @@
 
 namespace msgpack_rpc::addresses {
 
-URI::URI(
-    std::string_view schema, std::string_view host, std::uint16_t port_number)
+URI::URI(std::string_view schema, std::string_view host,
+    std::optional<std::uint16_t> port_number)
     : schema_(schema), host_(host), port_number_(port_number) {}
 
 std::string_view URI::schema() const noexcept { return schema_; }
 
 std::string_view URI::host() const noexcept { return host_; }
 
-std::uint16_t URI::port_number() const noexcept { return port_number_; }
+std::optional<std::uint16_t> URI::port_number() const noexcept {
+    return port_number_;
+}
 
 URI URI::parse(std::string_view uri_string) {
     static re2::RE2 full_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
@@ -67,8 +69,8 @@ formatter<msgpack_rpc::addresses::URI>::format(  // NOLINT
     } else {
         out = fmt::format_to(out, "[{}]", val.host());
     }
-    if (val.port_number() != static_cast<std::uint16_t>(0)) {
-        out = fmt::format_to(out, ":{}", val.port_number());
+    if (val.port_number()) {
+        out = fmt::format_to(out, ":{}", *(val.port_number()));
     }
     return out;
 }
