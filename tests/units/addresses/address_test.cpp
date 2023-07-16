@@ -31,5 +31,6 @@ TEST_CASE("msgpack_rpc::addresses::Address") {
         const auto address = Address(TCPAddress("1.2.3.4", 12345));
 
         CHECK(fmt::format("{}", address) == "tcp://1.2.3.4:12345");
+        CHECK(fmt::format("{}", address.to_uri()) == "tcp://1.2.3.4:12345");
     }
 }
