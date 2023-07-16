@@ -46,3 +46,15 @@ URI TCPAddress::to_uri() const {
 const AsioTCPAddress& TCPAddress::asio_address() const { return address_; }
 
 }  // namespace msgpack_rpc::addresses
+
+namespace fmt {
+
+format_context::iterator
+formatter<msgpack_rpc::addresses::TCPAddress>::format(  // NOLINT
+    const msgpack_rpc::addresses::TCPAddress& val,
+    format_context& context) const {
+    return fmt::format_to(context.out(), "{}://{}",
+        msgpack_rpc::addresses::TCP_SCHEME, fmt::streamed(val.asio_address()));
+}
+
+}  // namespace fmt

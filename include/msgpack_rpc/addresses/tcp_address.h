@@ -31,6 +31,9 @@
 
 namespace msgpack_rpc::addresses {
 
+//! Scheme of TCP.
+constexpr std::string_view TCP_SCHEME = "tcp";
+
 /*!
  * \brief Type of addresses of TCP in asio library.
  */
@@ -118,12 +121,9 @@ public:
      * \param[in] context Context.
      * \return Iterator of the buffer.
      */
-    format_context::iterator format(  // NOLINT
+    MSGPACK_RPC_EXPORT format_context::iterator format(  // NOLINT
         const msgpack_rpc::addresses::TCPAddress& val,
-        format_context& context) const {
-        return fmt::format_to(
-            context.out(), "tcp://{}", fmt::streamed(val.asio_address()));
-    }
+        format_context& context) const;
 };
 
 }  // namespace fmt
