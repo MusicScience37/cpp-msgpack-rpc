@@ -15,70 +15,49 @@
  */
 /*!
  * \file
- * \brief Definition of TCPAddress.
+ * \brief Definition of Address class.
  */
 #pragma once
 
-#include <cstdint>
-#include <string_view>
+#include <utility>
+#include <variant>
 
-#include <asio/ip/tcp.hpp>
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 
-#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/addresses/tcp_address.h"
 
 namespace msgpack_rpc::addresses {
 
 /*!
- * \brief Type of addresses of TCP in asio library.
+ * \brief Class of addresses.
  */
-using AsioTCPAddress = asio::ip::tcp::endpoint;
-
-/*!
- * \brief Class of addresses of TCP.
- */
-class MSGPACK_RPC_EXPORT TCPAddress {
+class Address {
 public:
-    /*!
-     * \brief Constructor.
-     *
-     * \param[in] ip_address IP address.
-     * \param[in] port_number Port number.
-     */
-    TCPAddress(std::string_view ip_address, std::uint16_t port_number);
+    //! Type of variant objects of actual addresses.
+    using AddressVariant = std::variant<TCPAddress>;
 
     /*!
      * \brief Constructor.
      *
-     * \param[in] address Address in asio library.
+     * \param[in] address Address.
      */
-    explicit TCPAddress(AsioTCPAddress address);
+    explicit Address(AddressVariant address) : address_(std::move(address)) {}
 
     /*!
-     * \brief Get the IP address.
+     * \brief Invoke a visitor function using the internal address.
      *
-     * \return IP address.
+     * \tparam Visitor Type of the visitor function.
+     * \param[in] visitor Visitor function.
+     * \return Return value of the visitor function.
      */
-    [[nodiscard]] std::string ip_address() const;
-
-    /*!
-     * \brief Get the port number.
-     *
-     * \return Port number.
-     */
-    [[nodiscard]] std::uint16_t port_number() const;
-
-    /*!
-     * \brief Get the address in asio library.
-     *
-     * \return Address in asio library.
-     */
-    [[nodiscard]] const AsioTCPAddress& asio_address() const;
+    template <typename Visitor>
+    decltype(auto) visit(Visitor&& visitor) const {
+        return std::visit(std::forward<Visitor>(visitor), address_);
+    }
 
 private:
-    //! Address in asio library.
-    AsioTCPAddress address_;
+    //! Address.
+    AddressVariant address_;
 };
 
 }  // namespace msgpack_rpc::addresses
@@ -87,10 +66,10 @@ namespace fmt {
 
 /*!
  * \brief Specialization of fmt::formatter for
- * msgpack_rpc::addresses::TCPAddress.
+ * msgpack_rpc::addresses::Address.
  */
 template <>
-class formatter<msgpack_rpc::addresses::TCPAddress> {
+class formatter<msgpack_rpc::addresses::Address> {
 public:
     /*!
      * \brief Parse format.
@@ -111,10 +90,11 @@ public:
      * \return Iterator of the buffer.
      */
     format_context::iterator format(  // NOLINT
-        const msgpack_rpc::addresses::TCPAddress& val,
+        const msgpack_rpc::addresses::Address& val,
         format_context& context) const {
-        return fmt::format_to(
-            context.out(), "{}", fmt::streamed(val.asio_address()));
+        return val.visit([&context](const auto& address) {
+            return fmt::format_to(context.out(), "{}", address);
+        });
     }
 };
 
