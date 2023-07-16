@@ -23,6 +23,8 @@
 
 #include <asio/ip/address.hpp>
 
+#include "msgpack_rpc/addresses/uri.h"
+
 namespace msgpack_rpc::addresses {
 
 TCPAddress::TCPAddress(std::string_view ip_address, std::uint16_t port_number)
@@ -36,6 +38,10 @@ std::string TCPAddress::ip_address() const {
 }
 
 std::uint16_t TCPAddress::port_number() const { return address_.port(); }
+
+URI TCPAddress::to_uri() const {
+    return URI("tcp", address_.address().to_string(), address_.port());
+}
 
 const AsioTCPAddress& TCPAddress::asio_address() const { return address_; }
 

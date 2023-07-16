@@ -26,6 +26,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::addresses {
@@ -68,6 +69,13 @@ public:
      * \return Port number.
      */
     [[nodiscard]] std::uint16_t port_number() const;
+
+    /*!
+     * \brief Convert to URI.
+     *
+     * \return URI.
+     */
+    [[nodiscard]] URI to_uri() const;
 
     /*!
      * \brief Get the address in asio library.

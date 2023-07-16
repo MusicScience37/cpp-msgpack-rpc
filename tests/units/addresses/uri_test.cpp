@@ -30,6 +30,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         CHECK(uri.schema() == "tcp");
         CHECK(uri.host() == "example.com");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(12345));
+        CHECK(fmt::format("{}", uri) == "tcp://example.com:12345");
     }
 
     SECTION("parse a URI of IP v6") {
@@ -38,13 +39,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         CHECK(uri.schema() == "tcp");
         CHECK(uri.host() == "fc00::3");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(65535));
-    }
-
-    SECTION("parse a URI without port number") {
-        const URI uri = URI::parse("unix://test.socket");
-
-        CHECK(uri.schema() == "unix");
-        CHECK(uri.host() == "test.socket");
+        CHECK(fmt::format("{}", uri) == "tcp://[fc00::3]:65535");
     }
 
     SECTION("parse invalid URIs") {

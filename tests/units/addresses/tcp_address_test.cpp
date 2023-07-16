@@ -35,8 +35,10 @@ TEST_CASE("msgpack_rpc::addresses::TCPAddress") {
 
         ApprovalTests::Approvals::verify(fmt::format(R"(IP: {}
 Port: {}
-Full: {})",
-            address.ip_address(), address.port_number(), address));
+Full: {}
+URI: {})",
+            address.ip_address(), address.port_number(), address,
+            address.to_uri()));
     }
 
     SECTION("create an IP v6 address") {
@@ -47,7 +49,9 @@ Full: {})",
 
         ApprovalTests::Approvals::verify(fmt::format(R"(IP: {}
 Port: {}
-Full: {})",
-            address.ip_address(), address.port_number(), address));
+Full: {}
+URI: {})",
+            address.ip_address(), address.port_number(), address,
+            address.to_uri()));
     }
 }

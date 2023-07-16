@@ -25,6 +25,7 @@
 #include <fmt/format.h>
 
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 
 namespace msgpack_rpc::addresses {
 
@@ -53,6 +54,15 @@ public:
     template <typename Visitor>
     decltype(auto) visit(Visitor&& visitor) const {
         return std::visit(std::forward<Visitor>(visitor), address_);
+    }
+
+    /*!
+     * \brief Convert to URI.
+     *
+     * \return URI.
+     */
+    [[nodiscard]] URI to_uri() const {
+        return visit([](const auto& address) { return address.to_uri(); });
     }
 
 private:

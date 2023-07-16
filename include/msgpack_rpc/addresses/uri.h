@@ -23,6 +23,8 @@
 #include <string>
 #include <string_view>
 
+#include <fmt/format.h>
+
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::addresses {
@@ -86,3 +88,36 @@ private:
 };
 
 }  // namespace msgpack_rpc::addresses
+
+namespace fmt {
+
+/*!
+ * \brief Specialization of fmt::formatter for
+ * msgpack_rpc::addresses::URI.
+ */
+template <>
+class formatter<msgpack_rpc::addresses::URI> {
+public:
+    /*!
+     * \brief Parse format.
+     *
+     * \param[in] context Context.
+     * \return Iterator of the format.
+     */
+    constexpr format_parse_context::iterator parse(  // NOLINT
+        format_parse_context& context) {
+        return context.end();
+    }
+
+    /*!
+     * \brief Format a value.
+     *
+     * \param[in] val Value.
+     * \param[in] context Context.
+     * \return Iterator of the buffer.
+     */
+    MSGPACK_RPC_EXPORT format_context::iterator format(  // NOLINT
+        const msgpack_rpc::addresses::URI& val, format_context& context) const;
+};
+
+}  // namespace fmt
