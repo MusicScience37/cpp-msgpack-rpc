@@ -1,4 +1,5 @@
 set(SOURCE_FILES
+    msgpack_rpc/addresses/tcp_address.cpp
     msgpack_rpc/common/status.cpp
     msgpack_rpc/common/status_code.cpp
     msgpack_rpc/config/executor_config.cpp

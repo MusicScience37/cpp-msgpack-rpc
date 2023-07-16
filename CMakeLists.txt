@@ -50,6 +50,13 @@ find_package(Threads REQUIRED)
 if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
     find_package(lyra REQUIRED)
+
+    # ApprovalTests.
+    find_path(APPROVAL_TESTS_CPP_INCLUDE_DIRS "ApprovalTests.hpp")
+    add_library(ApprovalTests_ApprovalTests INTERFACE)
+    target_include_directories(ApprovalTests_ApprovalTests
+                               INTERFACE ${APPROVAL_TESTS_CPP_INCLUDE_DIRS})
+    add_library(ApprovalTests::ApprovalTests ALIAS ApprovalTests_ApprovalTests)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS
