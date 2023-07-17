@@ -1,4 +1,7 @@
 set(SOURCE_FILES
+    addresses/address_test.cpp
+    addresses/tcp_address_test.cpp
+    addresses/uri_test.cpp
     catch_event_listener.cpp
     common/status_code_test.cpp
     common/status_test.cpp
@@ -16,4 +19,5 @@ set(SOURCE_FILES
     messages/method_name_test.cpp
     messages/method_name_view_test.cpp
     messages/parsed_parameters_test.cpp
+    test_main.cpp
 )
