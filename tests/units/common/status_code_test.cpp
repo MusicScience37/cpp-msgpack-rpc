@@ -36,8 +36,10 @@ TEST_CASE("using msgpack_rpc::format_status_code") {
                 {StatusCode::INVALID_MESSAGE, "INVALID_MESSAGE"},
                 {StatusCode::TYPE_ERROR, "TYPE_ERROR"},
                 {StatusCode::PRECONDITION_NOT_MET, "PRECONDITION_NOT_MET"},
+                {StatusCode::OPERATION_ABORTED, "OPERATION_ABORTED"},
+                {StatusCode::UNEXPECTED_ERROR, "UNEXPECTED_ERROR"},
                 {static_cast<StatusCode>(
-                     static_cast<int>(StatusCode::PRECONDITION_NOT_MET) + 1),
+                     static_cast<int>(StatusCode::UNEXPECTED_ERROR) + 1),
                     "INVALID_STATUS_CODE"}};
 
         for (const auto& [value, string] : result_map) {

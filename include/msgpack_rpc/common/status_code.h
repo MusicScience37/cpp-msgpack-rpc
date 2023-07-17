@@ -44,6 +44,12 @@ enum class StatusCode {
 
     //! Pre-condition for a process is not met.
     PRECONDITION_NOT_MET,
+
+    //! Operation was aborted by user.
+    OPERATION_ABORTED,
+
+    //! Unexpected errors. (Maybe a bug.)
+    UNEXPECTED_ERROR
 };
 
 /*!
