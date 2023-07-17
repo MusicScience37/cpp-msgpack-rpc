@@ -23,7 +23,7 @@
 
 #include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/transport/i_connection.h"
-#include "msgpack_rpc/transport/stream_socket_impl.h"
+#include "msgpack_rpc/transport/stream_connection_impl.h"
 
 namespace msgpack_rpc::transport::tcp {
 
@@ -63,6 +63,7 @@ public:
     TCPConnection& operator=(const TCPConnection&) = delete;
     TCPConnection& operator=(TCPConnection&&) = delete;
 
+    //! Destructor.
     ~TCPConnection() override;
 
 private:

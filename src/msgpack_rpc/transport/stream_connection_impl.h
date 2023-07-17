@@ -44,7 +44,7 @@
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
-namespace msgpack_rpc::transport::tcp {
+namespace msgpack_rpc::transport {
 
 /*!
  * \brief Internal class of connections of streams.
@@ -70,6 +70,7 @@ public:
      *
      * \param[in] context Context in asio library.
      * \param[in] message_parser_config Configuration of the parser of messages.
+     * \param[in] logger Logger.
      */
     StreamConnectionImpl(executors::AsioContextType& context,
         const config::MessageParserConfig& message_parser_config,
@@ -83,7 +84,7 @@ public:
      *
      * \return Socket.
      */
-    Protocol::socket& socket() { return socket_; }
+    Protocol::socket& socket() noexcept { return socket_; }
 
     /*!
      * \brief Start process of this connection.
@@ -120,6 +121,10 @@ public:
      * \param[in] message Message to send.
      */
     void async_send(std::shared_ptr<messages::SerializedMessage> message) {
+        if (current_state() != State::PROCESSING) {
+            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+                "This connection is not started yet.");
+        }
         asio::post(socket_.get_executor(),
             [self = this->shared_from_this(),
                 message_moved = std::move(message)]() {
@@ -177,6 +182,7 @@ private:
             if (error == asio::error::eof) {
                 MSGPACK_RPC_TRACE(
                     logger_, "({}) Connection closed by peer.", log_name_);
+                change_state_to(State::STOPPED);
                 on_closed_(Status());
                 return;
             }
@@ -199,9 +205,14 @@ private:
             return;
         }
         if (message) {
+            MSGPACK_RPC_TRACE(
+                logger_, "({}) Received a message.", log_name_, size);
             on_received_(std::move(*message));
         }
 
+        if (current_state() != State::PROCESSING) {
+            return;
+        }
         async_read_next();
     }
 
@@ -236,6 +247,7 @@ private:
             if (error == asio::error::eof) {
                 MSGPACK_RPC_TRACE(
                     logger_, "({}) Connection closed by peer.", log_name_);
+                change_state_to(State::STOPPED);
                 on_closed_(Status());
                 return;
             }
@@ -255,6 +267,9 @@ private:
      * \param[in] status Status.
      */
     void close_in_thread(const Status& status) {
+        if (state_.exchange(State::STOPPED) == State::STOPPED) {
+            return;
+        }
         socket_.cancel();
         socket_.shutdown(Protocol::socket::shutdown_both);
         socket_.close();
@@ -284,6 +299,15 @@ private:
         state_.store(next_state, std::memory_order_release);
     }
 
+    /*!
+     * \brief Get the current state of this connection.
+     *
+     * \return Current state.
+     */
+    [[nodiscard]] State current_state() {
+        return state_.load(std::memory_order_relaxed);
+    }
+
     //! Socket.
     Protocol::socket socket_;
 
@@ -309,4 +333,4 @@ private:
     std::atomic<State> state_{State::INIT};
 };
 
-}  // namespace msgpack_rpc::transport::tcp
+}  // namespace msgpack_rpc::transport
