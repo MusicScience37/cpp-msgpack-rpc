@@ -34,7 +34,7 @@ namespace msgpack_rpc::addresses {
  */
 class Address {
 public:
-    //! Type of variant objects of actual addresses.
+    //! Type of variant objects of concrete addresses.
     using AddressVariant = std::variant<TCPAddress>;
 
     /*!
@@ -45,7 +45,7 @@ public:
     explicit Address(AddressVariant address) : address_(std::move(address)) {}
 
     /*!
-     * \brief Invoke a visitor function using the internal address.
+     * \brief Invoke a visitor function using the concrete address.
      *
      * \tparam Visitor Type of the visitor function.
      * \param[in] visitor Visitor function.
