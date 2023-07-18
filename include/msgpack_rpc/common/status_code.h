@@ -48,6 +48,9 @@ enum class StatusCode {
     //! Operation was aborted by user.
     OPERATION_ABORTED,
 
+    //! Failure in resolving a host.
+    HOST_UNRESOLVED,
+
     //! Unexpected errors. (Maybe a bug.)
     UNEXPECTED_ERROR
 };

@@ -44,6 +44,7 @@ public:
     using Protocol = asio::ip::tcp;  // TODO Change to template when another
                                      // protocol is implemented.
 
+    //! Type of connections.
     using ConnectionImplType = StreamConnectionImpl;
 
     //! Type of callback functions called when a connection is accepted.
@@ -210,8 +211,10 @@ private:
     //! Acceptor.
     Protocol::acceptor acceptor_;
 
+    //! Callback function called when a connection is accepted.
     ConnectionCallback on_connection_{};
 
+    //! Configuration of parsers of messages.
     config::MessageParserConfig message_parser_config_;
 
     //! Name of the connection for logs.

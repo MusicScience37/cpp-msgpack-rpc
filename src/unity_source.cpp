@@ -11,3 +11,4 @@
 #include "msgpack_rpc/messages/message_type.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_connection.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/transport/tcp/tcp_resolver.cpp"  // NOLINT(bugprone-suspicious-include)

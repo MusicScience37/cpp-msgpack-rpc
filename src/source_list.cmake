@@ -12,4 +12,5 @@ set(SOURCE_FILES
     msgpack_rpc/messages/message_type.cpp
     msgpack_rpc/transport/tcp/tcp_acceptor.cpp
     msgpack_rpc/transport/tcp/tcp_connection.cpp
+    msgpack_rpc/transport/tcp/tcp_resolver.cpp
 )
