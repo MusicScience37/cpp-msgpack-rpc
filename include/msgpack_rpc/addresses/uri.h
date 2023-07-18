@@ -39,22 +39,22 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] schema Schema.
+     * \param[in] scheme Scheme.
      * \param[in] host Host.
      * \param[in] port_number Port number.
      *
      * \note For protocols without port numbers, port_number can be omitted.
      */
-    URI(std::string_view schema, std::string_view host,
+    URI(std::string_view scheme, std::string_view host,
         std::optional<std::uint16_t> port_number =
             std::optional<std::uint16_t>());
 
     /*!
-     * \brief Get the schema.
+     * \brief Get the scheme.
      *
-     * \return Schema.
+     * \return Scheme.
      */
-    [[nodiscard]] std::string_view schema() const noexcept;
+    [[nodiscard]] std::string_view scheme() const noexcept;
 
     /*!
      * \brief Get the host name.
@@ -79,8 +79,8 @@ public:
     [[nodiscard]] static URI parse(std::string_view uri_string);
 
 private:
-    //! Schema.
-    std::string schema_;
+    //! Scheme.
+    std::string scheme_;
 
     //! Host.
     std::string host_;

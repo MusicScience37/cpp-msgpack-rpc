@@ -31,11 +31,11 @@ TCPResolver::TCPResolver(executors::AsioContextType& context,
 
 std::vector<addresses::Address> TCPResolver::resolve(
     const addresses::URI& uri) {
-    if (uri.schema() != addresses::TCP_SCHEME) {
+    if (uri.scheme() != addresses::TCP_SCHEME) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format(
                 "Scheme is different with the resolver: expected={}, actual={}",
-                addresses::TCP_SCHEME, uri.schema()));
+                addresses::TCP_SCHEME, uri.scheme()));
     }
     return impl_.resolve(uri);
 }
