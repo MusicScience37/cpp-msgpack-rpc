@@ -78,7 +78,7 @@ public:
      * \param[in] message Message to send.
      */
     virtual void async_send(
-        std::shared_ptr<messages::SerializedMessage> message) = 0;
+        std::shared_ptr<const messages::SerializedMessage> message) = 0;
 
     /*!
      * \brief Asynchronously close this connection.

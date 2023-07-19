@@ -107,7 +107,7 @@ public:
 
     //! \copydoc msgpack_rpc::transport::IConnection::async_send
     void async_send(
-        std::shared_ptr<messages::SerializedMessage> message) override {
+        std::shared_ptr<const messages::SerializedMessage> message) override {
         if (current_state() != State::PROCESSING) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This connection is not started yet.");
@@ -219,7 +219,7 @@ private:
      * \param[in] message Message.
      */
     void async_send_in_thread(
-        const std::shared_ptr<messages::SerializedMessage>& message) {
+        const std::shared_ptr<const messages::SerializedMessage>& message) {
         asio::async_write(socket_,
             asio::const_buffer(message->data(), message->size()),
             [self = this->shared_from_this(), message](
