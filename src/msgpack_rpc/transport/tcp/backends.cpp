@@ -15,23 +15,22 @@
  */
 /*!
  * \file
- * \brief Definition of Address class.
+ * \brief Implementation of functions to create backends.
  */
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/transport/backends.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <memory>
 
-#include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/transport/tcp/tcp_backend.h"
 
-TEST_CASE("msgpack_rpc::addresses::Address") {
-    using msgpack_rpc::addresses::Address;
-    using msgpack_rpc::addresses::TCPAddress;
+namespace msgpack_rpc::transport {
 
-    SECTION("create TCP address") {
-        const auto address = Address(TCPAddress("1.2.3.4", 12345));
-
-        CHECK(fmt::format("{}", address) == "tcp://1.2.3.4:12345");
-        CHECK(fmt::format("{}", address.to_uri()) == "tcp://1.2.3.4:12345");
-        CHECK(fmt::format("{}", address.as_tcp()) == "tcp://1.2.3.4:12345");
-    }
+std::shared_ptr<IBackend> create_tcp_backend(
+    const std::shared_ptr<executors::IExecutor>& executor,
+    const config::MessageParserConfig& message_parser_config,
+    std::shared_ptr<logging::Logger> logger) {
+    return std::make_shared<tcp::TCPBackend>(
+        executor, message_parser_config, std::move(logger));
 }
+
+}  // namespace msgpack_rpc::transport

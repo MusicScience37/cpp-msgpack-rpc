@@ -34,6 +34,14 @@ std::string_view format_status_code(StatusCode code) noexcept {
         return "TYPE_ERROR";
     case StatusCode::PRECONDITION_NOT_MET:
         return "PRECONDITION_NOT_MET";
+    case StatusCode::OPERATION_ABORTED:
+        return "OPERATION_ABORTED";
+    case StatusCode::HOST_UNRESOLVED:
+        return "HOST_UNRESOLVED";
+    case StatusCode::CONNECTION_FAILURE:
+        return "CONNECTION_FAILURE";
+    case StatusCode::UNEXPECTED_ERROR:
+        return "UNEXPECTED_ERROR";
     }
     return "INVALID_STATUS_CODE";
 }

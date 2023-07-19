@@ -83,6 +83,7 @@ public:
             spdlog::source_loc(location.filepath().data(),
                 static_cast<int>(location.line()), location.function().data()),
             convert_log_level(level), body);
+        logger_->flush();  // TODO configuration
     }
 
 private:

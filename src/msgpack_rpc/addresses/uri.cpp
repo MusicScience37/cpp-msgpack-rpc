@@ -27,11 +27,11 @@
 
 namespace msgpack_rpc::addresses {
 
-URI::URI(std::string_view schema, std::string_view host,
+URI::URI(std::string_view scheme, std::string_view host,
     std::optional<std::uint16_t> port_number)
-    : schema_(schema), host_(host), port_number_(port_number) {}
+    : scheme_(scheme), host_(host), port_number_(port_number) {}
 
-std::string_view URI::schema() const noexcept { return schema_; }
+std::string_view URI::scheme() const noexcept { return scheme_; }
 
 std::string_view URI::host() const noexcept { return host_; }
 
@@ -43,16 +43,16 @@ URI URI::parse(std::string_view uri_string) {
     static re2::RE2 full_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
     static re2::RE2 ipv6_regex{R"((tcp)://\[([a-zA-Z0-9+-.:]+)\]:(\d+))"};
 
-    std::string schema{};
+    std::string scheme{};
     std::string host{};
     auto port = static_cast<std::uint16_t>(0);
 
-    if (!re2::RE2::FullMatch(uri_string, full_regex, &schema, &host, &port) &&
-        !re2::RE2::FullMatch(uri_string, ipv6_regex, &schema, &host, &port)) {
+    if (!re2::RE2::FullMatch(uri_string, full_regex, &scheme, &host, &port) &&
+        !re2::RE2::FullMatch(uri_string, ipv6_regex, &scheme, &host, &port)) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format("Invalid URI string: \"{}\".", uri_string));
     }
-    return URI(schema, host, port);
+    return URI(scheme, host, port);
 }
 
 }  // namespace msgpack_rpc::addresses
@@ -63,7 +63,7 @@ format_context::iterator
 formatter<msgpack_rpc::addresses::URI>::format(  // NOLINT
     const msgpack_rpc::addresses::URI& val, format_context& context) const {
     auto out = context.out();
-    out = fmt::format_to(out, "{}://", val.schema());
+    out = fmt::format_to(out, "{}://", val.scheme());
     if (val.host().find(':') == std::string_view::npos) {
         out = fmt::format_to(out, "{}", val.host());
     } else {

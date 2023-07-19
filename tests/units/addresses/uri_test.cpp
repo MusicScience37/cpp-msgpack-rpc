@@ -27,7 +27,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
     SECTION("parse a URI of TCP") {
         const URI uri = URI::parse("tcp://example.com:12345");
 
-        CHECK(uri.schema() == "tcp");
+        CHECK(uri.scheme() == "tcp");
         CHECK(uri.host() == "example.com");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(12345));
         CHECK(fmt::format("{}", uri) == "tcp://example.com:12345");
@@ -36,7 +36,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
     SECTION("parse a URI of IP v6") {
         const URI uri = URI::parse("tcp://[fc00::3]:65535");
 
-        CHECK(uri.schema() == "tcp");
+        CHECK(uri.scheme() == "tcp");
         CHECK(uri.host() == "fc00::3");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(65535));
         CHECK(fmt::format("{}", uri) == "tcp://[fc00::3]:65535");

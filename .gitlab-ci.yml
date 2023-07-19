@@ -88,7 +88,7 @@ test release:
   needs: []
   parallel:
     matrix:
-      - COMPILER_TYPE: ["gcc10", "gcc12"]
+      - COMPILER_TYPE: ["gcc12"]
         IMAGE_PATH: "musicscience37/gcc-ci"
       - COMPILER_TYPE: ["clang14", "clang15"]
         IMAGE_PATH: "musicscience37/clang-ci"
@@ -144,7 +144,7 @@ test debug:
   extends: test release
   parallel:
     matrix:
-      - COMPILER_TYPE: ["gcc10", "gcc12"]
+      - COMPILER_TYPE: ["gcc12"]
         IMAGE_PATH: "musicscience37/gcc-ci"
       - COMPILER_TYPE: ["clang14", "clang15"]
         IMAGE_PATH: "musicscience37/clang-ci"

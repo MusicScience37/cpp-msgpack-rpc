@@ -50,6 +50,7 @@ find_package(re2 REQUIRED)
 find_package(Threads REQUIRED)
 if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
+    find_package(trompeloeil REQUIRED)
     find_package(lyra REQUIRED)
 
     # ApprovalTests.

@@ -6,8 +6,8 @@ MessageParser ..> ParsedMessage
 
 !startsub IConnection
 interface IConnection {
-    {abstract} + start(on_message: function<void(ParsedMessage)>, on_error: function<void(Error)>, on_closed: function<void()>)
-    {abstract} + async_send(message: Bytes, on_sent: function<void(Error)>)
+    {abstract} + start(on_message: function<void(ParsedMessage)>, on_closed: function<void(Status)>)
+    {abstract} + async_send(message: Bytes)
     {abstract} + async_close()
 }
 !endsub

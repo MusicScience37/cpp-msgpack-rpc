@@ -26,6 +26,8 @@
 
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 
 namespace msgpack_rpc::addresses {
 
@@ -42,7 +44,9 @@ public:
      *
      * \param[in] address Address.
      */
-    explicit Address(AddressVariant address) : address_(std::move(address)) {}
+    Address(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        TCPAddress address)
+        : address_(std::move(address)) {}
 
     /*!
      * \brief Invoke a visitor function using the concrete address.
@@ -63,6 +67,20 @@ public:
      */
     [[nodiscard]] URI to_uri() const {
         return visit([](const auto& address) { return address.to_uri(); });
+    }
+
+    /*!
+     * \brief Get as an address of TCP.
+     *
+     * \return Address.
+     */
+    [[nodiscard]] TCPAddress as_tcp() const {
+        try {
+            return std::get<TCPAddress>(address_);
+        } catch (const std::bad_variant_access& /*exception*/) {
+            throw MsgpackRPCException(
+                StatusCode::PRECONDITION_NOT_MET, "Invalid type of address.");
+        }
     }
 
 private:
