@@ -62,7 +62,7 @@ public:
      * \brief Constructor.
      *
      * \param[in] local_address Local address.
-     * \param[in] context Context in asio library.
+     * \param[in] executor Executor.
      * \param[in] message_parser_config Configuration of the parser of messages.
      * \param[in] logger Logger.
      */

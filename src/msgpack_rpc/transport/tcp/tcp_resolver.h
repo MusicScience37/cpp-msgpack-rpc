@@ -15,46 +15,15 @@
  */
 /*!
  * \file
- * \brief Definition of TCPResolver class.
+ * \brief Definition of TCPResolver type.
  */
 #pragma once
 
-#include "msgpack_rpc/executors/asio_context_type.h"
-#include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/transport/i_resolver.h"
-#include "msgpack_rpc/transport/ip_resolver_impl.h"
+#include "msgpack_rpc/transport/ip_resolver.h"
 
 namespace msgpack_rpc::transport::tcp {
 
-/*!
- * \brief Class of resolvers for TCP.
- */
-class TCPResolver final : public IResolver {
-public:
-    /*!
-     * \brief Constructor.
-     *
-     * \param[in] context Context in asio library.
-     * \param[in] logger Logger.
-     */
-    TCPResolver(executors::AsioContextType& context,
-        std::shared_ptr<logging::Logger> logger);
-
-    //! \copydoc msgpack_rpc::transport::IResolver::resolve
-    [[nodiscard]] std::vector<addresses::Address> resolve(
-        const addresses::URI& uri) override;
-
-    TCPResolver(const TCPResolver&) = delete;
-    TCPResolver(TCPResolver&&) = delete;
-    TCPResolver& operator=(const TCPResolver&) = delete;
-    TCPResolver& operator=(TCPResolver&&) = delete;
-
-    //! Destructor.
-    ~TCPResolver() override;
-
-private:
-    //! Internal resolver.
-    IPResolverImpl impl_;
-};
+//! Type of resolvers for TCP.
+using TCPResolver = IPResolver;
 
 }  // namespace msgpack_rpc::transport::tcp

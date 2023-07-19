@@ -28,7 +28,9 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"
+#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/executors.h"
@@ -44,6 +46,9 @@
 #include "msgpack_rpc/transport/connection.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
+#include "msgpack_rpc/transport/tcp/tcp_connection.h"
+#include "msgpack_rpc/transport/tcp/tcp_resolver.h"
 #include "trompeloeil_catch2.h"
 
 class AcceptorCallbacks
@@ -82,9 +87,7 @@ public:
     }
 };
 
-TEST_CASE("TCP transport") {
-    using ConnectionType = msgpack_rpc::transport::Connection;
-    using AcceptorType = msgpack_rpc::transport::Acceptor;
+TEST_CASE("Communication via TCP") {
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::config::MessageParserConfig;
     using msgpack_rpc::executors::OperationType;
@@ -95,6 +98,8 @@ TEST_CASE("TCP transport") {
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc::transport::IConnection;
+    using msgpack_rpc::transport::tcp::TCPAcceptor;
+    using msgpack_rpc::transport::tcp::TCPConnection;
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
@@ -125,9 +130,8 @@ TEST_CASE("TCP transport") {
         // Start acceptor.
         post([&executor, &logger, &acceptor_specified_address, &acceptor,
                  &acceptor_callbacks] {
-            acceptor =
-                std::make_shared<AcceptorType>(acceptor_specified_address,
-                    executor, MessageParserConfig(), logger);
+            acceptor = std::make_shared<TCPAcceptor>(acceptor_specified_address,
+                executor, MessageParserConfig(), logger);
             acceptor_callbacks->apply_to(acceptor);
         });
 
@@ -146,7 +150,7 @@ TEST_CASE("TCP transport") {
                     if (error) {
                         throw asio::system_error(error);
                     }
-                    client_connection = std::make_shared<ConnectionType>(
+                    client_connection = std::make_shared<TCPConnection>(
                         std::move(*socket), MessageParserConfig(), logger);
 
                     client_connection_callbacks->apply_to(client_connection);
@@ -186,12 +190,38 @@ TEST_CASE("TCP transport") {
     SECTION("create acceptor and stop without start") {
         post([&logger, &executor, &acceptor_specified_address] {
             const auto acceptor =
-                std::make_shared<AcceptorType>(acceptor_specified_address,
+                std::make_shared<TCPAcceptor>(acceptor_specified_address,
                     executor, MessageParserConfig(), logger);
 
             acceptor->stop();
         });
 
         executor->run();
+    }
+}
+
+TEST_CASE("msgpack_rpc::transport::tcp::TCPResolver") {
+    using msgpack_rpc::addresses::URI;
+    using msgpack_rpc::transport::tcp::TCPResolver;
+
+    const auto logger = msgpack_rpc_test::create_test_logger();
+    const auto executor =
+        msgpack_rpc::executors::create_single_thread_executor(logger);
+
+    const auto resolver = std::make_shared<TCPResolver>(executor, logger);
+
+    SECTION("resolve") {
+        const auto uri = URI("tcp", "127.0.0.1", 1234);
+
+        const auto results = resolver->resolve(uri);
+
+        REQUIRE(results.size() == 1);
+        CHECK(fmt::format("{}", results.at(0)) == "tcp://127.0.0.1:1234");
+    }
+
+    SECTION("try to resolve invalid domain") {
+        const auto uri = URI("tcp", "test.invalid", 1234);
+
+        CHECK_THROWS((void)resolver->resolve(uri));
     }
 }

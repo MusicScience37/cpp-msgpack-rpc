@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of IPResolverImpl class.
+ * \brief Definition of IPResolver class.
  */
 #pragma once
 
@@ -33,6 +33,8 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
+#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/i_resolver.h"
 
@@ -41,11 +43,12 @@ namespace msgpack_rpc::transport {
 /*!
  * \brief Class of resolvers for protocols based on IP.
  */
-class IPResolverImpl {
+class IPResolver : public IResolver {
 public:
-    //! Protocol type.
-    using Protocol = asio::ip::tcp;  // TODO Change to template when another
-                                     // protocol is implemented.
+    // TODO Change to template when another protocol is implemented.
+
+    //! Type of resolvers in asio library.
+    using AsioResolver = asio::ip::tcp::resolver;
 
     //! Type of concrete addresses.
     using ConcreteAddressType = addresses::TCPAddress;
@@ -53,14 +56,14 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] context Context in asio library.
-     * \param[in] log_name Name of the resolver for logs.
+     * \param[in] executor Executor.
      * \param[in] logger Logger.
      */
-    IPResolverImpl(executors::AsioContextType& context, std::string log_name,
+    IPResolver(const std::shared_ptr<executors::IExecutor>& executor,
         std::shared_ptr<logging::Logger> logger)
-        : resolver_(context),
-          log_name_(std::move(log_name)),
+        : resolver_(executor->context(executors::OperationType::TRANSPORT)),
+          scheme_("tcp"),
+          log_name_(fmt::format("Resolver({})", scheme_)),
           logger_(std::move(logger)) {}
 
     /*!
@@ -70,7 +73,14 @@ public:
      * \return List of resolved addresses.
      */
     [[nodiscard]] std::vector<addresses::Address> resolve(
-        const addresses::URI& uri) {
+        const addresses::URI& uri) override {
+        if (uri.scheme() != scheme_) {
+            throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+                fmt::format("Scheme is different with the resolver: "
+                            "expected={}, actual={}",
+                    scheme_, uri.scheme()));
+        }
+
         MSGPACK_RPC_TRACE(logger_, "({}) Resolve {}.", log_name_, uri);
 
         const std::string service = fmt::format(
@@ -97,7 +107,10 @@ public:
 
 private:
     //! Resolver.
-    Protocol::resolver resolver_;
+    AsioResolver resolver_;
+
+    //! Scheme.
+    std::string scheme_;
 
     //! Name of the resolver for logs.
     std::string log_name_;
