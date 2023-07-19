@@ -92,6 +92,7 @@ TEST_CASE("TCP transport") {
     using msgpack_rpc::messages::ParsedMessage;
     using msgpack_rpc::messages::ParsedNotification;
     using msgpack_rpc::messages::SerializedMessage;
+    using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc::transport::IConnection;
     using trompeloeil::_;
 
@@ -112,36 +113,15 @@ TEST_CASE("TCP transport") {
 
         std::shared_ptr<IConnection> client_connection;
         std::shared_ptr<IConnection> server_connection;
-        std::shared_ptr<msgpack_rpc::transport::IAcceptor> acceptor;
+        std::shared_ptr<IAcceptor> acceptor;
 
         const auto client_connection_callbacks =
             std::make_shared<ConnectionCallbacks>();
-        REQUIRE_CALL(*client_connection_callbacks, on_sent()).TIMES(1);
-        REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
-
         const auto server_connection_callbacks =
             std::make_shared<ConnectionCallbacks>();
-        std::optional<ParsedMessage> received_message;
-        REQUIRE_CALL(*server_connection_callbacks, on_received(_))
-            .TIMES(1)
-            .LR_SIDE_EFFECT([&_1, &method_name] {
-                REQUIRE(std::holds_alternative<ParsedNotification>(_1));
-                const ParsedNotification notification =
-                    std::get<ParsedNotification>(_1);
-                CHECK(notification.method_name().name() == method_name.name());
-            }())
-            .LR_SIDE_EFFECT(server_connection->async_close());
-        REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
-            .TIMES(1)
-            .LR_SIDE_EFFECT(acceptor->stop());
-
         const auto acceptor_callbacks = std::make_shared<AcceptorCallbacks>();
-        REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
-            .TIMES(1)
-            .SIDE_EFFECT(CHECK(_1))
-            .LR_SIDE_EFFECT(server_connection = _1)
-            .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
+        // Start acceptor.
         post([&executor, &logger, &acceptor_specified_address, &acceptor,
                  &acceptor_callbacks] {
             acceptor =
@@ -150,6 +130,7 @@ TEST_CASE("TCP transport") {
             acceptor_callbacks->apply_to(acceptor);
         });
 
+        // Connect and send a message.
         post([&executor, &logger, &message, &client_connection,
                  &client_connection_callbacks, &acceptor] {
             // TODO use connectors.
@@ -173,6 +154,28 @@ TEST_CASE("TCP transport") {
                         std::make_shared<SerializedMessage>(message));
                 });
         });
+
+        REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
+            .TIMES(1)
+            .SIDE_EFFECT(CHECK(_1))
+            .LR_SIDE_EFFECT(server_connection = _1)
+            .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
+
+        REQUIRE_CALL(*client_connection_callbacks, on_sent()).TIMES(1);
+        REQUIRE_CALL(*server_connection_callbacks, on_received(_))
+            .TIMES(1)
+            .LR_SIDE_EFFECT([&_1, &method_name] {
+                REQUIRE(std::holds_alternative<ParsedNotification>(_1));
+                const ParsedNotification notification =
+                    std::get<ParsedNotification>(_1);
+                CHECK(notification.method_name().name() == method_name.name());
+            }())
+            .LR_SIDE_EFFECT(server_connection->async_close());
+
+        REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
+            .TIMES(1)
+            .LR_SIDE_EFFECT(acceptor->stop());
+        REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
 
         executor->run();
     }
