@@ -17,6 +17,8 @@
  * \file
  * \brief Implementation of TCPAcceptor class.
  */
+#if false
+
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
 
 #include <memory>
@@ -56,3 +58,5 @@ const addresses::Address& TCPAcceptor::local_address() const noexcept {
 TCPAcceptor::~TCPAcceptor() = default;
 
 }  // namespace msgpack_rpc::transport::tcp
+
+#endif

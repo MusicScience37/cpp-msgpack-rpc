@@ -17,6 +17,8 @@
  * \file
  * \brief Implementation of TCPConnection class.
  */
+#if false
+
 #include "msgpack_rpc/transport/tcp/tcp_connection.h"
 
 #include <utility>
@@ -58,3 +60,5 @@ const addresses::Address& TCPConnection::remote_address() const noexcept {
 TCPConnection::~TCPConnection() = default;
 
 }  // namespace msgpack_rpc::transport::tcp
+
+#endif

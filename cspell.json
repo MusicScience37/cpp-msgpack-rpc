@@ -91,6 +91,7 @@
     "swappable",
     "toctree",
     "TOUPPER",
+    "trompeloeil",
     "ubsan",
     "vcpkg",
     "venv",

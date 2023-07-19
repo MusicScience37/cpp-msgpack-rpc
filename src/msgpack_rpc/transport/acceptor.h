@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of AcceptorImpl class.
+ * \brief Definition of Acceptor class.
  */
 #pragma once
 
@@ -25,64 +25,70 @@
 
 #include <asio/error_code.hpp>
 #include <asio/ip/tcp.hpp>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
+#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/transport/connection.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
-#include "msgpack_rpc/transport/stream_connection_impl.h"
 
 namespace msgpack_rpc::transport {
 
 /*!
  * \brief Internal class of acceptors.
  */
-class AcceptorImpl : public std::enable_shared_from_this<AcceptorImpl> {
+class Acceptor : public IAcceptor,
+                 public std::enable_shared_from_this<Acceptor> {
 public:
-    //! Protocol type.
-    using Protocol = asio::ip::tcp;  // TODO Change to template when another
-                                     // protocol is implemented.
+    // TODO Change to template when another protocol is implemented.
+
+    //! Type of acceptors in asio library.
+    using AsioAcceptor = asio::ip::tcp::acceptor;
+
+    //! Type of sockets in asio library.
+    using AsioSocket = asio::ip::tcp::socket;
+
+    //! Type of concrete addresses.
+    using ConcreteAddress = addresses::TCPAddress;
 
     //! Type of connections.
-    using ConnectionImplType = StreamConnectionImpl;
-
-    //! Type of callback functions called when a connection is accepted.
-    using ConnectionCallback =
-        std::function<void(std::shared_ptr<ConnectionImplType>)>;
+    using ConnectionType = Connection;
 
     /*!
      * \brief Constructor.
      *
+     * \param[in] local_address Local address.
      * \param[in] context Context in asio library.
-     * \param[in] local_address Local address in asio library.
      * \param[in] message_parser_config Configuration of the parser of messages.
      * \param[in] logger Logger.
      */
-    AcceptorImpl(executors::AsioContextType& context,
-        const Protocol::endpoint& local_address,
+    Acceptor(const ConcreteAddress& local_address,
+        const std::shared_ptr<executors::IExecutor>& executor,
         const config::MessageParserConfig& message_parser_config,
         std::shared_ptr<logging::Logger> logger)
-        : context_(context),
-          acceptor_(context, local_address),
+        : acceptor_(executor->context(executors::OperationType::TRANSPORT),
+              local_address.asio_address()),
+          local_address_(ConcreteAddress(acceptor_.local_endpoint())),
           message_parser_config_(message_parser_config),
-          logger_(std::move(logger)) {}
+          log_name_(fmt::format("Acceptor(local={})", local_address_)),
+          logger_(std::move(logger)) {
+        MSGPACK_RPC_TRACE(logger_, "({}) Created an acceptor to listen {}.",
+            log_name_, local_address_);
+    }
 
     /*!
      * \brief Access to the acceptor.
      *
      * \return Acceptor.
      */
-    Protocol::acceptor& acceptor() noexcept { return acceptor_; }
+    AsioAcceptor& acceptor() noexcept { return acceptor_; }
 
-    /*!
-     * \brief Start process of this acceptor.
-     *
-     * \param[in] on_connection Callback function called when a connection is
-     * accepted.
-     * \param[in] log_name Name of the connection for logs.
-     */
-    void start(ConnectionCallback on_connection, std::string log_name) {
+    //! \copydoc msgpack_rpc::transport::IAcceptor::start
+    void start(ConnectionCallback on_connection) override {
         if (!change_state_if(State::INIT, State::STARTING)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This acceptor is already started.");
@@ -90,19 +96,22 @@ public:
         // Only one thread can enter here.
 
         on_connection_ = std::move(on_connection);
-        log_name_ = std::move(log_name);
         asio::post(acceptor_.get_executor(),
             [self = this->shared_from_this()] { self->async_accept_next(); });
 
         change_state_to(State::PROCESSING);
     }
 
-    /*!
-     * \brief Asynchronously stop this acceptor.
-     */
-    void async_stop() {
+    //! \copydoc msgpack_rpc::transport::IAcceptor::stop
+    void stop() override {
         asio::post(acceptor_.get_executor(),
             [self = this->shared_from_this()]() { self->stop_in_thread(); });
+    }
+
+    //! \copydoc msgpack_rpc::transport::IConnection::local_address
+    [[nodiscard]] const addresses::Address& local_address()
+        const noexcept override {
+        return local_address_;
     }
 
 private:
@@ -125,12 +134,10 @@ private:
      * \brief Asynchronously accept a connection.
      */
     void async_accept_next() {
-        const auto connection = std::make_shared<ConnectionImplType>(
-            context_, message_parser_config_, logger_);
-        acceptor_.async_accept(connection->socket(),
-            [self = this->shared_from_this(), connection](
-                const asio::error_code& error) {
-                self->on_accept(error, connection);
+        acceptor_.async_accept(
+            [self = this->shared_from_this()](
+                const asio::error_code& error, AsioSocket socket) {
+                self->on_accept(error, std::move(socket));
             });
     }
 
@@ -138,9 +145,9 @@ private:
      * \brief Handle the result of accept operation.
      *
      * \param[in] error Error.
+     * \param[in] socket Socket.
      */
-    void on_accept(const asio::error_code& error,
-        std::shared_ptr<ConnectionImplType> connection) {
+    void on_accept(const asio::error_code& error, AsioSocket socket) {
         if (error) {
             if (error == asio::error::operation_aborted) {
                 return;
@@ -153,8 +160,9 @@ private:
         }
 
         MSGPACK_RPC_TRACE(logger_, "({}) Accepted a connection from {}.",
-            log_name_, fmt::streamed(connection->socket().remote_endpoint()));
-        on_connection_(std::move(connection));
+            log_name_, fmt::streamed(socket.remote_endpoint()));
+        on_connection_(std::make_shared<ConnectionType>(
+            std::move(socket), message_parser_config_, logger_));
 
         if (current_state() != State::PROCESSING) {
             return;
@@ -205,20 +213,23 @@ private:
         return state_.load(std::memory_order_relaxed);
     }
 
-    //! Context.
-    executors::AsioContextType& context_;
-
     //! Acceptor.
-    Protocol::acceptor acceptor_;
+    AsioAcceptor acceptor_;
+
+    //! Executor.
+    std::weak_ptr<executors::IExecutor> executor_;
 
     //! Callback function called when a connection is accepted.
     ConnectionCallback on_connection_{};
+
+    //! Address of the local endpoint.
+    addresses::Address local_address_;
 
     //! Configuration of parsers of messages.
     config::MessageParserConfig message_parser_config_;
 
     //! Name of the connection for logs.
-    std::string log_name_{};
+    std::string log_name_;
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;

@@ -65,6 +65,16 @@ public:
         return visit([](const auto& address) { return address.to_uri(); });
     }
 
+    /*!
+     * \brief Get as an address of TCP.
+     *
+     * \return Address.
+     */
+    [[nodiscard]] TCPAddress as_tcp() const {
+        // TODO check
+        return std::get<TCPAddress>(address_);
+    }
+
 private:
     //! Address.
     AddressVariant address_;

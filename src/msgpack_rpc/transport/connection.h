@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of TCPConnection class.
+ * \brief Definition of Connection class.
  */
 #pragma once
 
@@ -33,7 +33,9 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/post.hpp>
 #include <asio/write.hpp>
+#include <fmt/core.h>
 
+#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -47,23 +49,18 @@
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Internal class of connections of streams.
+ * \brief Internal class of connections.
  */
-class StreamConnectionImpl
-    : public std::enable_shared_from_this<StreamConnectionImpl> {
+class Connection : public IConnection,
+                   public std::enable_shared_from_this<Connection> {
 public:
-    //! Protocol type.
-    using Protocol = asio::ip::tcp;  // TODO Change to template when another
-                                     // protocol is implemented.
+    // TODO Change to template when another protocol is implemented.
 
-    //! Type of callback functions called when a message is received.
-    using MessageReceivedCallback = IConnection::MessageReceivedCallback;
+    //! Type of sockets in asio library.
+    using AsioSocket = asio::ip::tcp::socket;
 
-    //! Type of callback functions called when a message is sent.
-    using MessageSentCallback = IConnection::MessageSentCallback;
-
-    //! Type of callback functions called when a connection is closed.
-    using ConnectionClosedCallback = IConnection::ConnectionClosedCallback;
+    //! Type of concrete addresses.
+    using ConcreteAddress = addresses::TCPAddress;
 
     /*!
      * \brief Constructor.
@@ -72,11 +69,15 @@ public:
      * \param[in] message_parser_config Configuration of the parser of messages.
      * \param[in] logger Logger.
      */
-    StreamConnectionImpl(executors::AsioContextType& context,
+    Connection(AsioSocket&& socket,
         const config::MessageParserConfig& message_parser_config,
         std::shared_ptr<logging::Logger> logger)
-        : socket_(context),
+        : socket_(std::move(socket)),
           message_parser_(message_parser_config),
+          local_address_(ConcreteAddress(socket_.local_endpoint())),
+          remote_address_(ConcreteAddress(socket_.remote_endpoint())),
+          log_name_(fmt::format("Connection(local={}, remote={})",
+              local_address_, remote_address_)),
           logger_(std::move(logger)) {}
 
     /*!
@@ -84,21 +85,11 @@ public:
      *
      * \return Socket.
      */
-    Protocol::socket& socket() noexcept { return socket_; }
+    AsioSocket& socket() noexcept { return socket_; }
 
-    /*!
-     * \brief Start process of this connection.
-     *
-     * \param[in] on_received Callback function called when a message is
-     * received.
-     * \param[in] on_sent Callback function called when a message is
-     * sent.
-     * \param[in] on_closed Callback function called when this connection is
-     * closed.
-     * \param[in] log_name Name of the connection for logs.
-     */
+    //! \copydoc msgpack_rpc::transport::IConnection::start
     void start(MessageReceivedCallback on_received, MessageSentCallback on_sent,
-        ConnectionClosedCallback on_closed, std::string log_name) {
+        ConnectionClosedCallback on_closed) override {
         if (!change_state_if(State::INIT, State::STARTING)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This connection is already started.");
@@ -108,19 +99,15 @@ public:
         on_received_ = std::move(on_received);
         on_sent_ = std::move(on_sent);
         on_closed_ = std::move(on_closed);
-        log_name_ = std::move(log_name);
         asio::post(socket_.get_executor(),
             [self = this->shared_from_this()] { self->async_read_next(); });
 
         change_state_to(State::PROCESSING);
     }
 
-    /*!
-     * \brief Asynchronously send a message.
-     *
-     * \param[in] message Message to send.
-     */
-    void async_send(std::shared_ptr<messages::SerializedMessage> message) {
+    //! \copydoc msgpack_rpc::transport::IConnection::async_send
+    void async_send(
+        std::shared_ptr<messages::SerializedMessage> message) override {
         if (current_state() != State::PROCESSING) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This connection is not started yet.");
@@ -132,13 +119,23 @@ public:
             });
     }
 
-    /*!
-     * \brief Asynchronously close this connection.
-     */
-    void async_close() {
+    //! \copydoc msgpack_rpc::transport::IConnection::async_close
+    void async_close() override {
         asio::post(socket_.get_executor(), [self = this->shared_from_this()]() {
             self->close_in_thread(Status());
         });
+    }
+
+    //! \copydoc msgpack_rpc::transport::IConnection::local_address
+    [[nodiscard]] const addresses::Address& local_address()
+        const noexcept override {
+        return local_address_;
+    }
+
+    //! \copydoc msgpack_rpc::transport::IConnection::remote_address
+    [[nodiscard]] const addresses::Address& remote_address()
+        const noexcept override {
+        return remote_address_;
     }
 
 private:
@@ -271,7 +268,7 @@ private:
             return;
         }
         socket_.cancel();
-        socket_.shutdown(Protocol::socket::shutdown_both);
+        socket_.shutdown(AsioSocket::shutdown_both);
         socket_.close();
         on_closed_(status);
         MSGPACK_RPC_TRACE(logger_, "({}) Closed this connection.", log_name_);
@@ -309,7 +306,7 @@ private:
     }
 
     //! Socket.
-    Protocol::socket socket_;
+    AsioSocket socket_;
 
     //! Callback function when a message is received.
     MessageReceivedCallback on_received_{};
@@ -323,8 +320,14 @@ private:
     //! Parser of messages.
     messages::MessageParser message_parser_;
 
+    //! Address of the local endpoint.
+    addresses::Address local_address_;
+
+    //! Address of the remote endpoint.
+    addresses::Address remote_address_;
+
     //! Name of the connection for logs.
-    std::string log_name_{};
+    std::string log_name_;
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
