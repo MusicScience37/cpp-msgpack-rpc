@@ -15,49 +15,15 @@
  */
 /*!
  * \file
- * \brief Definition of TCPAcceptor class.
+ * \brief Definition of TCPAcceptor type.
  */
 #pragma once
 
-#include <memory>
-
-#include "msgpack_rpc/transport/acceptor_impl.h"
-#include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/acceptor.h"
 
 namespace msgpack_rpc::transport::tcp {
 
-class TCPAcceptor final : public IAcceptor {
-public:
-    /*!
-     * \brief Constructor.
-     *
-     * \param[in] acceptor Acceptor.
-     */
-    explicit TCPAcceptor(std::shared_ptr<AcceptorImpl> acceptor);
-
-    //! \copydoc msgpack_rpc::transport::IAcceptor::start
-    void start(ConnectionCallback on_connection) override;
-
-    //! \copydoc msgpack_rpc::transport::IAcceptor::stop
-    void stop() override;
-
-    //! \copydoc msgpack_rpc::transport::IConnection::local_address
-    [[nodiscard]] const addresses::Address& local_address()
-        const noexcept override;
-
-    TCPAcceptor(const TCPAcceptor&) = delete;
-    TCPAcceptor(TCPAcceptor&&) = delete;
-    TCPAcceptor& operator=(const TCPAcceptor&) = delete;
-    TCPAcceptor& operator=(TCPAcceptor&&) = delete;
-
-    ~TCPAcceptor() override;
-
-private:
-    //! Acceptor.
-    std::shared_ptr<AcceptorImpl> acceptor_;
-
-    //! Address of the local endpoint.
-    addresses::Address local_address_;
-};
+//! Type of acceptors of TCP.
+using TCPAcceptor = Acceptor;
 
 }  // namespace msgpack_rpc::transport::tcp
