@@ -32,5 +32,6 @@ TEST_CASE("msgpack_rpc::addresses::Address") {
 
         CHECK(fmt::format("{}", address) == "tcp://1.2.3.4:12345");
         CHECK(fmt::format("{}", address.to_uri()) == "tcp://1.2.3.4:12345");
+        CHECK(fmt::format("{}", address.as_tcp()) == "tcp://1.2.3.4:12345");
     }
 }
