@@ -21,6 +21,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include <asio/error_code.hpp>
@@ -28,6 +29,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/i_executor.h"
@@ -72,6 +75,7 @@ public:
         std::shared_ptr<logging::Logger> logger)
         : acceptor_(executor->context(executors::OperationType::TRANSPORT),
               local_address.asio_address()),
+          executor_(executor),
           local_address_(ConcreteAddress(acceptor_.local_endpoint())),
           message_parser_config_(message_parser_config),
           log_name_(fmt::format("Acceptor(local={})", local_address_)),
@@ -134,20 +138,20 @@ private:
      * \brief Asynchronously accept a connection.
      */
     void async_accept_next() {
-        acceptor_.async_accept(
+        socket_.reset();
+        socket_.emplace(
+            get_executor()->context(executors::OperationType::TRANSPORT));
+        acceptor_.async_accept(*socket_,
             [self = this->shared_from_this()](
-                const asio::error_code& error, AsioSocket socket) {
-                self->on_accept(error, std::move(socket));
-            });
+                const asio::error_code& error) { self->on_accept(error); });
     }
 
     /*!
      * \brief Handle the result of accept operation.
      *
      * \param[in] error Error.
-     * \param[in] socket Socket.
      */
-    void on_accept(const asio::error_code& error, AsioSocket socket) {
+    void on_accept(const asio::error_code& error) {
         if (error) {
             if (error == asio::error::operation_aborted) {
                 return;
@@ -160,9 +164,9 @@ private:
         }
 
         MSGPACK_RPC_TRACE(logger_, "({}) Accepted a connection from {}.",
-            log_name_, fmt::streamed(socket.remote_endpoint()));
+            log_name_, fmt::streamed(socket_->remote_endpoint()));
         on_connection_(std::make_shared<ConnectionType>(
-            std::move(socket), message_parser_config_, logger_));
+            std::move(*socket_), message_parser_config_, logger_));
 
         if (current_state() != State::PROCESSING) {
             return;
@@ -213,8 +217,27 @@ private:
         return state_.load(std::memory_order_relaxed);
     }
 
+    /*!
+     * \brief Get the executor.
+     *
+     * \return Executor.
+     */
+    [[nodiscard]] std::shared_ptr<executors::IExecutor> get_executor() {
+        auto executor = executor_.lock();
+        if (!executor) {
+            const auto message = std::string("Executor is not set.");
+            MSGPACK_RPC_CRITICAL(logger_, "({}) {}", log_name_, message);
+            throw MsgpackRPCException(
+                StatusCode::PRECONDITION_NOT_MET, message);
+        }
+        return executor;
+    }
+
     //! Acceptor.
     AsioAcceptor acceptor_;
+
+    //! Socket to accept connections.
+    std::optional<AsioSocket> socket_{};
 
     //! Executor.
     std::weak_ptr<executors::IExecutor> executor_;
