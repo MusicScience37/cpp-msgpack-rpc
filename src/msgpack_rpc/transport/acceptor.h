@@ -93,17 +93,14 @@ public:
 
     //! \copydoc msgpack_rpc::transport::IAcceptor::start
     void start(ConnectionCallback on_connection) override {
-        if (!change_state_if(State::INIT, State::STARTING)) {
-            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
-                "This acceptor is already started.");
-        }
+        state_machine_.handle_start_request();
         // Only one thread can enter here.
 
         on_connection_ = std::move(on_connection);
         asio::post(acceptor_.get_executor(),
             [self = this->shared_from_this()] { self->async_accept_next(); });
 
-        change_state_to(State::PROCESSING);
+        state_machine_.handle_processing_started();
     }
 
     //! \copydoc msgpack_rpc::transport::IAcceptor::stop
@@ -119,21 +116,6 @@ public:
     }
 
 private:
-    //! Enumeration of states.
-    enum class State {
-        //! Initial state.
-        INIT,
-
-        //! Starting.
-        STARTING,
-
-        //! Processing.
-        PROCESSING,
-
-        //! Stopped.
-        STOPPED
-    };
-
     /*!
      * \brief Asynchronously accept a connection.
      */
@@ -168,53 +150,22 @@ private:
         on_connection_(std::make_shared<ConnectionType>(
             std::move(*socket_), message_parser_config_, logger_));
 
-        if (current_state() != State::PROCESSING) {
+        if (!state_machine_.is_processing()) {
             return;
         }
         async_accept_next();
     }
 
     /*!
-     * \brief Stop this connection in this thread.
+     * \brief Stop this acceptor in this thread.
      */
     void stop_in_thread() {
-        if (state_.exchange(State::STOPPED) == State::STOPPED) {
+        if (!state_machine_.handle_stop_requested()) {
             return;
         }
         acceptor_.cancel();
         acceptor_.close();
         MSGPACK_RPC_TRACE(logger_, "({}) Stopped this acceptor.", log_name_);
-    }
-
-    /*!
-     * \brief Change the state of this connection if the current state matches
-     * to an expected state.
-     *
-     * \param[in] expected_state Expected state.
-     * \param[in] next_state Next state.
-     * \return Whether the current state matched the expected state.
-     */
-    bool change_state_if(State expected_state, State next_state) {
-        return state_.compare_exchange_strong(
-            expected_state, next_state, std::memory_order_acquire);
-    }
-
-    /*!
-     * \brief Change the state of this connection.
-     *
-     * \param[in] next_state Next state.
-     */
-    void change_state_to(State next_state) {
-        state_.store(next_state, std::memory_order_release);
-    }
-
-    /*!
-     * \brief Get the current state of this connection.
-     *
-     * \return Current state.
-     */
-    [[nodiscard]] State current_state() {
-        return state_.load(std::memory_order_relaxed);
     }
 
     /*!
@@ -257,8 +208,8 @@ private:
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
 
-    //! Whether the process of this connection is started.
-    std::atomic<State> state_{State::INIT};
+    //! State machine.
+    BackgroundTaskStateMachine state_machine_{};
 };
 
 }  // namespace msgpack_rpc::transport
