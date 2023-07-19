@@ -44,7 +44,9 @@ public:
      *
      * \param[in] address Address.
      */
-    explicit Address(AddressVariant address) : address_(std::move(address)) {}
+    Address(  // NOLINT(google-explicit-constructor, hicpp-explicit-conversions)
+        TCPAddress address)
+        : address_(std::move(address)) {}
 
     /*!
      * \brief Invoke a visitor function using the concrete address.

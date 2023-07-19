@@ -45,14 +45,9 @@
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/serialized_message.h"
-#include "msgpack_rpc/transport/acceptor.h"
-#include "msgpack_rpc/transport/connection.h"
+#include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
-#include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
-#include "msgpack_rpc/transport/tcp/tcp_connection.h"
-#include "msgpack_rpc/transport/tcp/tcp_connector.h"
-#include "msgpack_rpc/transport/tcp/tcp_resolver.h"
 #include "trompeloeil_catch2.h"
 
 class TestExecutor final : public msgpack_rpc::executors::IExecutor {
@@ -131,14 +126,13 @@ TEST_CASE("Communication via TCP") {
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc::transport::IConnection;
-    using msgpack_rpc::transport::tcp::TCPAcceptor;
-    using msgpack_rpc::transport::tcp::TCPConnection;
-    using msgpack_rpc::transport::tcp::TCPConnector;
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
     const auto executor = std::make_shared<TestExecutor>(
         msgpack_rpc::executors::create_single_thread_executor(logger));
+    const auto backend = msgpack_rpc::transport::create_tcp_backend(
+        executor, MessageParserConfig(), logger);
 
     const auto acceptor_specified_address = TCPAddress("127.0.0.1", 0);
 
@@ -163,18 +157,16 @@ TEST_CASE("Communication via TCP") {
         const auto acceptor_callbacks = std::make_shared<AcceptorCallbacks>();
 
         // Start acceptor.
-        post([&executor, &logger, &acceptor_specified_address, &acceptor,
+        post([&backend, &acceptor_specified_address, &acceptor,
                  &acceptor_callbacks] {
-            acceptor = std::make_shared<TCPAcceptor>(acceptor_specified_address,
-                executor, MessageParserConfig(), logger);
+            acceptor = backend->create_acceptor(acceptor_specified_address);
             acceptor_callbacks->apply_to(acceptor);
         });
 
         // Connect and send a message.
-        post([&executor, &logger, &message, &client_connection,
+        post([&backend, &message, &client_connection,
                  &client_connection_callbacks, &acceptor] {
-            const auto connector = std::make_shared<TCPConnector>(
-                executor, MessageParserConfig(), logger);
+            const auto connector = backend->create_connector();
 
             connector->async_connect(acceptor->local_address(),
                 [&message, &client_connection, &client_connection_callbacks](
@@ -224,10 +216,9 @@ TEST_CASE("Communication via TCP") {
     }
 
     SECTION("create acceptor and stop without start") {
-        post([&logger, &executor, &acceptor_specified_address] {
+        post([&backend, &acceptor_specified_address] {
             const auto acceptor =
-                std::make_shared<TCPAcceptor>(acceptor_specified_address,
-                    executor, MessageParserConfig(), logger);
+                backend->create_acceptor(acceptor_specified_address);
 
             acceptor->stop();
         });
@@ -240,13 +231,15 @@ TEST_CASE("Communication via TCP") {
 
 TEST_CASE("msgpack_rpc::transport::tcp::TCPResolver") {
     using msgpack_rpc::addresses::URI;
-    using msgpack_rpc::transport::tcp::TCPResolver;
+    using msgpack_rpc::config::MessageParserConfig;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
     const auto executor =
         msgpack_rpc::executors::create_single_thread_executor(logger);
+    const auto backend = msgpack_rpc::transport::create_tcp_backend(
+        executor, MessageParserConfig(), logger);
 
-    const auto resolver = std::make_shared<TCPResolver>(executor, logger);
+    const auto resolver = backend->create_resolver();
 
     SECTION("resolve") {
         const auto uri = URI("tcp", "127.0.0.1", 1234);

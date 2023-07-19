@@ -10,5 +10,6 @@ set(SOURCE_FILES
     msgpack_rpc/logging/log_sinks.cpp
     msgpack_rpc/messages/message_parser.cpp
     msgpack_rpc/messages/message_type.cpp
+    msgpack_rpc/transport/tcp/backends.cpp
     msgpack_rpc/transport/tcp/tcp_backend.cpp
 )
