@@ -81,13 +81,6 @@ public:
               local_address_, remote_address_)),
           logger_(std::move(logger)) {}
 
-    /*!
-     * \brief Access to the socket.
-     *
-     * \return Socket.
-     */
-    AsioSocket& socket() noexcept { return socket_; }
-
     //! \copydoc msgpack_rpc::transport::IConnection::start
     void start(MessageReceivedCallback on_received, MessageSentCallback on_sent,
         ConnectionClosedCallback on_closed) override {

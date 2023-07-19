@@ -84,13 +84,6 @@ public:
             log_name_, local_address_);
     }
 
-    /*!
-     * \brief Access to the acceptor.
-     *
-     * \return Acceptor.
-     */
-    AsioAcceptor& acceptor() noexcept { return acceptor_; }
-
     //! \copydoc msgpack_rpc::transport::IAcceptor::start
     void start(ConnectionCallback on_connection) override {
         state_machine_.handle_start_request();
