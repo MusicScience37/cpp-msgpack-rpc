@@ -34,17 +34,6 @@ namespace msgpack_rpc::transport {
 class IResolver {
 public:
     /*!
-     * \brief Type of callback functions called when a URI is resolved.
-     *
-     * Parameters:
-     *
-     * 1. Status.
-     * 2. List of resolved addresses. (Empty when an error occurred.)
-     */
-    using ResolvedCallback =
-        std::function<void(Status, std::vector<addresses::Address>)>;
-
-    /*!
      * \brief Resolve a URI.
      *
      * \param[in] uri URI.

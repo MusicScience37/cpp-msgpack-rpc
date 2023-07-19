@@ -50,9 +50,6 @@ public:
     //! Type of concrete addresses.
     using ConcreteAddressType = addresses::TCPAddress;
 
-    //! Type of callback functions called when a URI is resolved.
-    using ResolvedCallback = IResolver::ResolvedCallback;
-
     /*!
      * \brief Constructor.
      *
