@@ -19,6 +19,7 @@
  */
 #include <functional>
 #include <memory>
+#include <optional>
 #include <variant>
 
 #include <asio/error_code.hpp>
@@ -157,19 +158,15 @@ TEST_CASE("TCP transport") {
 
         REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
             .TIMES(1)
-            .SIDE_EFFECT(CHECK(_1))
+            .WITH(static_cast<bool>(_1))
             .LR_SIDE_EFFECT(server_connection = _1)
             .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
+        std::optional<ParsedMessage> received_message;
         REQUIRE_CALL(*client_connection_callbacks, on_sent()).TIMES(1);
         REQUIRE_CALL(*server_connection_callbacks, on_received(_))
             .TIMES(1)
-            .LR_SIDE_EFFECT([&_1, &method_name] {
-                REQUIRE(std::holds_alternative<ParsedNotification>(_1));
-                const ParsedNotification notification =
-                    std::get<ParsedNotification>(_1);
-                CHECK(notification.method_name().name() == method_name.name());
-            }())
+            .LR_SIDE_EFFECT(received_message = _1)
             .LR_SIDE_EFFECT(server_connection->async_close());
 
         REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
@@ -178,6 +175,12 @@ TEST_CASE("TCP transport") {
         REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
 
         executor->run();
+
+        REQUIRE(received_message);
+        REQUIRE(std::holds_alternative<ParsedNotification>(*received_message));
+        const ParsedNotification notification =
+            std::get<ParsedNotification>(*received_message);
+        CHECK(notification.method_name().name() == method_name.name());
     }
 
     SECTION("create acceptor and stop without start") {
