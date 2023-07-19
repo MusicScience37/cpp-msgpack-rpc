@@ -31,7 +31,9 @@
 #include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
@@ -49,6 +51,7 @@
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
 #include "msgpack_rpc/transport/tcp/tcp_connection.h"
+#include "msgpack_rpc/transport/tcp/tcp_connector.h"
 #include "msgpack_rpc/transport/tcp/tcp_resolver.h"
 #include "trompeloeil_catch2.h"
 
@@ -115,6 +118,9 @@ public:
 };
 
 TEST_CASE("Communication via TCP") {
+    using msgpack_rpc::MsgpackRPCException;
+    using msgpack_rpc::Status;
+    using msgpack_rpc::StatusCode;
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::config::MessageParserConfig;
     using msgpack_rpc::executors::OperationType;
@@ -127,6 +133,7 @@ TEST_CASE("Communication via TCP") {
     using msgpack_rpc::transport::IConnection;
     using msgpack_rpc::transport::tcp::TCPAcceptor;
     using msgpack_rpc::transport::tcp::TCPConnection;
+    using msgpack_rpc::transport::tcp::TCPConnector;
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
@@ -166,20 +173,18 @@ TEST_CASE("Communication via TCP") {
         // Connect and send a message.
         post([&executor, &logger, &message, &client_connection,
                  &client_connection_callbacks, &acceptor] {
-            // TODO use connectors.
-            const auto socket = std::make_shared<asio::ip::tcp::socket>(
-                executor->context(OperationType::TRANSPORT));
+            const auto connector = std::make_shared<TCPConnector>(
+                executor, MessageParserConfig(), logger);
 
-            socket->async_connect(
-                acceptor->local_address().as_tcp().asio_address(),
-                [socket, &message, &client_connection,
-                    &client_connection_callbacks,
-                    &logger](const asio::error_code& error) {
-                    if (error) {
-                        throw asio::system_error(error);
+            connector->async_connect(acceptor->local_address(),
+                [&message, &client_connection, &client_connection_callbacks](
+                    const Status& status,
+                    std::shared_ptr<IConnection> connection) {
+                    if (status.code() != msgpack_rpc::StatusCode::SUCCESS) {
+                        throw MsgpackRPCException(status);
                     }
-                    client_connection = std::make_shared<TCPConnection>(
-                        std::move(*socket), MessageParserConfig(), logger);
+
+                    client_connection = std::move(connection);
 
                     client_connection_callbacks->apply_to(client_connection);
 

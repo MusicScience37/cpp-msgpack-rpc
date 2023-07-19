@@ -57,7 +57,7 @@ public:
      *
      * 1. Status object specifying the reason.
      */
-    using ConnectionClosedCallback = std::function<void(Status)>;
+    using ConnectionClosedCallback = std::function<void(const Status&)>;
 
     /*!
      * \brief Start process of this connection.

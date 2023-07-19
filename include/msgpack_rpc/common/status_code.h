@@ -51,6 +51,9 @@ enum class StatusCode {
     //! Failure in resolving a host.
     HOST_UNRESOLVED,
 
+    //! Failure in connecting to an endpoint.
+    CONNECTION_FAILURE,
+
     //! Unexpected errors. (Maybe a bug.)
     UNEXPECTED_ERROR
 };
