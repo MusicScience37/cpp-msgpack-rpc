@@ -15,9 +15,9 @@
  */
 /*!
  * \file
- * \brief Implementation of TCPProtocol class.
+ * \brief Implementation of TCPBackend class.
  */
-#include "msgpack_rpc/transport/tcp/tcp_protocol.h"
+#include "msgpack_rpc/transport/tcp/tcp_backend.h"
 
 #include <memory>
 #include <utility>
@@ -32,35 +32,35 @@
 
 namespace msgpack_rpc::transport::tcp {
 
-TCPProtocol::TCPProtocol(const std::shared_ptr<executors::IExecutor>& executor,
+TCPBackend::TCPBackend(const std::shared_ptr<executors::IExecutor>& executor,
     const config::MessageParserConfig& message_parser_config,
     std::shared_ptr<logging::Logger> logger)
     : executor_(executor),
       message_parser_config_(message_parser_config),
       logger_(std::move(logger)) {}
 
-std::string_view TCPProtocol::scheme() const noexcept {
+std::string_view TCPBackend::scheme() const noexcept {
     return addresses::TCP_SCHEME;
 }
 
-std::shared_ptr<IAcceptor> TCPProtocol::create_acceptor(
+std::shared_ptr<IAcceptor> TCPBackend::create_acceptor(
     const addresses::Address& local_address) {
     return std::make_shared<TCPAcceptor>(
         local_address.as_tcp(), executor(), message_parser_config_, logger_);
 }
 
-std::shared_ptr<IConnector> TCPProtocol::create_connector() {
+std::shared_ptr<IConnector> TCPBackend::create_connector() {
     return std::make_shared<TCPConnector>(
         executor(), message_parser_config_, logger_);
 }
 
-std::shared_ptr<IResolver> TCPProtocol::create_resolver() {
+std::shared_ptr<IResolver> TCPBackend::create_resolver() {
     return std::make_shared<TCPResolver>(executor(), logger_);
 }
 
-TCPProtocol::~TCPProtocol() noexcept = default;
+TCPBackend::~TCPBackend() noexcept = default;
 
-std::shared_ptr<executors::IExecutor> TCPProtocol::executor() const {
+std::shared_ptr<executors::IExecutor> TCPBackend::executor() const {
     auto locked = executor_.lock();
     if (!locked) {
         throw MsgpackRPCException(

@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of TCPProtocol class.
+ * \brief Definition of TCPBackend class.
  */
 #pragma once
 
@@ -25,14 +25,14 @@
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_parser.h"
-#include "msgpack_rpc/transport/i_protocol.h"
+#include "msgpack_rpc/transport/i_backend.h"
 
 namespace msgpack_rpc::transport::tcp {
 
 /*!
- * \brief Class of TCP.
+ * \brief Class of backend of TCP.
  */
-class TCPProtocol final : public IProtocol {
+class TCPBackend final : public IBackend {
 public:
     /*!
      * \brief Constructor.
@@ -41,30 +41,30 @@ public:
      * \param[in] message_parser_config Configuration of parsers of messages.
      * \param[in] logger Logger.
      */
-    TCPProtocol(const std::shared_ptr<executors::IExecutor>& executor,
+    TCPBackend(const std::shared_ptr<executors::IExecutor>& executor,
         const config::MessageParserConfig& message_parser_config,
         std::shared_ptr<logging::Logger> logger);
 
-    //! \copydoc msgpack_rpc::transport::IProtocol::scheme
+    //! \copydoc msgpack_rpc::transport::IBackend::scheme
     [[nodiscard]] std::string_view scheme() const noexcept override;
 
-    //! \copydoc msgpack_rpc::transport::IProtocol::create_acceptor
+    //! \copydoc msgpack_rpc::transport::IBackend::create_acceptor
     [[nodiscard]] std::shared_ptr<IAcceptor> create_acceptor(
         const addresses::Address& local_address) override;
 
-    //! \copydoc msgpack_rpc::transport::IProtocol::create_connector
+    //! \copydoc msgpack_rpc::transport::IBackend::create_connector
     [[nodiscard]] std::shared_ptr<IConnector> create_connector() override;
 
-    //! \copydoc msgpack_rpc::transport::IProtocol::create_resolver
+    //! \copydoc msgpack_rpc::transport::IBackend::create_resolver
     [[nodiscard]] std::shared_ptr<IResolver> create_resolver() override;
 
-    TCPProtocol(const TCPProtocol&) = delete;
-    TCPProtocol(TCPProtocol&&) = delete;
-    TCPProtocol& operator=(const TCPProtocol&) = delete;
-    TCPProtocol& operator=(TCPProtocol&&) = delete;
+    TCPBackend(const TCPBackend&) = delete;
+    TCPBackend(TCPBackend&&) = delete;
+    TCPBackend& operator=(const TCPBackend&) = delete;
+    TCPBackend& operator=(TCPBackend&&) = delete;
 
     //! Destructor.
-    ~TCPProtocol() noexcept override;
+    ~TCPBackend() noexcept override;
 
 private:
     /*!

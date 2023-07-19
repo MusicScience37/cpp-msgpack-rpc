@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of IProtocol class.
+ * \brief Definition of IBackend class.
  */
 #pragma once
 
@@ -30,12 +30,12 @@
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Interface of protocols.
+ * \brief Interface of backends of protocols.
  *
  * \note Objects of this class are factories of acceptors, connectors, and
  * resolvers.
  */
-class IProtocol {
+class IBackend {
 public:
     /*!
      * \brief Get the scheme.
@@ -67,17 +67,17 @@ public:
      */
     [[nodiscard]] virtual std::shared_ptr<IResolver> create_resolver() = 0;
 
-    IProtocol(const IProtocol&) = delete;
-    IProtocol(IProtocol&&) = delete;
-    IProtocol& operator=(const IProtocol&) = delete;
-    IProtocol& operator=(IProtocol&&) = delete;
+    IBackend(const IBackend&) = delete;
+    IBackend(IBackend&&) = delete;
+    IBackend& operator=(const IBackend&) = delete;
+    IBackend& operator=(IBackend&&) = delete;
 
     //! Destructor.
-    virtual ~IProtocol() noexcept = default;
+    virtual ~IBackend() noexcept = default;
 
 protected:
     //! Constructor.
-    IProtocol() noexcept = default;
+    IBackend() noexcept = default;
 };
 
 }  // namespace msgpack_rpc::transport
