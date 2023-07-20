@@ -144,7 +144,7 @@ SCENARIO("Send messages") {
             .LR_SIDE_EFFECT(acceptor->stop());
         REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
 
-        THEN("addresses are correctly set") {
+        THEN("Addresses are correctly set") {
             std::optional<Address> client_local_address;
             std::optional<Address> client_remote_address;
 
@@ -178,7 +178,7 @@ SCENARIO("Send messages") {
                     std::make_shared<SerializedMessage>(message));
             };
 
-            THEN("Server-side connection received the message") {
+            THEN("Server-side connection receives the message") {
                 std::optional<ParsedMessage> received_message;
                 REQUIRE_CALL(*client_connection_callbacks, on_sent()).TIMES(1);
                 REQUIRE_CALL(*server_connection_callbacks, on_received(_))
