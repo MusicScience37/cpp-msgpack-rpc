@@ -48,69 +48,8 @@
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "transport_helper.h"
 #include "trompeloeil_catch2.h"
-
-class TestExecutor final : public msgpack_rpc::executors::IExecutor {
-public:
-    explicit TestExecutor(
-        std::shared_ptr<msgpack_rpc::executors::IExecutor> executor)
-        : executor_(std::move(executor)) {}
-
-    void run() override { executor_->run(); }
-
-    void run_until_interruption() override {
-        executor_->run_until_interruption();
-    }
-
-    void stop() override { executor_->stop(); }
-
-    msgpack_rpc::executors::AsioContextType& context(
-        msgpack_rpc::executors::OperationType type) noexcept override {
-        on_context(type);
-        return executor_->context(type);
-    }
-
-    MAKE_MOCK1(on_context, void(msgpack_rpc::executors::OperationType));
-
-private:
-    std::shared_ptr<msgpack_rpc::executors::IExecutor> executor_;
-};
-
-class AcceptorCallbacks
-    : public std::enable_shared_from_this<AcceptorCallbacks> {
-public:
-    MAKE_MOCK1(on_connection,
-        void(const std::shared_ptr<msgpack_rpc::transport::IConnection>&));
-
-    void apply_to(
-        const std::shared_ptr<msgpack_rpc::transport::IAcceptor>& acceptor) {
-        acceptor->start(
-            [self = this->shared_from_this()](
-                const std::shared_ptr<msgpack_rpc::transport::IConnection>&
-                    connection) { self->on_connection(connection); });
-    }
-};
-
-class ConnectionCallbacks
-    : public std::enable_shared_from_this<ConnectionCallbacks> {
-public:
-    MAKE_MOCK1(on_received, void(msgpack_rpc::messages::ParsedMessage));
-    MAKE_MOCK0(on_sent, void());
-    MAKE_MOCK1(on_closed, void(msgpack_rpc::Status));
-
-    void apply_to(const std::shared_ptr<msgpack_rpc::transport::IConnection>&
-            connection) {
-        connection->start(
-            [self = this->shared_from_this()](
-                msgpack_rpc::messages::ParsedMessage message) {
-                self->on_received(std::move(message));
-            },
-            [self = this->shared_from_this()] { self->on_sent(); },
-            [self = this->shared_from_this()](msgpack_rpc::Status status) {
-                self->on_closed(std::move(status));
-            });
-    }
-};
 
 TEST_CASE("Communication via TCP") {
     using msgpack_rpc::MsgpackRPCException;
@@ -140,80 +79,6 @@ TEST_CASE("Communication via TCP") {
     const auto post = [&executor](std::function<void()> function) {
         asio::post(executor->context(OperationType::MAIN), std::move(function));
     };
-
-    SECTION("send a message from client to server") {
-        const auto method_name = MethodNameView("test_transport");
-        const auto message =
-            MessageSerializer::serialize_notification(method_name);
-
-        std::shared_ptr<IConnection> client_connection;
-        std::shared_ptr<IConnection> server_connection;
-        std::shared_ptr<IAcceptor> acceptor;
-
-        const auto client_connection_callbacks =
-            std::make_shared<ConnectionCallbacks>();
-        const auto server_connection_callbacks =
-            std::make_shared<ConnectionCallbacks>();
-        const auto acceptor_callbacks = std::make_shared<AcceptorCallbacks>();
-
-        // Start acceptor.
-        post([&backend, &acceptor_specified_address, &acceptor,
-                 &acceptor_callbacks] {
-            acceptor = backend->create_acceptor(acceptor_specified_address);
-            acceptor_callbacks->apply_to(acceptor);
-        });
-
-        // Connect and send a message.
-        post([&backend, &message, &client_connection,
-                 &client_connection_callbacks, &acceptor] {
-            const auto connector = backend->create_connector();
-
-            connector->async_connect(acceptor->local_address(),
-                [&message, &client_connection, &client_connection_callbacks](
-                    const Status& status,
-                    std::shared_ptr<IConnection> connection) {
-                    if (status.code() != msgpack_rpc::StatusCode::SUCCESS) {
-                        throw MsgpackRPCException(status);
-                    }
-
-                    client_connection = std::move(connection);
-
-                    client_connection_callbacks->apply_to(client_connection);
-
-                    client_connection->async_send(
-                        std::make_shared<SerializedMessage>(message));
-                });
-        });
-
-        REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
-            .TIMES(1)
-            .WITH(static_cast<bool>(_1))
-            .LR_SIDE_EFFECT(server_connection = _1)
-            .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
-
-        std::optional<ParsedMessage> received_message;
-        REQUIRE_CALL(*client_connection_callbacks, on_sent()).TIMES(1);
-        REQUIRE_CALL(*server_connection_callbacks, on_received(_))
-            .TIMES(1)
-            .LR_SIDE_EFFECT(received_message = _1)
-            .LR_SIDE_EFFECT(server_connection->async_close());
-
-        REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
-            .TIMES(1)
-            .LR_SIDE_EFFECT(acceptor->stop());
-        REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
-
-        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT))
-            .TIMES(AT_LEAST(3));
-
-        executor->run();
-
-        REQUIRE(received_message);
-        REQUIRE(std::holds_alternative<ParsedNotification>(*received_message));
-        const ParsedNotification notification =
-            std::get<ParsedNotification>(*received_message);
-        CHECK(notification.method_name().name() == method_name.name());
-    }
 
     SECTION("create acceptor and stop without start") {
         post([&backend, &acceptor_specified_address] {
