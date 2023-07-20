@@ -55,7 +55,7 @@ SCENARIO("Resolve addresses in TCP") {
         }
 
         WHEN("The resolver is requested to resolve an invalid URI") {
-            // TDL ".invalid" can't be resolved.
+            // TLD ".invalid" can't be resolved.
             const auto uri = URI("tcp", "test.invalid", 1234);
 
             THEN("An exception is thrown") {

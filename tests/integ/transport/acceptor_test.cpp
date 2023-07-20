@@ -72,7 +72,7 @@ SCENARIO("Start and stop acceptor") {
         WHEN("The acceptor is stopped without starting") {
             post([&acceptor] { acceptor->stop(); });
 
-            THEN("No exception won't thrown") {
+            THEN("No exception isn't thrown") {
                 CHECK_NOTHROW(executor->run());
             }
         }
