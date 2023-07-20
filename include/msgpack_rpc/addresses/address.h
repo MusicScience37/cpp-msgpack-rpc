@@ -83,6 +83,26 @@ public:
         }
     }
 
+    /*!
+     * \brief Compare two addresses.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two addresses are same.
+     * \retval false Two addresses are different.
+     */
+    bool operator==(const Address& right) const {
+        return address_ == right.address_;
+    }
+
+    /*!
+     * \brief Compare two addresses.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two addresses are different.
+     * \retval false Two addresses are same.
+     */
+    bool operator!=(const Address& right) const { return !operator==(right); }
+
 private:
     //! Address.
     AddressVariant address_;
@@ -127,3 +147,18 @@ public:
 };
 
 }  // namespace fmt
+
+/*!
+ * \brief Format an address.
+ *
+ * \param[in] stream Stream.
+ * \param[in] address Address.
+ * \return Stream after formatting.
+ */
+inline std::ostream& operator<<(
+    std::ostream& stream, const msgpack_rpc::addresses::Address& address) {
+    address.visit([&stream](const auto& concrete_address) {
+        stream << concrete_address;
+    });
+    return stream;
+}

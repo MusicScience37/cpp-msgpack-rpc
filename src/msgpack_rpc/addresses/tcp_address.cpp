@@ -45,6 +45,14 @@ URI TCPAddress::to_uri() const {
 
 const AsioTCPAddress& TCPAddress::asio_address() const { return address_; }
 
+bool TCPAddress::operator==(const TCPAddress& right) const {
+    return address_ == right.address_;
+}
+
+bool TCPAddress::operator!=(const TCPAddress& right) const {
+    return !operator==(right);
+}
+
 }  // namespace msgpack_rpc::addresses
 
 namespace fmt {
@@ -58,3 +66,9 @@ formatter<msgpack_rpc::addresses::TCPAddress>::format(  // NOLINT
 }
 
 }  // namespace fmt
+
+std::ostream& operator<<(
+    std::ostream& stream, const msgpack_rpc::addresses::TCPAddress& address) {
+    stream << address.asio_address();
+    return stream;
+}

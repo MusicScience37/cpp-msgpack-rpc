@@ -123,10 +123,18 @@ SCENARIO("Send messages") {
                 });
         });
 
+        std::optional<Address> acceptor_local_address;
+        std::optional<Address> server_local_address;
+        std::optional<Address> server_remote_address;
         REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
             .TIMES(1)
             .WITH(static_cast<bool>(_1))
             .LR_SIDE_EFFECT(server_connection = _1)
+            .LR_SIDE_EFFECT(acceptor_local_address = acceptor->local_address())
+            .LR_SIDE_EFFECT(
+                server_local_address = server_connection->local_address())
+            .LR_SIDE_EFFECT(
+                server_remote_address = server_connection->remote_address())
             .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
         REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(4);
@@ -135,6 +143,30 @@ SCENARIO("Send messages") {
             .TIMES(1)
             .LR_SIDE_EFFECT(acceptor->stop());
         REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
+
+        THEN("addresses are correctly set") {
+            std::optional<Address> client_local_address;
+            std::optional<Address> client_remote_address;
+
+            on_connected = [&client_connection, &client_local_address,
+                               &client_remote_address] {
+                client_local_address = client_connection->local_address();
+                client_remote_address = client_connection->remote_address();
+
+                client_connection->async_close();
+            };
+
+            executor->run();
+
+            CHECK(
+                server_local_address.value() == acceptor_local_address.value());
+            CHECK(
+                server_local_address.value() == client_remote_address.value());
+            CHECK(
+                server_remote_address.value() != server_local_address.value());
+            CHECK(
+                server_remote_address.value() == client_local_address.value());
+        }
 
         WHEN("A message is sent from client-side connection") {
             const auto method_name = MethodNameView("test_transport");

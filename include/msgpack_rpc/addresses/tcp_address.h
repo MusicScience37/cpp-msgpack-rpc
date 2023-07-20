@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 #include <string_view>
 
 #include <asio/ip/tcp.hpp>
@@ -87,6 +88,24 @@ public:
      */
     [[nodiscard]] const AsioTCPAddress& asio_address() const;
 
+    /*!
+     * \brief Compare with an address.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two addresses are same.
+     * \retval false Two addresses are different.
+     */
+    bool operator==(const TCPAddress& right) const;
+
+    /*!
+     * \brief Compare with an address.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two addresses are different.
+     * \retval false Two addresses are same.
+     */
+    bool operator!=(const TCPAddress& right) const;
+
 private:
     //! Address in asio library.
     AsioTCPAddress address_;
@@ -127,3 +146,13 @@ public:
 };
 
 }  // namespace fmt
+
+/*!
+ * \brief Format an address.
+ *
+ * \param[in] stream Stream.
+ * \param[in] address Address.
+ * \return Stream after formatting.
+ */
+MSGPACK_RPC_EXPORT std::ostream& operator<<(
+    std::ostream& stream, const msgpack_rpc::addresses::TCPAddress& address);

@@ -34,4 +34,12 @@ TEST_CASE("msgpack_rpc::addresses::Address") {
         CHECK(fmt::format("{}", address.to_uri()) == "tcp://1.2.3.4:12345");
         CHECK(fmt::format("{}", address.as_tcp()) == "tcp://1.2.3.4:12345");
     }
+
+    SECTION("compare addresses") {
+        const auto tcp_address1 = Address(TCPAddress("11.22.33.44", 1234));
+        const auto tcp_address2 = Address(TCPAddress("11.22.33.44", 1235));
+
+        CHECK(tcp_address1 == tcp_address1);
+        CHECK(tcp_address1 != tcp_address2);
+    }
 }
