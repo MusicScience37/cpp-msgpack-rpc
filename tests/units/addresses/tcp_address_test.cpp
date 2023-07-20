@@ -54,4 +54,14 @@ URI: {})",
             address.ip_address(), address.port_number(), address,
             address.to_uri()));
     }
+
+    SECTION("compare addresses") {
+        const auto address1 = TCPAddress("11.22.33.44", 1234);
+        const auto address2 = TCPAddress("11.22.33.44", 1235);
+        const auto address3 = TCPAddress("11.22.33.45", 1234);
+
+        CHECK(address1 == address1);
+        CHECK(address1 != address2);
+        CHECK(address1 != address3);
+    }
 }
