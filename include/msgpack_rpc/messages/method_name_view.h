@@ -22,6 +22,8 @@
 #include <string>
 #include <string_view>
 
+#include <fmt/format.h>
+
 #include "msgpack_rpc/messages/method_name.h"
 
 namespace msgpack_rpc::messages {
@@ -146,3 +148,29 @@ private:
 }
 
 }  // namespace msgpack_rpc::messages
+
+namespace fmt {
+
+/*!
+ * \brief Specialization of fmt::formatter for
+ * msgpack_rpc::messages::MethodNameView.
+ */
+template <>
+class formatter<msgpack_rpc::messages::MethodNameView>
+    : public formatter<std::string_view> {
+public:
+    /*!
+     * \brief Format a value.
+     *
+     * \param[in] val Value.
+     * \param[in] context Context.
+     * \return Iterator of the buffer.
+     */
+    format_context::iterator format(
+        const msgpack_rpc::messages::MethodNameView& val,
+        format_context& context) const {
+        return formatter<std::string_view>::format(val.name(), context);
+    }
+};
+
+}  // namespace fmt

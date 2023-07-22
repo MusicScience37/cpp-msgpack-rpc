@@ -24,12 +24,14 @@
 #include <type_traits>
 #include <utility>
 
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_parameters.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"
+#include "msgpack_rpc/methods/method_exception.h"
 
 namespace msgpack_rpc::methods {
 
@@ -52,10 +54,14 @@ public:
      * \tparam InputFunction Type of the function in the argument.
      * \param[in] name Method name.
      * \param[in] function Function implementing the method.
+     * \param[in] logger Logger.
      */
     template <typename InputFunction>
-    FunctionalMethod(messages::MethodNameView name, InputFunction&& function)
-        : name_(name), function_(std::forward<InputFunction>(function)) {}
+    FunctionalMethod(messages::MethodNameView name, InputFunction&& function,
+        std::shared_ptr<logging::Logger> logger)
+        : name_(name),
+          function_(std::forward<InputFunction>(function)),
+          logger_(std::move(logger)) {}
 
     /*!
      * \brief Get the method name.
@@ -74,8 +80,15 @@ public:
      */
     [[nodiscard]] messages::SerializedMessage call(
         const messages::ParsedRequest& request) {
-        return messages::MessageSerializer::serialize_successful_response(
-            request.id(), invoke(request.parameters()));
+        try {
+            return messages::MessageSerializer::serialize_successful_response(
+                request.id(),
+                invoke_with_tuple(
+                    request.parameters().as<std::decay_t<Parameters>...>()));
+        } catch (const MethodException& exception) {
+            return messages::MessageSerializer::serialize_error_response(
+                request.id(), exception.object());
+        }
     }
 
     /*!
@@ -84,19 +97,42 @@ public:
      * \param[in] request Request.
      */
     void notify(const messages::ParsedRequest& request) {
-        invoke(request.parameters());
+        try {
+            std::apply(function_,
+                request.parameters().as<std::decay_t<Parameters>...>());
+        } catch (const MethodException& /*exception*/) {
+            MSGPACK_RPC_DEBUG(logger_,
+                "Method {} threw an exception with a custom object.", name_);
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_DEBUG(
+                logger_, "Method {} threw an exception: {}", name_, e.what());
+        }
     }
 
 private:
     /*!
-     * \brief Invoke the function of this method.
+     * \brief Invoke the function with a tuple of parameters.
      *
-     * \param[in] parameters Parameters.
+     * \tparam ParameterTuple Type of the tuple of parameters.
+     * \param[in] parameter_tuple Tuple of parameters.
      * \return Return value.
+     * \throws MethodException Thrown when an exception is thrown by the
+     * function.
      */
-    decltype(auto) invoke(const messages::ParsedParameters& parameters) {
-        return std::apply(
-            function_, parameters.as<std::decay_t<Parameters>...>());
+    template <typename ParameterTuple>
+    decltype(auto) invoke_with_tuple(ParameterTuple&& parameter_tuple) {
+        try {
+            return std::apply(
+                function_, std::forward<ParameterTuple>(parameter_tuple));
+        } catch (const MethodException& /*exception*/) {
+            MSGPACK_RPC_DEBUG(logger_,
+                "Method {} threw an exception with a custom object.", name_);
+            throw;
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_DEBUG(
+                logger_, "Method {} threw an exception: {}", name_, e.what());
+            throw MethodException(e.what());
+        }
     }
 
     //! Method name.
@@ -104,6 +140,9 @@ private:
 
     //! Function.
     std::decay_t<Function> function_;
+
+    //! Logger.
+    std::shared_ptr<logging::Logger> logger_;
 };
 
 /*!
@@ -113,14 +152,16 @@ private:
  * \tparam Function Type of the function implementing the method.
  * \param[in] name Name of the method.
  * \param[in] function Function implementing the method.
+ * \param[in] logger Logger.
  * \return Method.
  */
 template <typename Signature, typename Function>
 [[nodiscard]] inline std::unique_ptr<FunctionalMethod<Signature, Function>>
-create_functional_method(messages::MethodNameView name, Function&& function) {
+create_functional_method(messages::MethodNameView name, Function&& function,
+    std::shared_ptr<logging::Logger> logger) {
     return std::make_unique<
         FunctionalMethod<Signature, std::decay_t<Function>>>(
-        name, std::forward<Function>(function));
+        name, std::forward<Function>(function), std::move(logger));
 }
 
 }  // namespace msgpack_rpc::methods

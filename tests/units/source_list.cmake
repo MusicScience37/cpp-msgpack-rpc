@@ -20,5 +20,6 @@ set(SOURCE_FILES
     messages/method_name_view_test.cpp
     messages/parsed_parameters_test.cpp
     methods/functional_method_test.cpp
+    methods/method_exception_test.cpp
     test_main.cpp
 )
