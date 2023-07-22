@@ -47,7 +47,7 @@ public:
     template <typename T>
     explicit MethodException(T&& object,
         std::enable_if_t<!std::is_same_v<std::decay_t<T>, MethodException>,
-            void*> /*sfinae*/
+            void*> /*for SFINAE*/
         = nullptr)
         : zone_(std::make_shared<msgpack::zone>()), object_(object, *zone_) {}
 

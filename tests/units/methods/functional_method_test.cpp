@@ -167,4 +167,122 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
             CHECK(received_request_param1 == param1);
         }
     }
+
+    SECTION("without return values") {
+        const auto method_name = MethodNameView("test_method");
+        std::string received_request_param1;
+        const auto method = create_functional_method<void(std::string)>(
+            method_name,
+            [&received_request_param1](
+                std::string_view str) { received_request_param1 = str; },
+            logger);
+
+        SECTION("get method name") { CHECK(method->name() == method_name); }
+
+        SECTION("call") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            const SerializedMessage result = method->call(request);
+
+            CHECK(received_request_param1 == param1);
+            const auto parsed_response = parse_response(result);
+            CHECK(parsed_response.id() == message_id);
+            CHECK(parsed_response.result().is_success());
+        }
+
+        SECTION("notify") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            CHECK_NOTHROW(method->notify(request));
+
+            CHECK(received_request_param1 == param1);
+        }
+    }
+
+    SECTION("without a return type and with exceptions in std::runtime_error") {
+        const auto method_name = MethodNameView("test_method");
+        std::string received_request_param1;
+        const auto method = create_functional_method<void(std::string)>(
+            method_name,
+            [&received_request_param1](std::string_view str) -> void {
+                received_request_param1 = str;
+                throw std::runtime_error("Test message.");
+            },
+            logger);
+
+        SECTION("get method name") { CHECK(method->name() == method_name); }
+
+        SECTION("call") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            const SerializedMessage result = method->call(request);
+
+            CHECK(received_request_param1 == param1);
+            const auto parsed_response = parse_response(result);
+            CHECK(parsed_response.id() == message_id);
+            CHECK(parsed_response.result().error_as<std::string_view>() ==
+                "Test message.");
+        }
+
+        SECTION("notify") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            CHECK_NOTHROW(method->notify(request));
+
+            CHECK(received_request_param1 == param1);
+        }
+    }
+
+    SECTION("without a return type and with exceptions in MethodException") {
+        const auto method_name = MethodNameView("test_method");
+        std::string received_request_param1;
+        const auto error = std::make_tuple(std::string("Test message."), 12345);
+        const auto method = create_functional_method<void(std::string)>(
+            method_name,
+            [&received_request_param1, &error](std::string_view str) -> void {
+                received_request_param1 = str;
+                throw MethodException(error);  // NOLINT
+            },
+            logger);
+
+        SECTION("get method name") { CHECK(method->name() == method_name); }
+
+        SECTION("call") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            const SerializedMessage result = method->call(request);
+
+            CHECK(received_request_param1 == param1);
+            const auto parsed_response = parse_response(result);
+            CHECK(parsed_response.id() == message_id);
+            CHECK(parsed_response.result()
+                      .error_as<std::tuple<std::string, int>>() == error);
+        }
+
+        SECTION("notify") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name, message_id, param1);
+
+            CHECK_NOTHROW(method->notify(request));
+
+            CHECK(received_request_param1 == param1);
+        }
+    }
 }
