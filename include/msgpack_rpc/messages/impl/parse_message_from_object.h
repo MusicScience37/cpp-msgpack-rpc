@@ -42,7 +42,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Message type.
  */
-[[nodiscard]] MessageType parse_message_type_from_object(
+[[nodiscard]] inline MessageType parse_message_type_from_object(
     const msgpack::object& object) {
     try {
         const auto val = object.as<std::uint64_t>();
@@ -69,7 +69,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Message ID.
  */
-[[nodiscard]] MessageID parse_message_id_from_object(
+[[nodiscard]] inline MessageID parse_message_id_from_object(
     const msgpack::object& object) {
     try {
         return object.as<MessageID>();
@@ -85,7 +85,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Method name.
  */
-[[nodiscard]] MethodNameView parse_method_name_from_object(
+[[nodiscard]] inline MethodNameView parse_method_name_from_object(
     const msgpack::object& object) {
     try {
         return MethodNameView(object.as<std::string_view>());
@@ -101,7 +101,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Request.
  */
-[[nodiscard]] ParsedRequest parse_request_from_object(
+[[nodiscard]] inline ParsedRequest parse_request_from_object(
     msgpack::object_handle object) {
     constexpr std::uint32_t num_elements_in_root_array = 4;
     if (object->via.array.size != num_elements_in_root_array) {
@@ -123,7 +123,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Response.
  */
-[[nodiscard]] ParsedResponse parse_response_from_object(
+[[nodiscard]] inline ParsedResponse parse_response_from_object(
     msgpack::object_handle object) {
     constexpr std::uint32_t num_elements_in_root_array = 4;
     if (object->via.array.size != num_elements_in_root_array) {
@@ -150,7 +150,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Notification.
  */
-[[nodiscard]] ParsedNotification parse_notification_from_object(
+[[nodiscard]] inline ParsedNotification parse_notification_from_object(
     msgpack::object_handle object) {
     constexpr std::uint32_t num_elements_in_root_array = 3;
     if (object->via.array.size != num_elements_in_root_array) {
@@ -170,7 +170,7 @@ namespace msgpack_rpc::messages::impl {
  * \param[in] object Object in msgpack library.
  * \return Message.
  */
-[[nodiscard]] ParsedMessage parse_message_from_object(
+[[nodiscard]] inline ParsedMessage parse_message_from_object(
     msgpack::object_handle object) {
     if (object->type != msgpack::type::ARRAY) {
         throw MsgpackRPCException(

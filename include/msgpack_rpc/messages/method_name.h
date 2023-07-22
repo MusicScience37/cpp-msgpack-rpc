@@ -99,4 +99,30 @@ private:
     std::string name_;
 };
 
+/*!
+ * \brief Compare two method names.
+ *
+ * \param[in] left Left-hand-side object.
+ * \param[in] right Right-hand-side object.
+ * \retval true Two names are equal.
+ * \retval false Two names are different.
+ */
+[[nodiscard]] inline bool operator==(
+    const MethodName& left, const MethodName& right) noexcept {
+    return left.name() == right.name();
+}
+
+/*!
+ * \brief Compare two method names.
+ *
+ * \param[in] left Left-hand-side object.
+ * \param[in] right Right-hand-side object.
+ * \retval true Two names are different.
+ * \retval false Two names are equal.
+ */
+[[nodiscard]] inline bool operator!=(
+    const MethodName& left, const MethodName& right) noexcept {
+    return left.name() != right.name();
+}
+
 }  // namespace msgpack_rpc::messages
