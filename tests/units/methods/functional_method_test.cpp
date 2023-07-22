@@ -29,6 +29,7 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/serialized_message.h"
+#include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
 #include "msgpack_rpc_test/parse_messages.h"
@@ -38,6 +39,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     using msgpack_rpc::messages::MethodNameView;
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::methods::create_functional_method;
+    using msgpack_rpc::methods::IMethod;
     using msgpack_rpc::methods::MethodException;
     using msgpack_rpc_test::create_parsed_request;
     using msgpack_rpc_test::parse_response;
@@ -49,13 +51,14 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     SECTION("with return values") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
-        const auto method = create_functional_method<std::string(std::string)>(
-            method_name,
-            [&received_request_param1](std::string_view str) {
-                received_request_param1 = str;
-                return std::string(str);
-            },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<std::string(std::string)>(
+                method_name,
+                [&received_request_param1](std::string_view str) {
+                    received_request_param1 = str;
+                    return std::string(str);
+                },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 
@@ -89,13 +92,15 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     SECTION("with a return type but with exceptions in std::runtime_error") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
-        const auto method = create_functional_method<std::string(std::string)>(
-            method_name,
-            [&received_request_param1](std::string_view str) -> std::string {
-                received_request_param1 = str;
-                throw std::runtime_error("Test message.");
-            },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<std::string(std::string)>(
+                method_name,
+                [&received_request_param1](
+                    std::string_view str) -> std::string {
+                    received_request_param1 = str;
+                    throw std::runtime_error("Test message.");
+                },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 
@@ -130,14 +135,15 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
         const auto error = std::make_tuple(std::string("Test message."), 12345);
-        const auto method = create_functional_method<std::string(std::string)>(
-            method_name,
-            [&received_request_param1, &error](
-                std::string_view str) -> std::string {
-                received_request_param1 = str;
-                throw MethodException(error);  // NOLINT
-            },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<std::string(std::string)>(
+                method_name,
+                [&received_request_param1, &error](
+                    std::string_view str) -> std::string {
+                    received_request_param1 = str;
+                    throw MethodException(error);  // NOLINT
+                },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 
@@ -171,11 +177,12 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     SECTION("without return values") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
-        const auto method = create_functional_method<void(std::string)>(
-            method_name,
-            [&received_request_param1](
-                std::string_view str) { received_request_param1 = str; },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<void(std::string)>(
+                method_name,
+                [&received_request_param1](
+                    std::string_view str) { received_request_param1 = str; },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 
@@ -208,13 +215,14 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     SECTION("without a return type and with exceptions in std::runtime_error") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
-        const auto method = create_functional_method<void(std::string)>(
-            method_name,
-            [&received_request_param1](std::string_view str) -> void {
-                received_request_param1 = str;
-                throw std::runtime_error("Test message.");
-            },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<void(std::string)>(
+                method_name,
+                [&received_request_param1](std::string_view str) -> void {
+                    received_request_param1 = str;
+                    throw std::runtime_error("Test message.");
+                },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 
@@ -249,13 +257,15 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         const auto method_name = MethodNameView("test_method");
         std::string received_request_param1;
         const auto error = std::make_tuple(std::string("Test message."), 12345);
-        const auto method = create_functional_method<void(std::string)>(
-            method_name,
-            [&received_request_param1, &error](std::string_view str) -> void {
-                received_request_param1 = str;
-                throw MethodException(error);  // NOLINT
-            },
-            logger);
+        const std::unique_ptr<IMethod> method =
+            create_functional_method<void(std::string)>(
+                method_name,
+                [&received_request_param1, &error](
+                    std::string_view str) -> void {
+                    received_request_param1 = str;
+                    throw MethodException(error);  // NOLINT
+                },
+                logger);
 
         SECTION("get method name") { CHECK(method->name() == method_name); }
 

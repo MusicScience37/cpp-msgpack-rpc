@@ -31,6 +31,7 @@
 #include "msgpack_rpc/messages/parsed_parameters.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"
+#include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_exception.h"
 
 namespace msgpack_rpc::methods {
@@ -53,7 +54,8 @@ class FunctionalMethod;
  */
 template <typename Function, typename Return, typename... Parameters>
 class FunctionalMethod<Return(Parameters...), Function,
-    std::enable_if_t<!std::is_same_v<Return, void>>> {
+    std::enable_if_t<!std::is_same_v<Return, void>>>
+    final : public IMethod {
 public:
     /*!
      * \brief Constructor.
@@ -75,7 +77,7 @@ public:
      *
      * \return Method name.
      */
-    [[nodiscard]] messages::MethodNameView name() const noexcept {
+    [[nodiscard]] messages::MethodNameView name() const noexcept override {
         return name_;
     }
 
@@ -86,7 +88,7 @@ public:
      * \return Serialized response.
      */
     [[nodiscard]] messages::SerializedMessage call(
-        const messages::ParsedRequest& request) {
+        const messages::ParsedRequest& request) override {
         try {
             return messages::MessageSerializer::serialize_successful_response(
                 request.id(),
@@ -103,7 +105,7 @@ public:
      *
      * \param[in] request Request.
      */
-    void notify(const messages::ParsedRequest& request) {
+    void notify(const messages::ParsedRequest& request) override {
         try {
             std::apply(function_,
                 request.parameters().as<std::decay_t<Parameters>...>());
@@ -159,7 +161,7 @@ private:
  * \tparam Parameters Types of parameters of the method.
  */
 template <typename Function, typename... Parameters>
-class FunctionalMethod<void(Parameters...), Function> {
+class FunctionalMethod<void(Parameters...), Function> final : public IMethod {
 public:
     /*!
      * \brief Constructor.
@@ -181,7 +183,7 @@ public:
      *
      * \return Method name.
      */
-    [[nodiscard]] messages::MethodNameView name() const noexcept {
+    [[nodiscard]] messages::MethodNameView name() const noexcept override {
         return name_;
     }
 
@@ -192,7 +194,7 @@ public:
      * \return Serialized response.
      */
     [[nodiscard]] messages::SerializedMessage call(
-        const messages::ParsedRequest& request) {
+        const messages::ParsedRequest& request) override {
         try {
             std::apply(function_,
                 request.parameters().as<std::decay_t<Parameters>...>());
@@ -216,7 +218,7 @@ public:
      *
      * \param[in] request Request.
      */
-    void notify(const messages::ParsedRequest& request) {
+    void notify(const messages::ParsedRequest& request) override {
         try {
             std::apply(function_,
                 request.parameters().as<std::decay_t<Parameters>...>());
