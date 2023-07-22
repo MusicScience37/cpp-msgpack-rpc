@@ -49,12 +49,12 @@ class FunctionalMethod;
  * \brief Class of methods implemented by function objects.
  *
  * \tparam Function Type of the function implementing the method.
- * \tparam Return Type of return values of the method.
+ * \tparam Result Type of return values of the method.
  * \tparam Parameters Types of parameters of the method.
  */
-template <typename Function, typename Return, typename... Parameters>
-class FunctionalMethod<Return(Parameters...), Function,
-    std::enable_if_t<!std::is_same_v<Return, void>>>
+template <typename Function, typename Result, typename... Parameters>
+class FunctionalMethod<Result(Parameters...), Function,
+    std::enable_if_t<!std::is_same_v<Result, void>>>
     final : public IMethod {
 public:
     /*!
