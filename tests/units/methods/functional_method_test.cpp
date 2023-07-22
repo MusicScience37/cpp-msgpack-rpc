@@ -27,6 +27,7 @@
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/messages/message_id.h"
+#include "msgpack_rpc/messages/method_name.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/methods/i_method.h"
@@ -36,6 +37,7 @@
 
 TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     using msgpack_rpc::messages::MessageID;
+    using msgpack_rpc::messages::MethodName;
     using msgpack_rpc::messages::MethodNameView;
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::methods::create_functional_method;
@@ -50,7 +52,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     // TODO interface without types.
 
     SECTION("with return values") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const std::unique_ptr<IMethod> method =
             create_functional_method<std::string(std::string)>(
@@ -90,7 +92,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     }
 
     SECTION("with a return type but with exceptions in std::runtime_error") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const std::unique_ptr<IMethod> method =
             create_functional_method<std::string(std::string)>(
@@ -131,7 +133,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     }
 
     SECTION("with a return type but with exceptions in MethodException") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const auto error = std::make_tuple(std::string("Test message."), 12345);
         const std::unique_ptr<IMethod> method =
@@ -173,7 +175,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     }
 
     SECTION("without return values") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const std::unique_ptr<IMethod> method =
             create_functional_method<void(std::string)>(
@@ -210,7 +212,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     }
 
     SECTION("without a return type and with exceptions in std::runtime_error") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const std::unique_ptr<IMethod> method =
             create_functional_method<void(std::string)>(
@@ -250,7 +252,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     }
 
     SECTION("without a return type and with exceptions in MethodException") {
-        const auto method_name = MethodNameView("test_method");
+        const auto method_name = MethodName("test_method");
         std::string received_request_param1;
         const auto error = std::make_tuple(std::string("Test message."), 12345);
         const std::unique_ptr<IMethod> method =

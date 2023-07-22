@@ -66,9 +66,9 @@ public:
      * \param[in] logger Logger.
      */
     template <typename InputFunction>
-    FunctionalMethod(messages::MethodNameView name, InputFunction&& function,
+    FunctionalMethod(messages::MethodName name, InputFunction&& function,
         std::shared_ptr<logging::Logger> logger)
-        : name_(name),
+        : name_(std::move(name)),
           function_(std::forward<InputFunction>(function)),
           logger_(std::move(logger)) {}
 
@@ -254,11 +254,11 @@ private:
  */
 template <typename Signature, typename Function>
 [[nodiscard]] inline std::unique_ptr<FunctionalMethod<Signature, Function>>
-create_functional_method(messages::MethodNameView name, Function&& function,
+create_functional_method(messages::MethodName name, Function&& function,
     std::shared_ptr<logging::Logger> logger) {
     return std::make_unique<
         FunctionalMethod<Signature, std::decay_t<Function>>>(
-        name, std::forward<Function>(function), std::move(logger));
+        std::move(name), std::forward<Function>(function), std::move(logger));
 }
 
 }  // namespace msgpack_rpc::methods
