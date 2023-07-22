@@ -103,12 +103,12 @@ public:
     /*!
      * \brief Notify this method.
      *
-     * \param[in] request Request.
+     * \param[in] notification Notification.
      */
-    void notify(const messages::ParsedRequest& request) override {
+    void notify(const messages::ParsedNotification& notification) override {
         try {
             std::apply(function_,
-                request.parameters().as<std::decay_t<Parameters>...>());
+                notification.parameters().as<std::decay_t<Parameters>...>());
         } catch (const MethodException& /*exception*/) {
             MSGPACK_RPC_DEBUG(logger_,
                 "Method {} threw an exception with a custom object.", name_);
@@ -216,12 +216,12 @@ public:
     /*!
      * \brief Notify this method.
      *
-     * \param[in] request Request.
+     * \param[in] notification Notification.
      */
-    void notify(const messages::ParsedRequest& request) override {
+    void notify(const messages::ParsedNotification& notification) override {
         try {
             std::apply(function_,
-                request.parameters().as<std::decay_t<Parameters>...>());
+                notification.parameters().as<std::decay_t<Parameters>...>());
         } catch (const MethodException& /*exception*/) {
             MSGPACK_RPC_DEBUG(logger_,
                 "Method {} threw an exception with a custom object.", name_);

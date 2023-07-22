@@ -41,6 +41,7 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
     using msgpack_rpc::methods::create_functional_method;
     using msgpack_rpc::methods::IMethod;
     using msgpack_rpc::methods::MethodException;
+    using msgpack_rpc_test::create_parsed_notification;
     using msgpack_rpc_test::create_parsed_request;
     using msgpack_rpc_test::parse_response;
 
@@ -78,12 +79,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }
@@ -120,12 +120,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }
@@ -163,12 +162,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }
@@ -201,12 +199,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }
@@ -242,12 +239,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }
@@ -285,12 +281,11 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
         }
 
         SECTION("notify") {
-            const auto message_id = static_cast<MessageID>(1234);
             const auto param1 = std::string_view("parameter");
-            const auto request =
-                create_parsed_request(method_name, message_id, param1);
+            const auto notification =
+                create_parsed_notification(method_name, param1);
 
-            CHECK_NOTHROW(method->notify(request));
+            CHECK_NOTHROW(method->notify(notification));
 
             CHECK(received_request_param1 == param1);
         }

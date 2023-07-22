@@ -20,6 +20,7 @@
 #pragma once
 
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 
@@ -49,9 +50,9 @@ public:
     /*!
      * \brief Notify this method.
      *
-     * \param[in] request Request.
+     * \param[in] notification Notification.
      */
-    virtual void notify(const messages::ParsedRequest& request) = 0;
+    virtual void notify(const messages::ParsedNotification& notification) = 0;
 
     IMethod(const IMethod&) = delete;
     IMethod(IMethod&&) = delete;

@@ -22,6 +22,7 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc_test/parse_messages.h"
 
@@ -44,6 +45,23 @@ template <typename... Parameters>
     return parse_request(
         msgpack_rpc::messages::MessageSerializer::serialize_request(
             method_name, message_id, parameters...));
+}
+
+/*!
+ * \brief Create an object of a parsed notification.
+ *
+ * \tparam Parameters Types of parameters.
+ * \param[in] method_name Method name.
+ * \param[in] parameters Parameters.
+ * \return Parsed notification.
+ */
+template <typename... Parameters>
+[[nodiscard]] inline msgpack_rpc::messages::ParsedNotification
+create_parsed_notification(msgpack_rpc::messages::MethodNameView method_name,
+    const Parameters&... parameters) {
+    return parse_notification(
+        msgpack_rpc::messages::MessageSerializer::serialize_notification(
+            method_name, parameters...));
 }
 
 }  // namespace msgpack_rpc_test
