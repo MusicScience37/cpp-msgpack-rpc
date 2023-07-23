@@ -31,6 +31,7 @@ Checks: >
   bugprone-*,
     -bugprone-easily-swappable-parameters,
     -bugprone-unchecked-optional-access,
+    -bugprone-exception-escape,
   concurrency-*,
   boost-*,
   openmp-*,
@@ -51,6 +52,7 @@ Checks: >
 # - bugprone-unchecked-optional-access generates false positives.
 # - cppcoreguidelines-macro-usage generates false positives.
 # - cppcoreguidelines-pro-bounds-array-to-pointer-decay and hicpp-no-array-decay force use of an external library.
+# - bugprone-exception-escape is not generating meaningful warnings.
 
 CheckOptions:
   # Naming Conventions
