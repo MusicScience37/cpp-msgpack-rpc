@@ -37,6 +37,7 @@ TEST_CASE("msgpack_rpc::methods::MethodProcessor") {
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::methods::create_functional_method;
     using msgpack_rpc::methods::create_method_processor;
+    using msgpack_rpc_test::create_parsed_notification;
     using msgpack_rpc_test::create_parsed_request;
     using msgpack_rpc_test::parse_response;
 
@@ -91,6 +92,27 @@ TEST_CASE("msgpack_rpc::methods::MethodProcessor") {
                 const auto parsed_response = parse_response(result);
                 CHECK(parsed_response.id() == message_id);
                 CHECK(parsed_response.result().is_error());
+            }
+
+            SECTION("and notify to a method") {
+                const auto param1 = std::string_view("parameter");
+                const auto notification =
+                    create_parsed_notification(method_name1, param1);
+
+                CHECK_NOTHROW(processor->notify(notification));
+
+                CHECK(received_param1 == param1);
+            }
+
+            SECTION("and notify to a method with non-existing name") {
+                const auto method_name = MethodName("non-existing method");
+                const auto param1 = std::string_view("parameter");
+                const auto notification =
+                    create_parsed_notification(method_name, param1);
+
+                CHECK_NOTHROW(processor->notify(notification));
+
+                CHECK(received_param1 == "");  // NOLINT
             }
         }
 

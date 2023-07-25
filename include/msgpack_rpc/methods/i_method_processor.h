@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/methods/i_method.h"
@@ -47,6 +48,13 @@ public:
      */
     [[nodiscard]] virtual messages::SerializedMessage call(
         const messages::ParsedRequest& request) = 0;
+
+    /*!
+     * \brief Notify a method.
+     *
+     * \param[in] notification Notification.
+     */
+    virtual void notify(const messages::ParsedNotification& notification) = 0;
 
     IMethodProcessor(const IMethodProcessor&) = delete;
     IMethodProcessor(IMethodProcessor&&) = delete;

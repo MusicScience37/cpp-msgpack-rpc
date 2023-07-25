@@ -61,11 +61,25 @@ public:
         const messages::ParsedRequest& request) override {
         const auto iter = methods_.find(request.method_name());
         if (iter == methods_.end()) {
+            const auto message =
+                fmt::format("Method {} not found.", request.method_name());
+            MSGPACK_RPC_DEBUG(logger_, message);
             return messages::MessageSerializer::serialize_error_response(
-                request.id(),
-                fmt::format("Method {} not found.", request.method_name()));
+                request.id(), message);
         }
         return iter->second->call(request);
+    }
+
+    //! \copydoc msgpack_rpc::methods::IMethodProcessor::notify
+    void notify(const messages::ParsedNotification& notification) override {
+        const auto iter = methods_.find(notification.method_name());
+        if (iter == methods_.end()) {
+            const auto message =
+                fmt::format("Method {} not found.", notification.method_name());
+            MSGPACK_RPC_DEBUG(logger_, message);
+            return;
+        }
+        iter->second->notify(notification);
     }
 
 private:
