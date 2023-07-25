@@ -49,8 +49,6 @@ TEST_CASE("msgpack_rpc::methods::FunctionalMethod") {
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
-    // TODO interface without types.
-
     SECTION("with return values") {
         const auto method_name = MethodName("test_method");
         std::string received_request_param1;

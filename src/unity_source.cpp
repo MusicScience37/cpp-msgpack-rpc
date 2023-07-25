@@ -9,5 +9,6 @@
 #include "msgpack_rpc/logging/log_sinks.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/messages/message_parser.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/messages/message_type.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/methods/method_processor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/backends.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_backend.cpp"  // NOLINT(bugprone-suspicious-include)

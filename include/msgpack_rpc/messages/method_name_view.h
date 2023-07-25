@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <functional>
 #include <string>
 #include <string_view>
 
@@ -174,3 +175,29 @@ public:
 };
 
 }  // namespace fmt
+
+namespace std {
+
+/*!
+ * \brief Specialization of std::hash for msgpack_rpc::messages::MethodNameView.
+ */
+template <>
+struct hash<msgpack_rpc::messages::MethodNameView> {
+public:
+    /*!
+     * \brief Calculate the hash number of a value.
+     *
+     * \param[in] value Value.
+     * \return Hash number.
+     */
+    std::size_t operator()(
+        const msgpack_rpc::messages::MethodNameView& value) const {
+        return string_view_hash_(value.name());
+    }
+
+private:
+    //! Hash of string_view.
+    std::hash<std::string_view> string_view_hash_{};
+};
+
+}  // namespace std
