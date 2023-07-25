@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -29,6 +30,7 @@
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/i_method_processor.h"
+#include "msgpack_rpc/methods/method_dict.h"
 
 namespace msgpack_rpc::methods {
 
@@ -47,39 +49,28 @@ public:
 
     //! \copydoc msgpack_rpc::methods::IMethodProcessor::append
     void append(std::unique_ptr<IMethod> method) override {
-        const messages::MethodNameView method_name = method->name();
-        const auto result =
-            methods_.try_emplace(method_name, std::move(method));
-        if (!result.second) {
-            throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
-                fmt::format("Duplicate method name {}.", method_name));
-        }
+        methods_.append(std::move(method));
     }
 
     //! \copydoc msgpack_rpc::methods::IMethodProcessor::call
     [[nodiscard]] messages::SerializedMessage call(
         const messages::ParsedRequest& request) override {
-        const auto iter = methods_.find(request.method_name());
-        if (iter == methods_.end()) {
-            const auto message =
-                fmt::format("Method {} not found.", request.method_name());
-            MSGPACK_RPC_DEBUG(logger_, message);
+        try {
+            return methods_.get(request.method_name())->call(request);
+        } catch (const MsgpackRPCException& e) {
+            MSGPACK_RPC_DEBUG(logger_, e.status().message());
             return messages::MessageSerializer::serialize_error_response(
-                request.id(), message);
+                request.id(), e.status().message());
         }
-        return iter->second->call(request);
     }
 
     //! \copydoc msgpack_rpc::methods::IMethodProcessor::notify
     void notify(const messages::ParsedNotification& notification) override {
-        const auto iter = methods_.find(notification.method_name());
-        if (iter == methods_.end()) {
-            const auto message =
-                fmt::format("Method {} not found.", notification.method_name());
-            MSGPACK_RPC_DEBUG(logger_, message);
-            return;
+        try {
+            methods_.get(notification.method_name())->notify(notification);
+        } catch (const MsgpackRPCException& e) {
+            MSGPACK_RPC_DEBUG(logger_, e.status().message());
         }
-        iter->second->notify(notification);
     }
 
 private:
@@ -87,8 +78,7 @@ private:
     std::shared_ptr<logging::Logger> logger_;
 
     //! Dictionary of methods.
-    std::unordered_map<messages::MethodNameView, std::unique_ptr<IMethod>>
-        methods_{};
+    MethodDict methods_{};
 };
 
 }  // namespace msgpack_rpc::methods
