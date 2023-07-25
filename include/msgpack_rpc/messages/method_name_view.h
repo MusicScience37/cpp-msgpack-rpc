@@ -19,8 +19,11 @@
  */
 #pragma once
 
+#include <functional>
 #include <string>
 #include <string_view>
+
+#include <fmt/format.h>
 
 #include "msgpack_rpc/messages/method_name.h"
 
@@ -119,4 +122,82 @@ private:
     std::string_view name_;
 };
 
+/*!
+ * \brief Compare two method names.
+ *
+ * \param[in] left Left-hand-side object.
+ * \param[in] right Right-hand-side object.
+ * \retval true Two names are equal.
+ * \retval false Two names are different.
+ */
+[[nodiscard]] inline bool operator==(
+    MethodNameView left, MethodNameView right) noexcept {
+    return left.name() == right.name();
+}
+
+/*!
+ * \brief Compare two method names.
+ *
+ * \param[in] left Left-hand-side object.
+ * \param[in] right Right-hand-side object.
+ * \retval true Two names are different.
+ * \retval false Two names are equal.
+ */
+[[nodiscard]] inline bool operator!=(
+    MethodNameView left, MethodNameView right) noexcept {
+    return left.name() != right.name();
+}
+
 }  // namespace msgpack_rpc::messages
+
+namespace fmt {
+
+/*!
+ * \brief Specialization of fmt::formatter for
+ * msgpack_rpc::messages::MethodNameView.
+ */
+template <>
+class formatter<msgpack_rpc::messages::MethodNameView>
+    : public formatter<std::string_view> {
+public:
+    /*!
+     * \brief Format a value.
+     *
+     * \param[in] val Value.
+     * \param[in] context Context.
+     * \return Iterator of the buffer.
+     */
+    format_context::iterator format(
+        const msgpack_rpc::messages::MethodNameView& val,
+        format_context& context) const {
+        return formatter<std::string_view>::format(val.name(), context);
+    }
+};
+
+}  // namespace fmt
+
+namespace std {
+
+/*!
+ * \brief Specialization of std::hash for msgpack_rpc::messages::MethodNameView.
+ */
+template <>
+struct hash<msgpack_rpc::messages::MethodNameView> {
+public:
+    /*!
+     * \brief Calculate the hash number of a value.
+     *
+     * \param[in] value Value.
+     * \return Hash number.
+     */
+    std::size_t operator()(
+        const msgpack_rpc::messages::MethodNameView& value) const {
+        return string_view_hash_(value.name());
+    }
+
+private:
+    //! Hash of string_view.
+    std::hash<std::string_view> string_view_hash_{};
+};
+
+}  // namespace std

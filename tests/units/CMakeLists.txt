@@ -5,5 +5,9 @@ target_add_ausan(${PROJECT_NAME}_test_units)
 
 add_executable(${PROJECT_NAME}_test_units_unity EXCLUDE_FROM_ALL
                unity_source.cpp)
-target_link_libraries(${PROJECT_NAME}_test_units_unity
-                      PRIVATE Catch2::Catch2WithMain ${PROJECT_NAME})
+target_link_libraries(
+    ${PROJECT_NAME}_test_units_unity
+    PRIVATE Catch2::Catch2WithMain trompeloeil::trompeloeil
+            ApprovalTests::ApprovalTests ${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME}_test_units_unity
+                           PRIVATE ${${UPPER_PROJECT_NAME}_TEST_INCLUDE_DIR})

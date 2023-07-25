@@ -67,4 +67,20 @@ TEST_CASE("msgpack_rpc::messages::MethodNameView") {
 
         CHECK(method_name.name() == str);
     }
+
+    SECTION("compare two names") {
+        const auto name_view1 = MethodNameView("abc");
+        const auto name_view2 = MethodNameView("abd");
+        const auto name1 = MethodName("abc");
+        const auto name2 = MethodName("abd");
+
+        CHECK(name_view1 == name_view1);
+        CHECK(name_view1 != name_view2);
+        CHECK(name_view1 == name1);
+        CHECK(name_view1 != name2);
+        CHECK(name1 == name_view1);
+        CHECK(name1 != name_view2);
+        CHECK(name1 == name1);
+        CHECK(name1 != name2);
+    }
 }

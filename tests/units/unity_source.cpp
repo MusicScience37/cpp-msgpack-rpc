@@ -18,4 +18,7 @@
 #include "messages/method_name_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/method_name_view_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/parsed_parameters_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "methods/functional_method_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "methods/method_exception_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "methods/method_processor_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "test_main.cpp"  // NOLINT(bugprone-suspicious-include)
