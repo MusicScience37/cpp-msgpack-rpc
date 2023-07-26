@@ -44,7 +44,7 @@ namespace msgpack_rpc::executors {
 /*!
  * \brief Class of general-purpose executors.
  */
-class GeneralExecutor final : public IExecutor {
+class GeneralExecutor final : public IAsyncExecutor {
 public:
     /*!
      * \brief Constructor.
@@ -304,7 +304,7 @@ private:
     std::shared_ptr<logging::Logger> logger_;
 };
 
-std::shared_ptr<IExecutor> create_executor(
+std::shared_ptr<IAsyncExecutor> create_executor(
     std::shared_ptr<logging::Logger> logger,
     const config::ExecutorConfig& config) {
     return std::make_shared<GeneralExecutor>(std::move(logger), config);

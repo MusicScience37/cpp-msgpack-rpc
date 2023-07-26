@@ -32,24 +32,6 @@ namespace msgpack_rpc::executors {
 class IExecutor {
 public:
     /*!
-     * \brief Start internal event loops to process asynchronous tasks.
-     *
-     * \note Internal processing stops
-     * - when a task throws an exception, which can be retrieved from
-     * last_exception function,
-     * - when stop function is called.
-     */
-    virtual void start() = 0;
-
-    /*!
-     * \brief Stops operation.
-     *
-     * \warning This function stops internal threads. Do not call this function
-     * from callbacks called in this executor.
-     */
-    virtual void stop() = 0;
-
-    /*!
      * \brief Run internal event loops to process asynchronous tasks.
      *
      * \note This function stops
@@ -88,13 +70,6 @@ public:
      * calls and different operation types.
      */
     virtual AsioContextType& context(OperationType type) noexcept = 0;
-
-    /*!
-     * \brief Get the last exception thrown in asynchronous tasks.
-     *
-     * \return Pointer of the exception.
-     */
-    [[nodiscard]] virtual std::exception_ptr last_exception() = 0;
 
     IExecutor(const IExecutor&) = delete;
     IExecutor(IExecutor&&) = delete;

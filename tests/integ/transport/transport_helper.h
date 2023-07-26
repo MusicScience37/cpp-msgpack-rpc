@@ -37,10 +37,6 @@ public:
         std::shared_ptr<msgpack_rpc::executors::IExecutor> executor)
         : executor_(std::move(executor)) {}
 
-    void start() override { executor_->start(); }
-
-    void stop() override { executor_->stop(); }
-
     void run() override { executor_->run(); }
 
     void run_until_interruption() override {
@@ -53,10 +49,6 @@ public:
         msgpack_rpc::executors::OperationType type) noexcept override {
         on_context(type);
         return executor_->context(type);
-    }
-
-    std::exception_ptr last_exception() override {
-        return executor_->last_exception();
     }
 
     MAKE_MOCK1(on_context, void(msgpack_rpc::executors::OperationType));

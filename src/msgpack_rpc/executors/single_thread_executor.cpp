@@ -40,18 +40,6 @@ public:
     explicit SingleThreadExecutor(std::shared_ptr<logging::Logger> logger)
         : logger_(std::move(logger)) {}
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::start
-    void start() override {
-        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
-            "Single-thread executor doesn't support start function.");
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::stop
-    void stop() override {
-        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
-            "Single-thread executor doesn't support stop function.");
-    }
-
     //! \copydoc msgpack_rpc::executors::IExecutor::run
     void run() override {
         try {
@@ -89,12 +77,6 @@ public:
     AsioContextType& context(OperationType type) noexcept override {
         (void)type;
         return context_;
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::last_exception
-    [[nodiscard]] std::exception_ptr last_exception() override {
-        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
-            "Single-thread executor doesn't support last_exception function.");
     }
 
 private:
