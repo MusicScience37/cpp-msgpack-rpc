@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <exception>
+
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
@@ -29,6 +31,24 @@ namespace msgpack_rpc::executors {
  */
 class IExecutor {
 public:
+    /*!
+     * \brief Start internal event loops to process asynchronous tasks.
+     *
+     * \note Internal processing stops
+     * - when a task throws an exception, which can be retrieved from
+     * last_exception function,
+     * - when stop function is called.
+     */
+    virtual void start() = 0;
+
+    /*!
+     * \brief Stops operation.
+     *
+     * \warning This function stops internal threads. Do not call this function
+     * from callbacks called in this executor.
+     */
+    virtual void stop() = 0;
+
     /*!
      * \brief Run internal event loops to process asynchronous tasks.
      *
@@ -53,9 +73,10 @@ public:
     /*!
      * \brief Stops operation.
      *
-     * \note This function returns without waiting stop of operations.
+     * \note This function returns without waiting stop of operations. So this
+     * function can be called from callback functions called in this executor.
      */
-    virtual void stop() = 0;
+    virtual void interrupt() = 0;
 
     /*!
      * \brief Get the context in asio library.
@@ -67,6 +88,13 @@ public:
      * calls and different operation types.
      */
     virtual AsioContextType& context(OperationType type) noexcept = 0;
+
+    /*!
+     * \brief Get the last exception thrown in asynchronous tasks.
+     *
+     * \return Pointer of the exception.
+     */
+    [[nodiscard]] virtual std::exception_ptr last_exception() = 0;
 
     IExecutor(const IExecutor&) = delete;
     IExecutor(IExecutor&&) = delete;

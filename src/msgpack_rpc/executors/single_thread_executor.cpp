@@ -22,6 +22,8 @@
 
 #include <asio/signal_set.hpp>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_executor.h"
@@ -37,6 +39,18 @@ public:
     //! Constructor.
     explicit SingleThreadExecutor(std::shared_ptr<logging::Logger> logger)
         : logger_(std::move(logger)) {}
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::start
+    void start() override {
+        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+            "Single-thread executor doesn't support start function.");
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::stop
+    void stop() override {
+        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+            "Single-thread executor doesn't support stop function.");
+    }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::run
     void run() override {
@@ -65,8 +79,8 @@ public:
         run();
     }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::stop
-    void stop() override {
+    //! \copydoc msgpack_rpc::executors::IExecutor::interrupt
+    void interrupt() override {
         context_.stop();
         MSGPACK_RPC_TRACE(logger_, "Stopping an executor.");
     }
@@ -75,6 +89,12 @@ public:
     AsioContextType& context(OperationType type) noexcept override {
         (void)type;
         return context_;
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::last_exception
+    [[nodiscard]] std::exception_ptr last_exception() override {
+        throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+            "Single-thread executor doesn't support last_exception function.");
     }
 
 private:

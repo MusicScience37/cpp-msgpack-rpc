@@ -60,24 +60,46 @@ public:
           main_context_work_guard_(asio::make_work_guard(main_context_)),
           logger_(std::move(logger)) {}
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::run
-    void run() override {
+    GeneralExecutor(const GeneralExecutor&) = delete;
+    GeneralExecutor(GeneralExecutor&&) = delete;
+    GeneralExecutor& operator=(const GeneralExecutor&) = delete;
+    GeneralExecutor& operator=(GeneralExecutor&&) = delete;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~GeneralExecutor() override { stop(); }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::start
+    void start() override {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "An executor must not be run multiple times.");
         }
 
+        MSGPACK_RPC_TRACE(logger_, "Start an executor.");
+        start_threads();
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::stop
+    void stop() override {
+        stop_threads();
+        MSGPACK_RPC_TRACE(logger_, "Executor run stopped.");
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::run
+    void run() override {
+        start();
         try {
-            MSGPACK_RPC_TRACE(logger_, "Start an executor.");
-            start_threads();
             run_in_thread(main_context_);
-            stop_threads();
-            MSGPACK_RPC_TRACE(logger_, "Executor run stopped normally.");
+            throw_last_exception_if_exists();
         } catch (const std::exception& e) {
             MSGPACK_RPC_CRITICAL(
                 logger_, "Executor stops due to an exception: {}", e.what());
+            stop();
             throw;
         }
+        stop();
     }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::run_until_interruption
@@ -94,8 +116,8 @@ public:
         run();
     }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::stop
-    void stop() override {
+    //! \copydoc msgpack_rpc::executors::IExecutor::interrupt
+    void interrupt() override {
         interrupt_threads();
         MSGPACK_RPC_TRACE(logger_, "Stopping an executor.");
     }
@@ -115,6 +137,12 @@ public:
                     .context;
         }
         return main_context_;
+    }
+
+    //! \copydoc msgpack_rpc::executors::IExecutor::last_exception
+    [[nodiscard]] std::exception_ptr last_exception() override {
+        std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
+        return exception_in_thread_;
     }
 
 private:
@@ -155,11 +183,6 @@ private:
             if (context_thread_pair.thread.joinable()) {
                 context_thread_pair.thread.join();
             }
-        }
-
-        std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
-        if (exception_in_thread_ != nullptr) {
-            std::rethrow_exception(exception_in_thread_);
         }
     }
 
@@ -220,6 +243,16 @@ private:
         std::atomic<std::size_t>& index, std::size_t size) {
         // TODO Should I consider overflow?
         return index.fetch_add(1, std::memory_order_relaxed) % size;
+    }
+
+    /*!
+     * \brief Throw the last exception in threads if exists.
+     */
+    void throw_last_exception_if_exists() {
+        const auto exception = last_exception();
+        if (exception) {
+            std::rethrow_exception(exception);
+        }
     }
 
     //! Pair of context and its thread.

@@ -74,7 +74,7 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
         CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
             [&is_called1, &executor] {
                 is_called1.store(true);
-                executor->stop();
+                executor->interrupt();
             }));
         std::atomic<bool> is_called2{false};
         CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),

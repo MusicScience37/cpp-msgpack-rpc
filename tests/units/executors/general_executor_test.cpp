@@ -18,7 +18,11 @@
  * \brief Test of GeneralExecutor class.
  */
 #include <atomic>
+#include <chrono>
+#include <exception>
+#include <future>
 #include <stdexcept>
+#include <thread>
 
 #include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -43,15 +47,15 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
 
     SECTION("run with a task") {
         std::atomic<bool> is_called{false};
-        const OperationType operation_type = GENERATE(OperationType::TRANSPORT,
-            OperationType::CALLBACK, OperationType::CALLBACK);
+        const OperationType operation_type =
+            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
         CHECK_NOTHROW(asio::post(
             executor->context(operation_type), [&is_called, &executor] {
                 is_called.store(true);
-                executor->stop();
+                executor->interrupt();
             }));
 
         CHECK_NOTHROW(executor->run());
@@ -76,5 +80,50 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         CHECK_THROWS_WITH(executor->run(), message);
 
         CHECK(is_called.load());
+    }
+
+    SECTION("start and stop") {
+        CHECK_NOTHROW(executor->start());
+
+        std::promise<void> called_promise;
+        auto future = called_promise.get_future();
+        const OperationType operation_type =
+            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
+        INFO("Operation type: " << static_cast<int>(operation_type));
+        MSGPACK_RPC_DEBUG(
+            logger, "Operation type: {}", static_cast<int>(operation_type));
+        CHECK_NOTHROW(asio::post(executor->context(operation_type),
+            [&called_promise] { called_promise.set_value(); }));
+
+        CHECK(future.wait_for(std::chrono::seconds(1)) ==
+            std::future_status::ready);
+
+        CHECK_NOTHROW(executor->stop());
+    }
+
+    SECTION("get the last exception in threads") {
+        CHECK_NOTHROW(executor->start());
+
+        const std::string message = "Test exception message.";
+        const OperationType operation_type =
+            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
+        INFO("Operation type: " << static_cast<int>(operation_type));
+        MSGPACK_RPC_DEBUG(
+            logger, "Operation type: {}", static_cast<int>(operation_type));
+        CHECK_NOTHROW(asio::post(executor->context(operation_type),
+            [&message] { throw std::runtime_error(message); }));
+
+        std::exception_ptr last_exception;
+        const auto deadline =
+            std::chrono::steady_clock::now() + std::chrono::seconds(1);
+        while (!last_exception && std::chrono::steady_clock::now() < deadline) {
+            CHECK_NOTHROW(last_exception = executor->last_exception());
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(10));  // NOLINT
+        }
+        REQUIRE(last_exception);
+        CHECK_THROWS_WITH(std::rethrow_exception(last_exception), message);
+
+        CHECK_NOTHROW(executor->stop());
     }
 }
