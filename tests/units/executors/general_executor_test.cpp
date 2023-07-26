@@ -44,7 +44,7 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     SECTION("run with a task") {
         std::atomic<bool> is_called{false};
         const OperationType operation_type = GENERATE(OperationType::TRANSPORT,
-            OperationType::CALLBACK, OperationType::MAIN);
+            OperationType::CALLBACK, OperationType::CALLBACK);
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
@@ -62,8 +62,8 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     SECTION("run with a task throwing an exception") {
         std::atomic<bool> is_called{false};
         const std::string message = "Test exception message.";
-        const OperationType operation_type = GENERATE(OperationType::TRANSPORT,
-            OperationType::CALLBACK, OperationType::MAIN);
+        const OperationType operation_type =
+            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));

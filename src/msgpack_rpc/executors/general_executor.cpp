@@ -113,8 +113,6 @@ public:
                 [get_context_index(callback_context_index_,
                      callbacks_context_thread_pairs_.size())]
                     .context;
-        case OperationType::MAIN:
-            return main_context_;
         }
         return main_context_;
     }

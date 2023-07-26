@@ -29,10 +29,7 @@ enum class OperationType {
     TRANSPORT,
 
     //! Execution of callbacks.
-    CALLBACK,
-
-    //! Operation in the main thread.
-    MAIN
+    CALLBACK
 };
 
 }  // namespace msgpack_rpc::executors
