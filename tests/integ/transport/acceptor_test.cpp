@@ -46,7 +46,8 @@ SCENARIO("Start and stop acceptor") {
     const Address acceptor_specified_address = TCPAddress("127.0.0.1", 0);
 
     const auto post = [&executor](std::function<void()> function) {
-        asio::post(executor->context(OperationType::MAIN), std::move(function));
+        asio::post(
+            executor->context(OperationType::CALLBACK), std::move(function));
     };
 
     GIVEN("An acceptor") {

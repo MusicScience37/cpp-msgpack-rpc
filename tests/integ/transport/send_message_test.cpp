@@ -77,9 +77,10 @@ SCENARIO("Send messages") {
         executor, MessageParserConfig(), logger);
     const Address acceptor_specified_address = TCPAddress("127.0.0.1", 0);
 
-    ALLOW_CALL(*executor, on_context(OperationType::MAIN));
+    ALLOW_CALL(*executor, on_context(OperationType::CALLBACK));
     const auto post = [&executor](std::function<void()> function) {
-        asio::post(executor->context(OperationType::MAIN), std::move(function));
+        asio::post(
+            executor->context(OperationType::CALLBACK), std::move(function));
     };
 
     GIVEN("A connection is established") {

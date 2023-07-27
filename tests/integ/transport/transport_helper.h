@@ -43,7 +43,7 @@ public:
         executor_->run_until_interruption();
     }
 
-    void stop() override { executor_->stop(); }
+    void interrupt() override { executor_->interrupt(); }
 
     msgpack_rpc::executors::AsioContextType& context(
         msgpack_rpc::executors::OperationType type) noexcept override {
