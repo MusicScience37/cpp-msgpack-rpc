@@ -23,4 +23,5 @@ set(SOURCE_FILES
     methods/method_exception_test.cpp
     methods/method_processor_test.cpp
     test_main.cpp
+    transport/connection_wrapper_test.cpp
 )
