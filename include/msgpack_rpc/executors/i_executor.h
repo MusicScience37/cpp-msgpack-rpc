@@ -37,7 +37,7 @@ public:
      * \note This function stops
      * - when a task throws an exception, which will be thrown to caller of this
      * function,
-     * - when stop function is called.
+     * - when interrupt function is called.
      */
     virtual void run() = 0;
 
@@ -48,7 +48,7 @@ public:
      * - when SIGTERM or SIGINT is received,
      * - when a task throws an exception, which will be thrown to caller of this
      * function,
-     * - when stop function is called.
+     * - when interrupt function is called.
      */
     virtual void run_until_interruption() = 0;
 
