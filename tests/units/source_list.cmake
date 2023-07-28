@@ -22,6 +22,8 @@ set(SOURCE_FILES
     methods/functional_method_test.cpp
     methods/method_exception_test.cpp
     methods/method_processor_test.cpp
+    servers/server_builder_impl_test.cpp
+    servers/server_builder_test.cpp
     test_main.cpp
     transport/connection_wrapper_test.cpp
 )
