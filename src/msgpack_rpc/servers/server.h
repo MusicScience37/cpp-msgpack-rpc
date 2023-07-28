@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <atomic>
+#include <exception>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -31,7 +33,9 @@
 #include <asio/post.hpp>
 #include <fmt/format.h>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -246,7 +250,17 @@ public:
           logger_(std::move(logger)) {}
 
     //! Destructor.
-    ~Server() override = default;
+    ~Server() override {
+        try {
+            stop();
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_CRITICAL(logger_,
+                "An exception was thrown when destructing a server but "
+                "ignored: "
+                "{}",
+                e.what());
+        }
+    }
 
     Server(const Server&) = delete;
     Server(Server&&) = delete;
@@ -255,6 +269,31 @@ public:
 
     //! \copydoc msgpack_rpc::servers::IServer::start
     void start() override {
+        if (is_started_.exchange(true)) {
+            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+                "This server has already been started.");
+        }
+        start_acceptors();
+        executor_->start();
+    }
+
+    //! \copydoc msgpack_rpc::servers::IServer::stop
+    void stop() override {
+        if (!is_started_.load()) {
+            return;
+        }
+        if (is_stopped_.exchange(true)) {
+            return;
+        }
+        stop_acceptors();
+        executor_->stop();
+    }
+
+private:
+    /*!
+     * \brief Start processing of acceptors.
+     */
+    void start_acceptors() {
         for (const auto& acceptor : acceptors_) {
             acceptor->start(
                 [this](
@@ -262,10 +301,17 @@ public:
                     this->on_connection(connection);
                 });
         }
-        executor_->start();
     }
 
-private:
+    /*!
+     * \brief Stop processing of acceptors.
+     */
+    void stop_acceptors() {
+        for (const auto& acceptor : acceptors_) {
+            acceptor->stop();
+        }
+    }
+
     /*!
      * \brief Handle a connection.
      *
@@ -289,6 +335,12 @@ private:
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
+
+    //! Whether this server has been started.
+    std::atomic<bool> is_started_{false};
+
+    //! Whether this server has been stopped.
+    std::atomic<bool> is_stopped_{false};
 };
 
 }  // namespace msgpack_rpc::servers

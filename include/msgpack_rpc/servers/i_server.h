@@ -31,6 +31,11 @@ public:
      */
     virtual void start() = 0;
 
+    /*!
+     * \brief Stop processing of this server.
+     */
+    virtual void stop() = 0;
+
     IServer(const IServer&) = delete;
     IServer(IServer&&) = delete;
     IServer& operator=(const IServer&) = delete;

@@ -85,11 +85,15 @@ TEST_CASE("msgpack_rpc::servers::Server") {
 
     const auto acceptor = std::make_shared<MockAcceptor>();
 
-    const std::shared_ptr<IServer> server = std::make_shared<Server>(
-        std::vector<std::shared_ptr<IAcceptor>>{acceptor}, std::move(processor),
-        executor_wrapper, logger);
-
     SECTION("start") {
+        // Once started, the server will call stop function in the destructor of
+        // the server.
+        REQUIRE_CALL(*acceptor, stop()).TIMES(1);
+
+        const std::shared_ptr<IServer> server = std::make_shared<Server>(
+            std::vector<std::shared_ptr<IAcceptor>>{acceptor},
+            std::move(processor), executor_wrapper, logger);
+
         IAcceptor::ConnectionCallback on_connection{
             [](auto /*connection*/) { FAIL(); }};
         REQUIRE_CALL(*acceptor, start(_))
@@ -191,5 +195,25 @@ TEST_CASE("msgpack_rpc::servers::Server") {
                 }
             }
         }
+
+        SECTION("and try to start one more time") {
+            CHECK_THROWS(server->start());
+        }
+
+        SECTION("stop") {
+            REQUIRE_NOTHROW(server->stop());
+
+            SECTION("and stop one more time") {
+                REQUIRE_NOTHROW(server->stop());
+            }
+        }
+    }
+
+    SECTION("stop without starting") {
+        const std::shared_ptr<IServer> server = std::make_shared<Server>(
+            std::vector<std::shared_ptr<IAcceptor>>{acceptor},
+            std::move(processor), executor_wrapper, logger);
+
+        REQUIRE_NOTHROW(server->stop());
     }
 }
