@@ -29,6 +29,7 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/i_method_processor.h"
 #include "msgpack_rpc/methods/method_processor.h"
@@ -49,7 +50,7 @@ public:
      * \param[in] executor Executor.
      * \param[in] logger Logger.
      */
-    ServerBuilderImpl(std::shared_ptr<executors::IExecutor> executor,
+    ServerBuilderImpl(std::shared_ptr<executors::IAsyncExecutor> executor,
         std::shared_ptr<logging::Logger> logger)
         : executor_(std::move(executor)),
           logger_(std::move(logger)),
@@ -92,7 +93,7 @@ public:
 
 private:
     //! Executor.
-    std::shared_ptr<executors::IExecutor> executor_;
+    std::shared_ptr<executors::IAsyncExecutor> executor_;
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;

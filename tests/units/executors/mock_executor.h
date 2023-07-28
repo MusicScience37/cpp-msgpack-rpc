@@ -15,33 +15,29 @@
  */
 /*!
  * \file
- * \brief Definition of IServer class.
+ * \brief Definition of MockExecutor class.
  */
 #pragma once
 
-namespace msgpack_rpc::servers {
+#include "msgpack_rpc/executors/asio_context_type.h"
+#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/operation_type.h"
+#include "trompeloeil_catch2.h"
 
-/*!
- * \brief Interface of servers.
- */
-class IServer {
+namespace msgpack_rpc_test {
+
+class MockExecutor final : public msgpack_rpc::executors::IExecutor {
 public:
-    /*!
-     * \brief Start processing of this server.
-     */
-    virtual void start() = 0;
+    MAKE_MOCK0(run, void(), override);
 
-    IServer(const IServer&) = delete;
-    IServer(IServer&&) = delete;
-    IServer& operator=(const IServer&) = delete;
-    IServer& operator=(IServer&&) = delete;
+    MAKE_MOCK0(run_until_interruption, void(), override);
 
-    //! Destructor.
-    virtual ~IServer() noexcept = default;
+    MAKE_MOCK0(interrupt, void(), override);
 
-protected:
-    //! Constructor.
-    IServer() noexcept = default;
+    MAKE_MOCK1(context,
+        msgpack_rpc::executors::AsioContextType&(
+            msgpack_rpc::executors::OperationType),
+        noexcept override);
 };
 
-}  // namespace msgpack_rpc::servers
+}  // namespace msgpack_rpc_test

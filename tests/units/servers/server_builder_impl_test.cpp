@@ -42,8 +42,8 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
-    const auto executor =
-        msgpack_rpc::executors::create_single_thread_executor(logger);
+    const auto executor = msgpack_rpc::executors::wrap_executor(
+        msgpack_rpc::executors::create_single_thread_executor(logger));
 
     const auto backend = std::make_shared<MockBackend>();
     const auto scheme = std::string_view("tcp");

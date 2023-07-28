@@ -22,7 +22,7 @@
 #include <memory>
 
 #include "msgpack_rpc/config/message_parser_config.h"
-#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/i_method.h"
@@ -86,7 +86,8 @@ protected:
  * \return IServerBuilderImpl object.
  */
 [[nodiscard]] MSGPACK_RPC_EXPORT std::unique_ptr<IServerBuilderImpl>
-create_empty_server_builder_impl(std::shared_ptr<executors::IExecutor> executor,
+create_empty_server_builder_impl(
+    std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger);
 
 }  // namespace msgpack_rpc::servers::impl

@@ -26,7 +26,7 @@
 namespace msgpack_rpc::servers::impl {
 
 std::unique_ptr<IServerBuilderImpl> create_empty_server_builder_impl(
-    std::shared_ptr<executors::IExecutor> executor,
+    std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger) {
     return std::make_unique<ServerBuilderImpl>(
         std::move(executor), std::move(logger));

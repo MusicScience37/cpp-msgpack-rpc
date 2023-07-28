@@ -10,6 +10,7 @@ set(SOURCE_FILES
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
+    executors/wrapping_executor_test.cpp
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
@@ -24,6 +25,7 @@ set(SOURCE_FILES
     methods/method_processor_test.cpp
     servers/server_builder_impl_test.cpp
     servers/server_builder_test.cpp
+    servers/server_test.cpp
     test_main.cpp
     transport/connection_wrapper_test.cpp
 )
