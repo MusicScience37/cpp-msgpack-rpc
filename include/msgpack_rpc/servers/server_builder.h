@@ -24,8 +24,8 @@
 #include <string_view>
 #include <utility>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 
 namespace msgpack_rpc::servers {
@@ -44,26 +44,26 @@ public:
         : impl_(std::move(impl)) {}
 
     /*!
-     * \brief Add an address to listen to.
+     * \brief Add a URI to listen to.
      *
-     * \param[in] address Address.
+     * \param[in] uri URI.
      * \return This.
      */
-    ServerBuilder& listen_to(addresses::Address address) {
-        impl_->listen_to(std::move(address));
+    ServerBuilder& listen_to(addresses::URI uri) {
+        impl_->listen_to(std::move(uri));
         return *this;
     }
 
     /*!
      * \brief Add a TCP address to listen to.
      *
-     * \param[in] ip_address IP address.
+     * \param[in] host Host name.
      * \param[in] port_number Port number.
      * \return This.
      */
     ServerBuilder& listen_to_tcp(
-        std::string_view ip_address, std::uint16_t port_number) {
-        listen_to(addresses::TCPAddress(ip_address, port_number));
+        std::string_view host, std::uint16_t port_number) {
+        listen_to(addresses::URI(addresses::TCP_SCHEME, host, port_number));
         return *this;
     }
 

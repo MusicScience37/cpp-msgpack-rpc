@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
@@ -64,8 +65,8 @@ public:
     }
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::listen_to
-    void listen_to(addresses::Address address) override {
-        addresses_.push_back(std::move(address));
+    void listen_to(addresses::URI uri) override {
+        uris_.push_back(std::move(uri));
     }
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::add_method
@@ -76,16 +77,19 @@ public:
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::build
     [[nodiscard]] std::unique_ptr<IServer> build() override {
         std::vector<std::shared_ptr<transport::IAcceptor>> acceptors;
-        for (const auto& address : addresses_) {
-            // TODO resolve from URIs.
-            const auto backend_iter = backends_.find(address.to_uri().scheme());
+        for (const auto& uri : uris_) {
+            const auto backend_iter = backends_.find(uri.scheme());
             if (backend_iter == backends_.end()) {
                 throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
-                    fmt::format(
-                        "Invalid scheme: {}.", address.to_uri().scheme()));
+                    fmt::format("Invalid scheme: {}.", uri.scheme()));
             }
-            auto acceptor = backend_iter->second->create_acceptor(address);
-            acceptors.push_back(std::move(acceptor));
+
+            const auto resolver = backend_iter->second->create_resolver();
+            const auto addresses = resolver->resolve(uri);
+            for (const auto& address : addresses) {
+                auto acceptor = backend_iter->second->create_acceptor(address);
+                acceptors.push_back(std::move(acceptor));
+            }
         }
         return std::make_unique<Server>(
             std::move(acceptors), std::move(processor_), executor_, logger_);
@@ -102,8 +106,8 @@ private:
     std::unordered_map<std::string_view, std::shared_ptr<transport::IBackend>>
         backends_{};
 
-    //! Addresses to listen to.
-    std::vector<addresses::Address> addresses_{};
+    //! URIs to listen to.
+    std::vector<addresses::URI> uris_{};
 
     //! Processor of methods.
     std::unique_ptr<methods::IMethodProcessor> processor_;

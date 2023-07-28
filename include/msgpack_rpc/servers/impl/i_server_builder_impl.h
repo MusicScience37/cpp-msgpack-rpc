@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
@@ -45,11 +46,11 @@ public:
         std::shared_ptr<transport::IBackend> backend) = 0;
 
     /*!
-     * \brief Add an address to listen to.
+     * \brief Add a URI to listen to.
      *
-     * \param[in] address Address.
+     * \param[in] uri URI.
      */
-    virtual void listen_to(addresses::Address address) = 0;
+    virtual void listen_to(addresses::URI uri) = 0;
 
     /*!
      * \brief Add a method.
