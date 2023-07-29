@@ -5,6 +5,8 @@ set(SOURCE_FILES
     msgpack_rpc/common/status_code.cpp
     msgpack_rpc/config/executor_config.cpp
     msgpack_rpc/config/message_parser_config.cpp
+    msgpack_rpc/config/server_config.cpp
+    msgpack_rpc/config/server_endpoint_config.cpp
     msgpack_rpc/executors/general_executor.cpp
     msgpack_rpc/executors/single_thread_executor.cpp
     msgpack_rpc/executors/wrapping_executor.cpp
