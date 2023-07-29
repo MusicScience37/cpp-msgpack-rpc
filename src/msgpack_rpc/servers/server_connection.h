@@ -110,9 +110,10 @@ private:
                                   std::decay_t<decltype(concrete_message)>>) {
                     asio::post(
                         executor->context(executors::OperationType::CALLBACK),
-                        // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
-                        [this, request = std::move(concrete_message)] {
-                            this->on_request(request);
+                        [self = this->shared_from_this(),
+                            // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
+                            request = std::move(concrete_message)] {
+                            self->on_request(request);
                         });
                 } else if constexpr (std::is_same_v<
                                          messages::ParsedNotification,
@@ -120,9 +121,10 @@ private:
                                              decltype(concrete_message)>>) {
                     asio::post(
                         executor->context(executors::OperationType::CALLBACK),
-                        // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
-                        [this, notification = std::move(concrete_message)] {
-                            this->on_notification(notification);
+                        [self = this->shared_from_this(),
+                            // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
+                            notification = std::move(concrete_message)] {
+                            self->on_notification(notification);
                         });
                 } else {
                     this->on_invalid_message();
