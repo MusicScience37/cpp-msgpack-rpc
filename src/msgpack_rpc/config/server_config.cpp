@@ -43,4 +43,18 @@ const std::vector<ServerEndpointConfig>& ServerConfig::endpoints()
     return endpoints_;
 }
 
+MessageParserConfig& ServerConfig::message_parser() noexcept {
+    return message_parser_;
+}
+
+const MessageParserConfig& ServerConfig::message_parser() const noexcept {
+    return message_parser_;
+}
+
+ExecutorConfig& ServerConfig::executor() noexcept { return executor_; }
+
+const ExecutorConfig& ServerConfig::executor() const noexcept {
+    return executor_;
+}
+
 }  // namespace msgpack_rpc::config

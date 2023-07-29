@@ -24,6 +24,8 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/config/executor_config.h"
+#include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/server_endpoint_config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
@@ -70,9 +72,43 @@ public:
     [[nodiscard]] const std::vector<ServerEndpointConfig>& endpoints()
         const noexcept;
 
+    /*!
+     * \brief Get the configuration of parsers of messages.
+     *
+     * \return Configuration.
+     */
+    [[nodiscard]] MessageParserConfig& message_parser() noexcept;
+
+    /*!
+     * \brief Get the configuration of parsers of messages.
+     *
+     * \return Configuration.
+     */
+    [[nodiscard]] const MessageParserConfig& message_parser() const noexcept;
+
+    /*!
+     * \brief Get the configuration of executors.
+     *
+     * \return Configuration of executors.
+     */
+    [[nodiscard]] ExecutorConfig& executor() noexcept;
+
+    /*!
+     * \brief Get the configuration of executors.
+     *
+     * \return Configuration of executors.
+     */
+    [[nodiscard]] const ExecutorConfig& executor() const noexcept;
+
 private:
     //! Endpoints.
     std::vector<ServerEndpointConfig> endpoints_;
+
+    //! Configuration of parsers of messages.
+    MessageParserConfig message_parser_;
+
+    //! Configuration of executors.
+    ExecutorConfig executor_;
 };
 
 }  // namespace msgpack_rpc::config

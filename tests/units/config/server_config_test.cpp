@@ -50,4 +50,20 @@ TEST_CASE("msgpack_rpc::config::ServerConfig") {
             CHECK(endpoints.at(0).uri().port_number() == port);
         }
     }
+
+    SECTION("get the configuration of parsers of messages") {
+        ServerConfig config;
+
+        CHECK_NOTHROW((void)config.message_parser());
+        CHECK_NOTHROW(
+            (void)static_cast<const ServerConfig&>(config).message_parser());
+    }
+
+    SECTION("get the configuration of executors") {
+        ServerConfig config;
+
+        CHECK_NOTHROW((void)config.executor());
+        CHECK_NOTHROW(
+            (void)static_cast<const ServerConfig&>(config).executor());
+    }
 }
