@@ -43,6 +43,15 @@ public:
     /*!
      * \brief Constructor.
      *
+     * \param[in] logger Logger.
+     */
+    explicit ServerBuilder(const std::shared_ptr<logging::Logger>& logger =
+                               logging::Logger::create())
+        : ServerBuilder(config::ServerConfig(), logger) {}
+
+    /*!
+     * \brief Constructor.
+     *
      * \param[in] server_config Configuration of the server.
      * \param[in] logger Logger.
      */
