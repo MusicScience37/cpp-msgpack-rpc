@@ -25,6 +25,7 @@
 
 #include <fmt/format.h>
 
+#include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/i_log_sink.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/log_sinks.h"
@@ -42,12 +43,24 @@ public:
     /*!
      * \brief Create a logger.
      *
+     * \param[in] config Configuration of logging.
+     * \return Logger.
+     */
+    [[nodiscard]] static std::shared_ptr<Logger> create(
+        const config::LoggingConfig& config = config::LoggingConfig()) {
+        return create(
+            create_log_sink_from_config(config), config.output_log_level());
+    }
+
+    /*!
+     * \brief Create a logger.
+     *
      * \param[in] sink Log sink.
      * \param[in] output_log_level Log level to write logs.
      * \return Logger.
      */
     [[nodiscard]] static std::shared_ptr<Logger> create(
-        std::shared_ptr<ILogSink> sink = create_stdout_log_sink(),
+        std::shared_ptr<ILogSink> sink,
         LogLevel output_log_level = LogLevel::INFO) {
         return std::make_shared<Logger>(std::move(sink), output_log_level);
     }

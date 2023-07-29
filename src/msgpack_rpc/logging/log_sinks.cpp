@@ -55,4 +55,13 @@ std::shared_ptr<ILogSink> create_rotating_file_log_sink(
         std::move(spdlog_logger));
 }
 
+std::shared_ptr<ILogSink> create_log_sink_from_config(
+    const config::LoggingConfig& config) {
+    if (config.filepath().empty()) {
+        return create_stdout_log_sink();
+    }
+    return create_rotating_file_log_sink(
+        config.filepath(), config.max_file_size(), config.max_files());
+}
+
 }  // namespace msgpack_rpc::logging

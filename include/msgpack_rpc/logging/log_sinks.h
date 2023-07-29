@@ -23,6 +23,7 @@
 #include <memory>
 #include <string_view>
 
+#include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/i_log_sink.h"
 
@@ -47,5 +48,14 @@ create_stdout_log_sink();
 [[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ILogSink>
 create_rotating_file_log_sink(std::string_view filepath,
     std::size_t max_file_size, std::size_t max_files);
+
+/*!
+ * \brief Create a log sink from a configuration.
+ *
+ * \param[in] config Configuration of logging.
+ * \return Log sink.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ILogSink>
+create_log_sink_from_config(const config::LoggingConfig& config);
 
 }  // namespace msgpack_rpc::logging
