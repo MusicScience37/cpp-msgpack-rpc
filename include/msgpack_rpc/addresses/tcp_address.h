@@ -27,13 +27,11 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::addresses {
-
-//! Scheme of TCP.
-constexpr std::string_view TCP_SCHEME = "tcp";
 
 /*!
  * \brief Type of addresses of TCP in asio library.
