@@ -26,6 +26,8 @@
 
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/methods/functional_method.h"
+#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 
 namespace msgpack_rpc::servers {
@@ -66,6 +68,40 @@ public:
         listen_to(addresses::URI(addresses::TCP_SCHEME, host, port_number));
         return *this;
     }
+
+    /*!
+     * \brief Add a method.
+     *
+     * \param[in] method Method.
+     * \return This.
+     */
+    ServerBuilder& add_method(std::unique_ptr<methods::IMethod> method) {
+        impl_->add_method(std::move(method));
+        return *this;
+    }
+
+    /*!
+     * \brief Add a method implemented by a function object.
+     *
+     * \tparam Signature Signature of the method.
+     * \tparam Function Type of the function implementing the method.
+     * \param[in] name Name of the method.
+     * \param[in] function Function implementing the method.
+     * \return This.
+     */
+    template <typename Signature, typename Function>
+    ServerBuilder& add_method(messages::MethodName name, Function&& function) {
+        return add_method(
+            methods::create_functional_method<Signature>(std::move(name),
+                std::forward<Function>(function), impl_->logger()));
+    }
+
+    /*!
+     * \brief Build a server.
+     *
+     * \return Server.
+     */
+    [[nodiscard]] std::unique_ptr<IServer> build() { return impl_->build(); }
 
 private:
     //! Internal implementation.

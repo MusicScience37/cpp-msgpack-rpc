@@ -66,6 +66,13 @@ public:
      */
     [[nodiscard]] virtual std::unique_ptr<IServer> build() = 0;
 
+    /*!
+     * \brief Get the logger in this builder.
+     *
+     * \return Logger.
+     */
+    [[nodiscard]] virtual std::shared_ptr<logging::Logger> logger() = 0;
+
     IServerBuilderImpl(const IServerBuilderImpl&) = delete;
     IServerBuilderImpl(IServerBuilderImpl&&) = delete;
     IServerBuilderImpl& operator=(const IServerBuilderImpl&) = delete;

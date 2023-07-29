@@ -91,6 +91,11 @@ public:
             std::move(acceptors), std::move(processor_), executor_, logger_);
     }
 
+    //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::logger
+    [[nodiscard]] std::shared_ptr<logging::Logger> logger() override {
+        return logger_;
+    }
+
 private:
     //! Executor.
     std::shared_ptr<executors::IAsyncExecutor> executor_;

@@ -57,8 +57,7 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
 
     const auto builder_impl =
         create_empty_server_builder_impl(executor, logger);
-    CHECK_NOTHROW(
-        builder_impl->register_protocol(backend));  // TODO check of duplicates
+    CHECK_NOTHROW(builder_impl->register_protocol(backend));
 
     SECTION("create a server") {
         const std::string host = "localhost";
