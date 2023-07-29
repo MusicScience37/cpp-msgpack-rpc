@@ -26,6 +26,9 @@
 
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/functional_method.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
@@ -37,6 +40,19 @@ namespace msgpack_rpc::servers {
  */
 class ServerBuilder {
 public:
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] server_config Configuration of the server.
+     * \param[in] logger Logger.
+     */
+    explicit ServerBuilder(const config::ServerConfig& server_config,
+        const std::shared_ptr<logging::Logger>& logger =
+            logging::Logger::create())
+        : impl_(impl::create_default_builder_impl(
+              executors::create_executor(logger, server_config.executor()),
+              server_config.message_parser(), logger)) {}
+
     /*!
      * \brief Constructor.
      *
@@ -53,6 +69,17 @@ public:
      */
     ServerBuilder& listen_to(addresses::URI uri) {
         impl_->listen_to(std::move(uri));
+        return *this;
+    }
+
+    /*!
+     * \brief Add a URI to listen to.
+     *
+     * \param[in] uri String of a URI.
+     * \return This.
+     */
+    ServerBuilder& listen_to(std::string_view uri) {
+        impl_->listen_to(addresses::URI::parse(uri));
         return *this;
     }
 

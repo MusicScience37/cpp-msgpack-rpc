@@ -98,4 +98,18 @@ create_empty_server_builder_impl(
     std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger);
 
+/*!
+ * \brief Create an IServerBuilderImpl object with default protocols.
+ *
+ * \param[in] executor Executor.
+ * \param[in] message_parser_config Configuration of parsers of messages.
+ * \param[in] logger Logger.
+ * \return IServerBuilderImpl object.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::unique_ptr<IServerBuilderImpl>
+create_default_builder_impl(
+    const std::shared_ptr<executors::IAsyncExecutor>& executor,
+    const config::MessageParserConfig& message_parser_config,
+    const std::shared_ptr<logging::Logger>& logger);
+
 }  // namespace msgpack_rpc::servers::impl

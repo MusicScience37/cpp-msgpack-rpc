@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "msgpack_rpc/servers/impl/server_builder_impl.h"
+#include "msgpack_rpc/transport/backends.h"
 
 namespace msgpack_rpc::servers::impl {
 
@@ -30,6 +31,16 @@ std::unique_ptr<IServerBuilderImpl> create_empty_server_builder_impl(
     std::shared_ptr<logging::Logger> logger) {
     return std::make_unique<ServerBuilderImpl>(
         std::move(executor), std::move(logger));
+}
+
+std::unique_ptr<IServerBuilderImpl> create_default_builder_impl(
+    const std::shared_ptr<executors::IAsyncExecutor>& executor,
+    const config::MessageParserConfig& message_parser_config,
+    const std::shared_ptr<logging::Logger>& logger) {
+    auto builder = create_empty_server_builder_impl(executor, logger);
+    builder->register_protocol(
+        transport::create_tcp_backend(executor, message_parser_config, logger));
+    return builder;
 }
 
 }  // namespace msgpack_rpc::servers::impl
