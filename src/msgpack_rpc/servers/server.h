@@ -113,6 +113,16 @@ public:
         executor_->stop();
     }
 
+    //! \copydoc msgpack_rpc::servers::IServer::local_addresses
+    [[nodiscard]] std::vector<addresses::Address> local_addresses() override {
+        std::vector<addresses::Address> addresses;
+        addresses.reserve(acceptors_.size());
+        for (const auto& acceptor : acceptors_) {
+            addresses.push_back(acceptor->local_address());
+        }
+        return addresses;
+    }
+
 private:
     /*!
      * \brief Start processing of acceptors.

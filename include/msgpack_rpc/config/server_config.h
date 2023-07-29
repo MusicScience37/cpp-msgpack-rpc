@@ -26,7 +26,6 @@
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
-#include "msgpack_rpc/config/server_endpoint_config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::config {
@@ -45,32 +44,27 @@ public:
     ServerConfig();
 
     /*!
-     * \brief Add an server endpoint.
+     * \brief Add a URI of the server.
      *
      * \param[in] uri URI.
-     * \return Reference to the configuration of the added endpoint. (Usable
-     * until the next call of this function or move operations of this object.)
+     * \return This.
      */
-    ServerEndpointConfig& add_endpoint(const addresses::URI& uri);
+    ServerConfig& add_uri(const addresses::URI& uri);
 
     /*!
-     * \brief Add an server endpoint.
+     * \brief Add a URI of the server.
      *
-     * \param[in] host Host name.
-     * \param[in] port Port number.
-     * \return Reference to the configuration of the added endpoint. (Usable
-     * until the next call of this function or move operations of this object.)
+     * \param[in] uri URI.
+     * \return This.
      */
-    ServerEndpointConfig& add_tcp_endpoint(
-        std::string_view host, std::uint16_t port);
+    ServerConfig& add_uri(std::string_view uri);
 
     /*!
-     * \brief Get the configurations of endpoints.
+     * \brief Get the URIs of the server.
      *
-     * \return Configurations of endpoints.
+     * \return URIs.
      */
-    [[nodiscard]] const std::vector<ServerEndpointConfig>& endpoints()
-        const noexcept;
+    [[nodiscard]] const std::vector<addresses::URI>& uris() const noexcept;
 
     /*!
      * \brief Get the configuration of parsers of messages.
@@ -101,8 +95,8 @@ public:
     [[nodiscard]] const ExecutorConfig& executor() const noexcept;
 
 private:
-    //! Endpoints.
-    std::vector<ServerEndpointConfig> endpoints_;
+    //! URIs.
+    std::vector<addresses::URI> uris_;
 
     //! Configuration of parsers of messages.
     MessageParserConfig message_parser_;

@@ -28,27 +28,16 @@
 
 TEST_CASE("msgpack_rpc::config::ServerConfig") {
     using msgpack_rpc::addresses::TCP_SCHEME;
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::ServerConfig;
 
-    SECTION("add an TCP endpoint") {
+    SECTION("add a URI") {
         ServerConfig config;
 
-        const auto host = std::string_view("localhost");
-        const auto port = static_cast<std::uint16_t>(12345);
-        const auto& endpoint_config = config.add_tcp_endpoint(host, port);
+        config.add_uri("tcp://localhost:12345");
 
-        CHECK(endpoint_config.uri().scheme() == TCP_SCHEME);
-        CHECK(endpoint_config.uri().host() == host);
-        CHECK(endpoint_config.uri().port_number() == port);
-
-        SECTION("and get the endpoints") {
-            const auto& endpoints = config.endpoints();
-
-            CHECK(endpoints.size() == 1);
-            CHECK(endpoints.at(0).uri().scheme() == TCP_SCHEME);
-            CHECK(endpoints.at(0).uri().host() == host);
-            CHECK(endpoints.at(0).uri().port_number() == port);
-        }
+        CHECK(config.uris() ==
+            std::vector<URI>{URI::parse("tcp://localhost:12345")});
     }
 
     SECTION("get the configuration of parsers of messages") {

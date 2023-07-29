@@ -19,6 +19,9 @@
  */
 #pragma once
 
+#include <vector>
+
+#include "msgpack_rpc/addresses/address.h"
 namespace msgpack_rpc::servers {
 
 /*!
@@ -35,6 +38,13 @@ public:
      * \brief Stop processing of this server.
      */
     virtual void stop() = 0;
+
+    /*!
+     * \brief Get the addresses of the local endpoints in this server.
+     *
+     * \return Addresses.
+     */
+    [[nodiscard]] virtual std::vector<addresses::Address> local_addresses() = 0;
 
     IServer(const IServer&) = delete;
     IServer(IServer&&) = delete;

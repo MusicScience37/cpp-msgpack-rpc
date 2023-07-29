@@ -21,24 +21,30 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include "check_connectivity.h"
 #include "create_test_logger.h"
+#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Create a server") {
+    using msgpack_rpc::addresses::Address;
     using msgpack_rpc::config::ServerConfig;
     using msgpack_rpc::servers::ServerBuilder;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
+    // TODO Parametrize here when additional protocols are tested.
+    const auto server_uri = std::string_view("tcp://127.0.0.1:0");
+
     GIVEN("A default configuration") {
-        ServerConfig config;
+        const ServerConfig config;
 
         THEN("Server builder can be created") {
             ServerBuilder builder{config, logger};
 
             WHEN("A URI is added") {
-                builder.listen_to("tcp://127.0.0.1:0");
+                builder.listen_to(server_uri);
 
                 AND_WHEN("Some methods are added") {
                     builder.add_method<int(int, int)>(
@@ -51,6 +57,51 @@ SCENARIO("Create a server") {
 
                     THEN("Server can be built") {
                         auto server = builder.build();
+
+                        AND_THEN("The server can be connectable") {
+                            server->start();
+
+                            const auto addresses = server->local_addresses();
+                            MSGPACK_RPC_DEBUG(logger, "Server addresses: {}",
+                                fmt::join(addresses, ", "));
+                            CHECK(
+                                addresses != std::vector<Address>{});  // NOLINT
+
+                            CHECK_NOTHROW(check_connectivity(addresses));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    GIVEN("A configuration with a URI") {
+        ServerConfig config;
+        config.add_uri(server_uri);
+
+        THEN("Server builder can be created") {
+            ServerBuilder builder{config, logger};
+
+            AND_WHEN("Some methods are added") {
+                builder.add_method<int(int, int)>(
+                    "add", [](int x, int y) { return x + y; });
+                builder.add_method<void(std::string)>(
+                    "write", [logger](const std::string& str) {
+                        MSGPACK_RPC_DEBUG(logger, "Received string: {}", str);
+                    });
+
+                THEN("Server can be built") {
+                    auto server = builder.build();
+
+                    AND_THEN("The server can be connectable") {
+                        server->start();
+
+                        const auto addresses = server->local_addresses();
+                        MSGPACK_RPC_DEBUG(logger, "Server addresses: {}",
+                            fmt::join(addresses, ", "));
+                        CHECK(addresses != std::vector<Address>{});  // NOLINT
+
+                        CHECK_NOTHROW(check_connectivity(addresses));
                     }
                 }
             }

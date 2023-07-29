@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/servers/impl/server_builder_impl.h"
 #include "msgpack_rpc/transport/backends.h"
 
@@ -34,12 +35,20 @@ std::unique_ptr<IServerBuilderImpl> create_empty_server_builder_impl(
 }
 
 std::unique_ptr<IServerBuilderImpl> create_default_builder_impl(
-    const std::shared_ptr<executors::IAsyncExecutor>& executor,
-    const config::MessageParserConfig& message_parser_config,
+    const config::ServerConfig& server_config,
     const std::shared_ptr<logging::Logger>& logger) {
+    const auto executor =
+        executors::create_executor(logger, server_config.executor());
+
     auto builder = create_empty_server_builder_impl(executor, logger);
-    builder->register_protocol(
-        transport::create_tcp_backend(executor, message_parser_config, logger));
+
+    builder->register_protocol(transport::create_tcp_backend(
+        executor, server_config.message_parser(), logger));
+
+    for (const auto& uri : server_config.uris()) {
+        builder->listen_to(uri);
+    }
+
     return builder;
 }
 

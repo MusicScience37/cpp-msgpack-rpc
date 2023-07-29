@@ -71,6 +71,24 @@ public:
     [[nodiscard]] std::optional<std::uint16_t> port_number() const noexcept;
 
     /*!
+     * \brief Compare with a URI.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two URIs are same.
+     * \retval false Two URIs are different.
+     */
+    bool operator==(const URI& right) const;
+
+    /*!
+     * \brief Compare with a URI.
+     *
+     * \param[in] right Right-hand-side address.
+     * \retval true Two URIs are different.
+     * \retval false Two URIs are same.
+     */
+    bool operator!=(const URI& right) const;
+
+    /*!
      * \brief Parse a string to create a URI.
      *
      * \param[in] uri_string String to specify a URI.
@@ -123,3 +141,13 @@ public:
 };
 
 }  // namespace fmt
+
+/*!
+ * \brief Format a URI.
+ *
+ * \param[in] stream Stream.
+ * \param[in] uri URI.
+ * \return Stream after formatting.
+ */
+MSGPACK_RPC_EXPORT std::ostream& operator<<(
+    std::ostream& stream, const msgpack_rpc::addresses::URI& uri);

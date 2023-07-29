@@ -49,9 +49,7 @@ public:
     explicit ServerBuilder(const config::ServerConfig& server_config,
         const std::shared_ptr<logging::Logger>& logger =
             logging::Logger::create())
-        : impl_(impl::create_default_builder_impl(
-              executors::create_executor(logger, server_config.executor()),
-              server_config.message_parser(), logger)) {}
+        : impl_(impl::create_default_builder_impl(server_config, logger)) {}
 
     /*!
      * \brief Constructor.

@@ -29,18 +29,17 @@ namespace msgpack_rpc::config {
 
 ServerConfig::ServerConfig() = default;
 
-ServerEndpointConfig& ServerConfig::add_endpoint(const addresses::URI& uri) {
-    return endpoints_.emplace_back(uri);
+ServerConfig& ServerConfig::add_uri(const addresses::URI& uri) {
+    uris_.push_back(uri);
+    return *this;
 }
 
-ServerEndpointConfig& ServerConfig::add_tcp_endpoint(
-    std::string_view host, std::uint16_t port) {
-    return add_endpoint(addresses::URI(addresses::TCP_SCHEME, host, port));
+ServerConfig& ServerConfig::add_uri(std::string_view uri) {
+    return add_uri(addresses::URI::parse(uri));
 }
 
-const std::vector<ServerEndpointConfig>& ServerConfig::endpoints()
-    const noexcept {
-    return endpoints_;
+const std::vector<addresses::URI>& ServerConfig::uris() const noexcept {
+    return uris_;
 }
 
 MessageParserConfig& ServerConfig::message_parser() noexcept {

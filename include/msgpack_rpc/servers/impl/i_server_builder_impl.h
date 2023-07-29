@@ -22,7 +22,7 @@
 #include <memory>
 
 #include "msgpack_rpc/addresses/uri.h"
-#include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -101,15 +101,12 @@ create_empty_server_builder_impl(
 /*!
  * \brief Create an IServerBuilderImpl object with default protocols.
  *
- * \param[in] executor Executor.
- * \param[in] message_parser_config Configuration of parsers of messages.
+ * \param[in] server_config Configuration of the server.
  * \param[in] logger Logger.
  * \return IServerBuilderImpl object.
  */
 [[nodiscard]] MSGPACK_RPC_EXPORT std::unique_ptr<IServerBuilderImpl>
-create_default_builder_impl(
-    const std::shared_ptr<executors::IAsyncExecutor>& executor,
-    const config::MessageParserConfig& message_parser_config,
+create_default_builder_impl(const config::ServerConfig& server_config,
     const std::shared_ptr<logging::Logger>& logger);
 
 }  // namespace msgpack_rpc::servers::impl
