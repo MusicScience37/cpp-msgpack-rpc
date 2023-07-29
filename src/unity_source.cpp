@@ -3,6 +3,7 @@
 #include "msgpack_rpc/common/status.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/common/status_code.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/executor_config.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/config/logging_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/message_parser_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/server_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/server_endpoint_config.cpp"  // NOLINT(bugprone-suspicious-include)
