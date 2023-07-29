@@ -26,4 +26,5 @@
 #include "servers/server_builder_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "servers/server_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "test_main.cpp"            // NOLINT(bugprone-suspicious-include)
+#include "transport/backend_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/connection_wrapper_test.cpp"  // NOLINT(bugprone-suspicious-include)

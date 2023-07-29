@@ -36,6 +36,7 @@
 #include "msgpack_rpc/methods/method_processor.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 #include "msgpack_rpc/servers/server.h"
+#include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_backend.h"
 
 namespace msgpack_rpc::servers::impl {
@@ -60,8 +61,7 @@ public:
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::register_protocol
     void register_protocol(
         std::shared_ptr<transport::IBackend> backend) override {
-        const auto scheme = backend->scheme();
-        backends_.try_emplace(scheme, std::move(backend));
+        backends_.append(backend);
     }
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::listen_to
@@ -78,16 +78,12 @@ public:
     [[nodiscard]] std::unique_ptr<IServer> build() override {
         std::vector<std::shared_ptr<transport::IAcceptor>> acceptors;
         for (const auto& uri : uris_) {
-            const auto backend_iter = backends_.find(uri.scheme());
-            if (backend_iter == backends_.end()) {
-                throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
-                    fmt::format("Invalid scheme: {}.", uri.scheme()));
-            }
+            const auto backend = backends_.find(uri.scheme());
 
-            const auto resolver = backend_iter->second->create_resolver();
+            const auto resolver = backend->create_resolver();
             const auto addresses = resolver->resolve(uri);
             for (const auto& address : addresses) {
-                auto acceptor = backend_iter->second->create_acceptor(address);
+                auto acceptor = backend->create_acceptor(address);
                 acceptors.push_back(std::move(acceptor));
             }
         }
@@ -103,8 +99,7 @@ private:
     std::shared_ptr<logging::Logger> logger_;
 
     //! Backends.
-    std::unordered_map<std::string_view, std::shared_ptr<transport::IBackend>>
-        backends_{};
+    transport::BackendList backends_{};
 
     //! URIs to listen to.
     std::vector<addresses::URI> uris_{};
