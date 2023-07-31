@@ -50,7 +50,7 @@ SCENARIO("Use a server") {
     const auto server_uri = std::string_view("tcp://127.0.0.1:0");
 
     GIVEN("A server") {
-        ServerBuilder builder{ServerConfig(), logger};
+        ServerBuilder builder{logger};
 
         builder.listen_to(server_uri);
 
