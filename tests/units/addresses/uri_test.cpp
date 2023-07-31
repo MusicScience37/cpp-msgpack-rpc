@@ -47,4 +47,14 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         CHECK_THROWS((void)URI::parse("tcp://[fc00::3]:65536"));
         CHECK_THROWS((void)URI::parse("abc"));
     }
+
+    SECTION("compare addresses") {
+        const auto address1 = URI::parse("tcp://11.22.33.44:1234");
+        const auto address2 = URI::parse("tcp://11.22.33.44:1235");
+        const auto address3 = URI::parse("tcp://11.22.33.45:1234");
+
+        CHECK(address1 == address1);
+        CHECK(address1 != address2);
+        CHECK(address1 != address3);
+    }
 }

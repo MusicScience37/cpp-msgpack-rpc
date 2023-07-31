@@ -40,16 +40,17 @@ public:
 
     void testCaseStarting(const Catch::TestCaseInfo& info) override {
         MSGPACK_RPC_INFO(logger_, std::string(LINE_LENGTH, '='));
-        MSGPACK_RPC_INFO(logger_, "Start test case {}.", info.name);
+        MSGPACK_RPC_INFO(logger_, "Start test case \"{}\".", info.name);
     }
 
     void sectionStarting(const Catch::SectionInfo& info) override {
         MSGPACK_RPC_INFO(logger_, std::string(LINE_LENGTH, '-'));
-        MSGPACK_RPC_INFO(logger_, "Start test section {}.", info.name);
+        MSGPACK_RPC_INFO(logger_, "Start test section \"{}\".", info.name);
     }
 
     void sectionEnded(const Catch::SectionStats& stats) override {
-        MSGPACK_RPC_INFO(logger_, "Finished test section {} with {} seconds.",
+        MSGPACK_RPC_INFO(logger_,
+            "Finished test section \"{}\" with {} seconds.",
             stats.sectionInfo.name, stats.durationInSeconds);
     }
 

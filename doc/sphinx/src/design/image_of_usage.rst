@@ -38,10 +38,10 @@ Server
     builder.add_method<void(std::string)>("publish", [] (const std::string& str) { print(str); });
 
     // Create a server.
-    Server server = builder.build();
+    auto server = builder.build();
 
     // Start the server.
-    server.start();
+    server->start();
 
     // Stop the server.
-    server.stop();
+    server->stop();

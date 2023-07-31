@@ -6,10 +6,13 @@ set(SOURCE_FILES
     common/status_code_test.cpp
     common/status_test.cpp
     config/executor_config_test.cpp
+    config/logging_config_test.cpp
     config/message_parser_config_test.cpp
+    config/server_config_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
+    executors/wrapping_executor_test.cpp
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
@@ -22,5 +25,10 @@ set(SOURCE_FILES
     methods/functional_method_test.cpp
     methods/method_exception_test.cpp
     methods/method_processor_test.cpp
+    servers/server_builder_impl_test.cpp
+    servers/server_builder_test.cpp
+    servers/server_test.cpp
     test_main.cpp
+    transport/backend_list_test.cpp
+    transport/connection_wrapper_test.cpp
 )

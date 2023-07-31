@@ -39,6 +39,13 @@ std::optional<std::uint16_t> URI::port_number() const noexcept {
     return port_number_;
 }
 
+bool URI::operator==(const URI& right) const {
+    return (scheme_ == right.scheme_) && (host_ == right.host_) &&
+        (port_number_ == right.port_number_);
+}
+
+bool URI::operator!=(const URI& right) const { return !operator==(right); }
+
 URI URI::parse(std::string_view uri_string) {
     static re2::RE2 full_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
     static re2::RE2 ipv6_regex{R"((tcp)://\[([a-zA-Z0-9+-.:]+)\]:(\d+))"};
@@ -76,3 +83,9 @@ formatter<msgpack_rpc::addresses::URI>::format(  // NOLINT
 }
 
 }  // namespace fmt
+
+std::ostream& operator<<(
+    std::ostream& stream, const msgpack_rpc::addresses::URI& uri) {
+    stream << fmt::format("{}", uri);
+    return stream;
+}

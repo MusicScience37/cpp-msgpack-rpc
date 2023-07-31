@@ -2,27 +2,33 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include <lyra/lyra.hpp>
 
+#include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/i_log_sink.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/log_sinks.h"
 #include "msgpack_rpc/logging/logger.h"
 
 int main(int argc, char** argv) {
-    std::string filepath;
+    msgpack_rpc::config::LoggingConfig config;
     std::shared_ptr<msgpack_rpc::logging::ILogSink> log_sink;
-    bool verbose = false;
     bool quiet = false;
     const auto cli =
         lyra::cli()
-            .add_argument(lyra::opt(filepath, "filepath")
+            .add_argument(lyra::opt(
+                [&config](
+                    const std::string& filepath) { config.filepath(filepath); },
+                "filepath")
                               .name("--out")
                               .name("-o")
                               .optional()
                               .help("Output to file."))
-            .add_argument(lyra::opt(verbose)
+            .add_argument(lyra::opt([&config](bool /*true*/) {
+                config.output_log_level(msgpack_rpc::logging::LogLevel::TRACE);
+            })
                               .name("--verbose")
                               .name("-v")
                               .optional()
@@ -39,20 +45,14 @@ int main(int argc, char** argv) {
 
     if (quiet) {
         // NOP
-    } else if (filepath.empty()) {
-        log_sink = msgpack_rpc::logging::create_stdout_log_sink();
     } else {
         const auto max_file_size = static_cast<std::size_t>(1024U * 1024U);
         const auto max_files = static_cast<std::size_t>(1);
-        log_sink = msgpack_rpc::logging::create_rotating_file_log_sink(
-            filepath, max_file_size, max_files);
+        config.max_file_size(max_file_size).max_files(max_files);
+        log_sink = msgpack_rpc::logging::create_log_sink_from_config(config);
     }
-    auto output_log_level = msgpack_rpc::logging::LogLevel::INFO;
-    if (verbose) {
-        output_log_level = msgpack_rpc::logging::LogLevel::TRACE;
-    }
-    const auto logger =
-        msgpack_rpc::logging::Logger::create(log_sink, output_log_level);
+    const auto logger = msgpack_rpc::logging::Logger::create(
+        log_sink, config.output_log_level());
 
     MSGPACK_RPC_TRACE(logger, "Trace.");
     MSGPACK_RPC_DEBUG(logger, "Debug.");

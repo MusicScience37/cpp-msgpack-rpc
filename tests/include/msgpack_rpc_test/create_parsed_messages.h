@@ -24,6 +24,7 @@
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc_test/parse_messages.h"
 
 namespace msgpack_rpc_test {
@@ -45,6 +46,23 @@ template <typename... Parameters>
     return parse_request(
         msgpack_rpc::messages::MessageSerializer::serialize_request(
             method_name, message_id, parameters...));
+}
+
+/*!
+ * \brief Create an object of a parsed response without an error.
+ *
+ * \tparam T Type of the result.
+ * \param[in] request_id Request ID.
+ * \param[in] result Result.
+ * \return Parsed response.
+ */
+template <typename T>
+[[nodiscard]] inline msgpack_rpc::messages::ParsedResponse
+create_parsed_successful_response(
+    msgpack_rpc::messages::MessageID request_id, const T& result) {
+    return parse_response(
+        msgpack_rpc::messages::MessageSerializer::serialize_successful_response(
+            request_id, result));
 }
 
 /*!
