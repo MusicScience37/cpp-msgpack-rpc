@@ -20,6 +20,7 @@
 #pragma once
 
 #include <atomic>
+#include <cassert>
 #include <exception>
 #include <memory>
 #include <mutex>
@@ -100,9 +101,7 @@ private:
      */
     void on_received(messages::ParsedMessage message) {
         const auto executor = executor_.lock();
-        if (!executor) {
-            return;
-        }
+        assert(executor);
 
         std::visit(
             [this, executor](auto&& concrete_message) {
