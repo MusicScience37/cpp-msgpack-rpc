@@ -37,6 +37,7 @@
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/parsed_message.h"
@@ -130,9 +131,12 @@ private:
     void start_acceptors() {
         for (const auto& acceptor : acceptors_) {
             acceptor->start(
-                [this](
+                [executor = std::weak_ptr<executors::IExecutor>(executor_),
+                    processor = processor_, logger = logger_](
                     const std::shared_ptr<transport::IConnection>& connection) {
-                    this->on_connection(connection);
+                    const auto handler = std::make_shared<ServerConnection>(
+                        connection, executor, processor, logger);
+                    handler->start();
                 });
         }
     }
@@ -144,18 +148,6 @@ private:
         for (const auto& acceptor : acceptors_) {
             acceptor->stop();
         }
-    }
-
-    /*!
-     * \brief Handle a connection.
-     *
-     * \param[in] connection Connection.
-     */
-    void on_connection(
-        const std::shared_ptr<transport::IConnection>& connection) {
-        const auto handler = std::make_shared<ServerConnection>(
-            connection, executor_, processor_, logger_);
-        handler->start();
     }
 
     //! Acceptors.

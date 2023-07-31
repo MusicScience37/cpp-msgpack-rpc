@@ -64,7 +64,7 @@ public:
      * \param[in] logger Logger.
      */
     ServerConnection(const std::shared_ptr<transport::IConnection>& connection,
-        std::weak_ptr<executors::IAsyncExecutor> executor,
+        std::weak_ptr<executors::IExecutor> executor,
         std::shared_ptr<methods::IMethodProcessor> processor,
         std::shared_ptr<logging::Logger> logger)
         : connection_(connection),
@@ -210,7 +210,7 @@ private:
     std::weak_ptr<transport::IConnection> connection_;
 
     //! Executor.
-    std::weak_ptr<executors::IAsyncExecutor> executor_;
+    std::weak_ptr<executors::IExecutor> executor_;
 
     //! Processor of methods.
     std::shared_ptr<methods::IMethodProcessor> processor_;
