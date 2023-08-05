@@ -54,8 +54,12 @@ URI URI::parse(std::string_view uri_string) {
     std::string host{};
     auto port = static_cast<std::uint16_t>(0);
 
-    if (!re2::RE2::FullMatch(uri_string, full_regex, &scheme, &host, &port) &&
-        !re2::RE2::FullMatch(uri_string, ipv6_regex, &scheme, &host, &port)) {
+    const auto absl_uri_string =
+        absl::string_view(uri_string.data(), uri_string.size());
+    if (!re2::RE2::FullMatch(
+            absl_uri_string, full_regex, &scheme, &host, &port) &&
+        !re2::RE2::FullMatch(
+            absl_uri_string, ipv6_regex, &scheme, &host, &port)) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format("Invalid URI string: \"{}\".", uri_string));
     }
