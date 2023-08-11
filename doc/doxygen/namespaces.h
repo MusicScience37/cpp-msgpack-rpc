@@ -121,7 +121,7 @@ namespace msgpack_rpc {
     namespace logging {
 
         /*!
-         * \dir include/msgpack_rpc/logging/impl
+         * \dir src/msgpack_rpc/logging/impl
          * \brief Directory of internal implementation.
          */
 
@@ -156,7 +156,7 @@ namespace msgpack_rpc {
     namespace messages {
 
         /*!
-         * \dir include/msgpack_rpc/messages/impl
+         * \dir src/msgpack_rpc/messages/impl
          * \brief Directory of internal implementation.
          */
 
