@@ -31,6 +31,11 @@
 
 namespace msgpack_rpc::logging {
 
+/*!
+ * \brief Create a log sink to write to standard output.
+ *
+ * \return Log sink.
+ */
 std::shared_ptr<ILogSink> create_stdout_log_sink_impl() {
     auto spdlog_logger = spdlog::stdout_color_mt("stdout");
     impl::spdlog_backend::configure_spdlog_logger_format_for_consoles(

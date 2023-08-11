@@ -33,6 +33,9 @@
 
 namespace msgpack_rpc::transport {
 
+/*!
+ * \brief Class of connectors.
+ */
 class Connector : public IConnector,
                   public std::enable_shared_from_this<Connector> {
 public:
@@ -63,7 +66,7 @@ public:
           log_name_(fmt::format("Resolver({})", scheme_)),
           logger_(std::move(logger)) {}
 
-    //! \copydoc msgpack_rpc::transport::IConnection::async_connect
+    //! \copydoc msgpack_rpc::transport::IConnector::async_connect
     void async_connect(const addresses::Address& address,
         ConnectionCallback on_connected) override {
         auto socket_ptr = std::make_unique<AsioSocket>(
@@ -88,6 +91,7 @@ private:
      * \param[in] error Error.
      * \param[in] socket Socket.
      * \param[in] on_connected Callback function to tell the result to user.
+     * \param[in] address Address.
      */
     void on_connect(const asio::error_code& error, AsioSocket&& socket,
         const ConnectionCallback& on_connected,

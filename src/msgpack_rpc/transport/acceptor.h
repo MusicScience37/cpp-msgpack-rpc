@@ -42,7 +42,7 @@
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Internal class of acceptors.
+ * \brief Class of acceptors.
  */
 class Acceptor : public IAcceptor,
                  public std::enable_shared_from_this<Acceptor> {
