@@ -36,7 +36,11 @@ namespace msgpack_rpc::executors {
  */
 class SingleThreadExecutor final : public IExecutor {
 public:
-    //! Constructor.
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] logger Logger.
+     */
     explicit SingleThreadExecutor(std::shared_ptr<logging::Logger> logger)
         : logger_(std::move(logger)) {}
 

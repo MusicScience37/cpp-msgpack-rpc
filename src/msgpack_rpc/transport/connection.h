@@ -50,7 +50,7 @@
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Internal class of connections.
+ * \brief Class of connections.
  */
 class Connection : public IConnection,
                    public std::enable_shared_from_this<Connection> {
@@ -66,7 +66,7 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] context Context in asio library.
+     * \param[in] socket Socket.
      * \param[in] message_parser_config Configuration of the parser of messages.
      * \param[in] logger Logger.
      */

@@ -70,7 +70,7 @@ public:
      */
     ~GeneralExecutor() override { stop(); }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::start
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::start
     void start() override {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
@@ -81,7 +81,7 @@ public:
         start_threads();
     }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::stop
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::stop
     void stop() override {
         stop_threads();
         MSGPACK_RPC_TRACE(logger_, "Executor run stopped.");
@@ -139,7 +139,7 @@ public:
         return main_context_;
     }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::last_exception
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::last_exception
     [[nodiscard]] std::exception_ptr last_exception() override {
         std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
         return exception_in_thread_;
