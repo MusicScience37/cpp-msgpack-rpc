@@ -15,44 +15,42 @@
  */
 /*!
  * \file
- * \brief Definition of IResolver class.
+ * \brief Definition of IAcceptorFactory class.
  */
 #pragma once
 
-#include <functional>
 #include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/uri.h"
-#include "msgpack_rpc/common/status.h"
+#include "msgpack_rpc/transport/i_acceptor.h"
 
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Interface of resolvers.
+ * \brief Interface of factories to create acceptors.
  */
-class IResolver {
+class IAcceptorFactory {
 public:
     /*!
-     * \brief Resolve a URI.
+     * \brief Create acceptors for a URI.
      *
      * \param[in] uri URI.
-     * \return List of resolved addresses.
+     * \return Acceptors.
      */
-    [[nodiscard]] virtual std::vector<addresses::Address> resolve(
+    [[nodiscard]] virtual std::vector<std::shared_ptr<IAcceptor>> create(
         const addresses::URI& uri) = 0;
 
-    IResolver(const IResolver&) = delete;
-    IResolver(IResolver&&) = delete;
-    IResolver& operator=(const IResolver&) = delete;
-    IResolver& operator=(IResolver&&) = delete;
+    IAcceptorFactory(const IAcceptorFactory&) = delete;
+    IAcceptorFactory(IAcceptorFactory&&) = delete;
+    IAcceptorFactory& operator=(const IAcceptorFactory&) = delete;
+    IAcceptorFactory& operator=(IAcceptorFactory&&) = delete;
 
     //! Destructor.
-    virtual ~IResolver() noexcept = default;
+    virtual ~IAcceptorFactory() noexcept = default;
 
 protected:
     //! Constructor.
-    IResolver() noexcept = default;
+    IAcceptorFactory() noexcept = default;
 };
 
 }  // namespace msgpack_rpc::transport

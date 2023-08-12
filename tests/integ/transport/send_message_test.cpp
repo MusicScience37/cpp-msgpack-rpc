@@ -55,8 +55,7 @@ SCENARIO("Send messages") {
     using msgpack_rpc::MsgpackRPCException;
     using msgpack_rpc::Status;
     using msgpack_rpc::StatusCode;
-    using msgpack_rpc::addresses::Address;
-    using msgpack_rpc::addresses::TCPAddress;
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::MessageParserConfig;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageSerializer;
@@ -75,7 +74,7 @@ SCENARIO("Send messages") {
     // TODO Parametrize here when additional protocols are tested.
     const auto backend = msgpack_rpc::transport::create_tcp_backend(
         executor, MessageParserConfig(), logger);
-    const Address acceptor_specified_address = TCPAddress("127.0.0.1", 0);
+    const URI acceptor_specified_uri = URI::parse("tcp://127.0.0.1:0");
 
     ALLOW_CALL(*executor, on_context(OperationType::CALLBACK));
     const auto post = [&executor](std::function<void()> function) {
@@ -97,9 +96,12 @@ SCENARIO("Send messages") {
         std::function<void()> on_connected;
 
         // Start acceptor.
-        post([&backend, &acceptor_specified_address, &acceptor,
+        post([&backend, &acceptor_specified_uri, &acceptor,
                  &acceptor_callbacks] {
-            acceptor = backend->create_acceptor(acceptor_specified_address);
+            const auto acceptors = backend->create_acceptor_factory()->create(
+                acceptor_specified_uri);
+            REQUIRE(acceptors.size() == 1);
+            acceptor = acceptors.front();
             acceptor_callbacks->apply_to(acceptor);
         });
 
@@ -108,7 +110,7 @@ SCENARIO("Send messages") {
                  &client_connection_callbacks, &acceptor] {
             const auto connector = backend->create_connector();
 
-            connector->async_connect(acceptor->local_address(),
+            connector->async_connect(acceptor->local_address().to_uri(),
                 [&on_connected, &client_connection,
                     &client_connection_callbacks](const Status& status,
                     std::shared_ptr<IConnection> connection) {
@@ -124,21 +126,28 @@ SCENARIO("Send messages") {
                 });
         });
 
-        std::optional<Address> acceptor_local_address;
-        std::optional<Address> server_local_address;
-        std::optional<Address> server_remote_address;
+        std::optional<URI> acceptor_local_address;
+        std::optional<URI> server_local_address;
+        std::optional<URI> server_remote_address;
         REQUIRE_CALL(*acceptor_callbacks, on_connection(_))
             .TIMES(1)
             .WITH(static_cast<bool>(_1))
             .LR_SIDE_EFFECT(server_connection = _1)
-            .LR_SIDE_EFFECT(acceptor_local_address = acceptor->local_address())
             .LR_SIDE_EFFECT(
-                server_local_address = server_connection->local_address())
-            .LR_SIDE_EFFECT(
-                server_remote_address = server_connection->remote_address())
+                acceptor_local_address = acceptor->local_address().to_uri())
+            .LR_SIDE_EFFECT(server_local_address =
+                                server_connection->local_address().to_uri())
+            .LR_SIDE_EFFECT(server_remote_address =
+                                server_connection->remote_address().to_uri())
             .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
-        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(4);
+        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(6);
+        // Calls:
+        // - 1 resolver in client
+        // - 1 socket in client
+        // - 1 resolver in server
+        // - 1 acceptor in server
+        // - 2 sockets in server
 
         REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
             .TIMES(1)
@@ -146,13 +155,15 @@ SCENARIO("Send messages") {
         REQUIRE_CALL(*client_connection_callbacks, on_closed(_)).TIMES(1);
 
         THEN("Addresses are correctly set") {
-            std::optional<Address> client_local_address;
-            std::optional<Address> client_remote_address;
+            std::optional<URI> client_local_address;
+            std::optional<URI> client_remote_address;
 
             on_connected = [&client_connection, &client_local_address,
                                &client_remote_address] {
-                client_local_address = client_connection->local_address();
-                client_remote_address = client_connection->remote_address();
+                client_local_address =
+                    client_connection->local_address().to_uri();
+                client_remote_address =
+                    client_connection->remote_address().to_uri();
 
                 client_connection->async_close();
             };

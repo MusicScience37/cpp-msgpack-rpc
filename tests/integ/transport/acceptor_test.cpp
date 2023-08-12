@@ -22,6 +22,7 @@
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -30,8 +31,7 @@
 #include "transport_helper.h"
 
 SCENARIO("Start and stop acceptor") {
-    using msgpack_rpc::addresses::Address;
-    using msgpack_rpc::addresses::TCPAddress;
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::MessageParserConfig;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::transport::IAcceptor;
@@ -43,7 +43,7 @@ SCENARIO("Start and stop acceptor") {
     // TODO Parametrize here when additional protocols are tested.
     const auto backend = msgpack_rpc::transport::create_tcp_backend(
         executor, MessageParserConfig(), logger);
-    const Address acceptor_specified_address = TCPAddress("127.0.0.1", 0);
+    const URI acceptor_specified_uri = URI::parse("tcp://127.0.0.1:0");
 
     const auto post = [&executor](std::function<void()> function) {
         asio::post(
@@ -55,8 +55,11 @@ SCENARIO("Start and stop acceptor") {
         const auto acceptor_callbacks = std::make_shared<AcceptorCallbacks>();
 
         // Start acceptor.
-        post([&backend, &acceptor_specified_address, &acceptor] {
-            acceptor = backend->create_acceptor(acceptor_specified_address);
+        post([&backend, &acceptor_specified_uri, &acceptor] {
+            const auto acceptors = backend->create_acceptor_factory()->create(
+                acceptor_specified_uri);
+            REQUIRE(acceptors.size() == 1);
+            acceptor = acceptors.front();
         });
 
         WHEN("The acceptor is started and stopped") {

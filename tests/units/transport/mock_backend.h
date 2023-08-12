@@ -24,9 +24,9 @@
 
 #include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connector.h"
-#include "msgpack_rpc/transport/i_resolver.h"
 #include "trompeloeil_catch2.h"
 
 namespace msgpack_rpc_test {
@@ -35,16 +35,11 @@ class MockBackend final : public msgpack_rpc::transport::IBackend {
 public:
     MAKE_CONST_MOCK0(scheme, std::string_view(), noexcept override);
 
-    MAKE_MOCK1(create_acceptor,
-        std::shared_ptr<msgpack_rpc::transport::IAcceptor>(
-            const msgpack_rpc::addresses::Address&),
-        override);
+    MAKE_MOCK0(create_acceptor_factory,
+        std::shared_ptr<msgpack_rpc::transport::IAcceptorFactory>(), override);
 
     MAKE_MOCK0(create_connector,
         std::shared_ptr<msgpack_rpc::transport::IConnector>(), override);
-
-    MAKE_MOCK0(create_resolver,
-        std::shared_ptr<msgpack_rpc::transport::IResolver>(), override);
 };
 
 }  // namespace msgpack_rpc_test

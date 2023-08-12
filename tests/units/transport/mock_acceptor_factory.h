@@ -15,23 +15,25 @@
  */
 /*!
  * \file
- * \brief Definition of MockResolver class.
+ * \brief Definition of MockAcceptorFactory class.
  */
 #pragma once
 
+#include <memory>
 #include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/uri.h"
-#include "msgpack_rpc/transport/i_resolver.h"
+#include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "trompeloeil_catch2.h"
 
 namespace msgpack_rpc_test {
 
-class MockResolver final : public msgpack_rpc::transport::IResolver {
+class MockAcceptorFactory final
+    : public msgpack_rpc::transport::IAcceptorFactory {
 public:
-    MAKE_MOCK1(resolve,
-        std::vector<msgpack_rpc::addresses::Address>(
+    MAKE_MOCK1(create,
+        std::vector<std::shared_ptr<msgpack_rpc::transport::IAcceptor>>(
             const msgpack_rpc::addresses::URI&),
         override);
 };

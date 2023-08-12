@@ -15,15 +15,15 @@
  */
 /*!
  * \file
- * \brief Definition of TCPResolver type.
+ * \brief Definition of TCPAcceptorFactory type.
  */
 #pragma once
 
-#include "msgpack_rpc/transport/ip_resolver.h"
+#include "msgpack_rpc/transport/ip_acceptor_factory.h"
 
 namespace msgpack_rpc::transport::tcp {
 
-//! Type of resolvers for TCP.
-using TCPResolver = IPResolver;
+//! Type of factories of acceptors of TCP.
+using TCPAcceptorFactory = IPAcceptorFactory;
 
 }  // namespace msgpack_rpc::transport::tcp

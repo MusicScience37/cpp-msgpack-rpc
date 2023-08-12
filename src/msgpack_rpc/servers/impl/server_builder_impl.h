@@ -80,11 +80,10 @@ public:
         for (const auto& uri : uris_) {
             const auto backend = backends_.find(uri.scheme());
 
-            const auto resolver = backend->create_resolver();
-            const auto addresses = resolver->resolve(uri);
-            for (const auto& address : addresses) {
-                auto acceptor = backend->create_acceptor(address);
-                acceptors.push_back(std::move(acceptor));
+            const auto added_acceptors =
+                backend->create_acceptor_factory()->create(uri);
+            for (const auto& acceptor : added_acceptors) {
+                acceptors.push_back(acceptor);
             }
         }
         return std::make_unique<Server>(
