@@ -24,6 +24,7 @@
 
 #include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_connector.h"
 #include "msgpack_rpc/transport/i_resolver.h"
 
@@ -52,6 +53,14 @@ public:
      */
     [[nodiscard]] virtual std::shared_ptr<IAcceptor> create_acceptor(
         const addresses::Address& local_address) = 0;
+
+    /*!
+     * \brief Create a factory to create acceptors.
+     *
+     * \return Factory of acceptors.
+     */
+    [[nodiscard]] virtual std::shared_ptr<IAcceptorFactory>
+    create_acceptor_factory() = 0;
 
     /*!
      * \brief Create a connector to connect to endpoints of acceptors.

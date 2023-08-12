@@ -15,40 +15,27 @@
  */
 /*!
  * \file
- * \brief Definition of MockBackend class.
+ * \brief Definition of MockAcceptorFactory class.
  */
 #pragma once
 
 #include <memory>
-#include <string_view>
+#include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
-#include "msgpack_rpc/transport/i_backend.h"
-#include "msgpack_rpc/transport/i_connector.h"
-#include "msgpack_rpc/transport/i_resolver.h"
 #include "trompeloeil_catch2.h"
 
 namespace msgpack_rpc_test {
 
-class MockBackend final : public msgpack_rpc::transport::IBackend {
+class MockAcceptorFactory final
+    : public msgpack_rpc::transport::IAcceptorFactory {
 public:
-    MAKE_CONST_MOCK0(scheme, std::string_view(), noexcept override);
-
-    MAKE_MOCK1(create_acceptor,
-        std::shared_ptr<msgpack_rpc::transport::IAcceptor>(
-            const msgpack_rpc::addresses::Address&),
+    MAKE_MOCK1(create,
+        std::vector<std::shared_ptr<msgpack_rpc::transport::IAcceptor>>(
+            const msgpack_rpc::addresses::URI&),
         override);
-
-    MAKE_MOCK0(create_acceptor_factory,
-        std::shared_ptr<msgpack_rpc::transport::IAcceptorFactory>(), override);
-
-    MAKE_MOCK0(create_connector,
-        std::shared_ptr<msgpack_rpc::transport::IConnector>(), override);
-
-    MAKE_MOCK0(create_resolver,
-        std::shared_ptr<msgpack_rpc::transport::IResolver>(), override);
 };
 
 }  // namespace msgpack_rpc_test

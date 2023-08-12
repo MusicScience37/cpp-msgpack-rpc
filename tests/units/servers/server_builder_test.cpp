@@ -26,6 +26,7 @@
 
 #include "../create_test_logger.h"
 #include "../transport/mock_acceptor.h"
+#include "../transport/mock_acceptor_factory.h"
 #include "../transport/mock_backend.h"
 #include "../transport/mock_resolver.h"
 #include "msgpack_rpc/addresses/address.h"
@@ -34,6 +35,7 @@
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
+#include "msgpack_rpc/transport/i_acceptor.h"
 
 TEST_CASE("msgpack_rpc::servers::ServerBuilder") {
     using msgpack_rpc::addresses::Address;
@@ -41,9 +43,10 @@ TEST_CASE("msgpack_rpc::servers::ServerBuilder") {
     using msgpack_rpc::servers::IServer;
     using msgpack_rpc::servers::ServerBuilder;
     using msgpack_rpc::servers::impl::create_empty_server_builder_impl;
+    using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc_test::MockAcceptor;
+    using msgpack_rpc_test::MockAcceptorFactory;
     using msgpack_rpc_test::MockBackend;
-    using msgpack_rpc_test::MockResolver;
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
@@ -67,15 +70,15 @@ TEST_CASE("msgpack_rpc::servers::ServerBuilder") {
         REQUIRE_NOTHROW(builder.add_method<int(int, int)>(
             "add", [](int a, int b) { return a + b; }));
 
-        const auto resolver = std::make_shared<MockResolver>();
-        REQUIRE_CALL(*backend, create_resolver()).TIMES(1).RETURN(resolver);
-        REQUIRE_CALL(*resolver, resolve(_))
-            .TIMES(1)
-            .RETURN(std::vector<Address>{TCPAddress{ip_address, port}});
-
+        const auto acceptor_factory = std::make_shared<MockAcceptorFactory>();
         const auto acceptor = std::make_shared<MockAcceptor>();
-        REQUIRE_CALL(*backend, create_acceptor(_)).TIMES(1).RETURN(acceptor);
+        REQUIRE_CALL(*acceptor_factory, create(_))
+            .TIMES(1)
+            .RETURN(std::vector<std::shared_ptr<IAcceptor>>{acceptor});
+        REQUIRE_CALL(*backend, create_acceptor_factory())
+            .TIMES(1)
+            .RETURN(acceptor_factory);
 
-        const auto server = builder.build();
+        std::unique_ptr<IServer> server = builder.build();
     }
 }

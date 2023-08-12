@@ -27,6 +27,7 @@
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
+#include "msgpack_rpc/transport/tcp/tcp_acceptor_factory.h"
 #include "msgpack_rpc/transport/tcp/tcp_connector.h"
 #include "msgpack_rpc/transport/tcp/tcp_resolver.h"
 
@@ -47,6 +48,11 @@ std::shared_ptr<IAcceptor> TCPBackend::create_acceptor(
     const addresses::Address& local_address) {
     return std::make_shared<TCPAcceptor>(
         local_address.as_tcp(), executor(), message_parser_config_, logger_);
+}
+
+std::shared_ptr<IAcceptorFactory> TCPBackend::create_acceptor_factory() {
+    return std::make_shared<TCPAcceptorFactory>(
+        executor(), message_parser_config_, logger_);
 }
 
 std::shared_ptr<IConnector> TCPBackend::create_connector() {
