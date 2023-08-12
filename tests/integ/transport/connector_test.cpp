@@ -15,51 +15,55 @@
  */
 /*!
  * \file
- * \brief Test of resolvers.
+ * \brief Test of connectors.
  */
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/transport/backends.h"
+#include "msgpack_rpc/transport/i_connector.h"
 
-SCENARIO("Resolve addresses in TCP") {
-    using msgpack_rpc::addresses::TCPAddress;
+SCENARIO("Create a connector") {
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::MessageParserConfig;
+    using msgpack_rpc::executors::OperationType;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
+
     const auto executor =
         msgpack_rpc::executors::create_single_thread_executor(logger);
+    const auto post = [&executor](std::function<void()> function) {
+        asio::post(
+            executor->context(OperationType::CALLBACK), std::move(function));
+    };
 
     const auto backend = msgpack_rpc::transport::create_tcp_backend(
         executor, MessageParserConfig(), logger);
 
-    GIVEN("A resolver") {
-        const auto resolver = backend->create_resolver();
+    GIVEN("A connector") {
+        const auto connector = backend->create_connector();
 
         WHEN(
-            "The resolver is requested to resolve a URI with a valid IP "
-            "address") {
-            const auto uri = URI("tcp", "127.0.0.1", 1234);
-
-            THEN("Correctly generate an address") {
-                const auto results = resolver->resolve(uri);
-
-                REQUIRE(results.size() == 1);
-                CHECK(results.at(0) == TCPAddress("127.0.0.1", 1234));
-            }
-        }
-
-        WHEN("The resolver is requested to resolve an invalid URI") {
+            "The connector is requested to establish a connection to an "
+            "invalid URI") {
             // TLD ".invalid" can't be resolved.
             const auto uri = URI("tcp", "test.invalid", 1234);
+            msgpack_rpc::transport::IConnector::ConnectionCallback
+                on_connected = [](auto /*status*/, auto /*connection*/) {
+                    // This must not be called.
+                    FAIL();
+                };
 
             THEN("An exception is thrown") {
-                CHECK_THROWS((void)resolver->resolve(uri));
+                post([&connector, &uri, &on_connected] {
+                    REQUIRE_THROWS(connector->async_connect(uri, on_connected));
+                });
+
+                executor->run();
             }
         }
     }

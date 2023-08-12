@@ -48,19 +48,12 @@ public:
     //! \copydoc msgpack_rpc::transport::IBackend::scheme
     [[nodiscard]] std::string_view scheme() const noexcept override;
 
-    //! \copydoc msgpack_rpc::transport::IBackend::create_acceptor
-    [[nodiscard]] std::shared_ptr<IAcceptor> create_acceptor(
-        const addresses::Address& local_address) override;
-
     //! \copydoc msgpack_rpc::transport::IBackend::create_acceptor_factory
     [[nodiscard]] std::shared_ptr<IAcceptorFactory> create_acceptor_factory()
         override;
 
     //! \copydoc msgpack_rpc::transport::IBackend::create_connector
     [[nodiscard]] std::shared_ptr<IConnector> create_connector() override;
-
-    //! \copydoc msgpack_rpc::transport::IBackend::create_resolver
-    [[nodiscard]] std::shared_ptr<IResolver> create_resolver() override;
 
     TCPBackend(const TCPBackend&) = delete;
     TCPBackend(TCPBackend&&) = delete;

@@ -29,7 +29,6 @@
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
 #include "msgpack_rpc/transport/tcp/tcp_acceptor_factory.h"
 #include "msgpack_rpc/transport/tcp/tcp_connector.h"
-#include "msgpack_rpc/transport/tcp/tcp_resolver.h"
 
 namespace msgpack_rpc::transport::tcp {
 
@@ -44,12 +43,6 @@ std::string_view TCPBackend::scheme() const noexcept {
     return addresses::TCP_SCHEME;
 }
 
-std::shared_ptr<IAcceptor> TCPBackend::create_acceptor(
-    const addresses::Address& local_address) {
-    return std::make_shared<TCPAcceptor>(
-        local_address.as_tcp(), executor(), message_parser_config_, logger_);
-}
-
 std::shared_ptr<IAcceptorFactory> TCPBackend::create_acceptor_factory() {
     return std::make_shared<TCPAcceptorFactory>(
         executor(), message_parser_config_, logger_);
@@ -58,10 +51,6 @@ std::shared_ptr<IAcceptorFactory> TCPBackend::create_acceptor_factory() {
 std::shared_ptr<IConnector> TCPBackend::create_connector() {
     return std::make_shared<TCPConnector>(
         executor(), message_parser_config_, logger_);
-}
-
-std::shared_ptr<IResolver> TCPBackend::create_resolver() {
-    return std::make_shared<TCPResolver>(executor(), logger_);
 }
 
 TCPBackend::~TCPBackend() noexcept = default;

@@ -26,15 +26,13 @@
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_connector.h"
-#include "msgpack_rpc/transport/i_resolver.h"
 
 namespace msgpack_rpc::transport {
 
 /*!
  * \brief Interface of backends of protocols.
  *
- * \note Objects of this class are factories of acceptors, connectors, and
- * resolvers.
+ * \note Objects of this class are factories of acceptor factories, connectors.
  */
 class IBackend {
 public:
@@ -44,15 +42,6 @@ public:
      * \return Scheme.
      */
     [[nodiscard]] virtual std::string_view scheme() const noexcept = 0;
-
-    /*!
-     * \brief Create an acceptor to accept connections.
-     *
-     * \param[in] local_address Local address to listen.
-     * \return Acceptor.
-     */
-    [[nodiscard]] virtual std::shared_ptr<IAcceptor> create_acceptor(
-        const addresses::Address& local_address) = 0;
 
     /*!
      * \brief Create a factory to create acceptors.
@@ -68,13 +57,6 @@ public:
      * \return Connector.
      */
     [[nodiscard]] virtual std::shared_ptr<IConnector> create_connector() = 0;
-
-    /*!
-     * \brief Create a resolver.
-     *
-     * \return Resolver.
-     */
-    [[nodiscard]] virtual std::shared_ptr<IResolver> create_resolver() = 0;
 
     IBackend(const IBackend&) = delete;
     IBackend(IBackend&&) = delete;
