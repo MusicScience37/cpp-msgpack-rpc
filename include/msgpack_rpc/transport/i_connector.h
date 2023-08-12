@@ -22,7 +22,7 @@
 #include <functional>
 #include <memory>
 
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
@@ -48,12 +48,12 @@ public:
     /*!
      * \brief Asynchronously connect to an endpoint.
      *
-     * \param[in] address Address of the endpoint.
+     * \param[in] uri URI of the endpoint.
      * \param[in] on_connected Callback function called when the process
      * finished.
      */
     virtual void async_connect(
-        const addresses::Address& address, ConnectionCallback on_connected) = 0;
+        const addresses::URI& uri, ConnectionCallback on_connected) = 0;
 
     IConnector(const IConnector&) = delete;
     IConnector(IConnector&&) = delete;

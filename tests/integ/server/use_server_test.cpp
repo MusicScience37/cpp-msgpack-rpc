@@ -108,7 +108,7 @@ SCENARIO("Use a server") {
                      address = addresses.front()] {
                 const auto connector = backend->create_connector();
 
-                connector->async_connect(address,
+                connector->async_connect(address.to_uri(),
                     [&on_connected, &client_connection,
                         &client_connection_callbacks](const Status& status,
                         std::shared_ptr<IConnection> connection) {

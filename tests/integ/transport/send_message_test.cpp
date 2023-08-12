@@ -108,7 +108,7 @@ SCENARIO("Send messages") {
                  &client_connection_callbacks, &acceptor] {
             const auto connector = backend->create_connector();
 
-            connector->async_connect(acceptor->local_address(),
+            connector->async_connect(acceptor->local_address().to_uri(),
                 [&on_connected, &client_connection,
                     &client_connection_callbacks](const Status& status,
                     std::shared_ptr<IConnection> connection) {
@@ -138,7 +138,12 @@ SCENARIO("Send messages") {
                 server_remote_address = server_connection->remote_address())
             .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
-        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(4);
+        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(5);
+        // Calls:
+        // - 1 resolver in client
+        // - 1 socket in client
+        // - 1 acceptor
+        // - 2 sockets in server
 
         REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
             .TIMES(1)

@@ -19,11 +19,11 @@
  */
 #pragma once
 
-#include "msgpack_rpc/transport/connector.h"
+#include "msgpack_rpc/transport/ip_connector.h"
 
 namespace msgpack_rpc::transport::tcp {
 
 //! Type of connectors of TCP.
-using TCPConnector = Connector;
+using TCPConnector = IPConnector;
 
 }  // namespace msgpack_rpc::transport::tcp

@@ -15,37 +15,46 @@
  */
 /*!
  * \file
- * \brief Definition of Connector class.
+ * \brief Definition of IPConnector class.
  */
 #pragma once
 
 #include <memory>
 
+#include <asio/connect.hpp>
 #include <asio/error_code.hpp>
 #include <fmt/core.h>
 
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/transport/connection.h"
 #include "msgpack_rpc/transport/i_connector.h"
 
 namespace msgpack_rpc::transport {
 
 /*!
- * \brief Class of connectors.
+ * \brief Class of connectors for protocols based on IP.
  */
-class Connector : public IConnector,
-                  public std::enable_shared_from_this<Connector> {
+class IPConnector : public IConnector,
+                    public std::enable_shared_from_this<IPConnector> {
 public:
     // TODO Change to template when another protocol is implemented.
+
+    //! Type of resolvers in asio library.
+    using AsioResolver = asio::ip::tcp::resolver;
 
     //! Type of sockets in asio library.
     using AsioSocket = asio::ip::tcp::socket;
 
+    //! Type of addresses in asio library.
+    using AsioAddress = asio::ip::tcp::endpoint;
+
     //! Type of concrete addresses.
-    using ConcreteAddress = addresses::TCPAddress;
+    using ConcreteAddressType = addresses::TCPAddress;
 
     //! Type of connections.
     using ConnectionType = Connection;
@@ -57,52 +66,96 @@ public:
      * \param[in] message_parser_config Configuration of parsers of messages.
      * \param[in] logger Logger.
      */
-    Connector(const std::shared_ptr<executors::IExecutor>& executor,
+    IPConnector(const std::shared_ptr<executors::IExecutor>& executor,
         const config::MessageParserConfig& message_parser_config,
         std::shared_ptr<logging::Logger> logger)
         : executor_(executor),
           message_parser_config_(message_parser_config),
+          resolver_(executor->context(executors::OperationType::TRANSPORT)),
           scheme_("tcp"),
           log_name_(fmt::format("Resolver({})", scheme_)),
           logger_(std::move(logger)) {}
 
     //! \copydoc msgpack_rpc::transport::IConnector::async_connect
-    void async_connect(const addresses::Address& address,
-        ConnectionCallback on_connected) override {
+    void async_connect(
+        const addresses::URI& uri, ConnectionCallback on_connected) override {
+        const auto resolved_endpoints = resolve(uri);
+
         auto socket_ptr = std::make_unique<AsioSocket>(
             get_executor()->context(executors::OperationType::TRANSPORT));
         AsioSocket& socket = *socket_ptr;
-        socket.async_connect(address.as_tcp().asio_address(),
+        asio::async_connect(socket, resolved_endpoints,
             [self = this->shared_from_this(),
                 socket_ptr_moved = std::move(socket_ptr),
                 on_connected_moved = std::move(on_connected),
-                address](const asio::error_code& error) {
+                uri](const asio::error_code& error,
+                const AsioAddress& asio_address) {
                 self->on_connect(error, std::move(*socket_ptr_moved),
-                    on_connected_moved, address);
+                    on_connected_moved, asio_address, uri);
             });
-        MSGPACK_RPC_TRACE(
-            logger_, "({}) Connecting to {}.", log_name_, address);
+        MSGPACK_RPC_TRACE(logger_, "({}) Connecting to {}.", log_name_, uri);
     }
 
 private:
+    /*!
+     * \brief Resolve a URI.
+     *
+     * \param[in] uri URI.
+     * \return List of resolved addresses in asio library.
+     */
+    [[nodiscard]] AsioResolver::results_type resolve(
+        const addresses::URI& uri) {
+        if (uri.scheme() != scheme_) {
+            throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+                fmt::format("Scheme is different with the resolver: "
+                            "expected={}, actual={}",
+                    scheme_, uri.scheme()));
+        }
+
+        MSGPACK_RPC_TRACE(logger_, "({}) Resolve {}.", log_name_, uri);
+
+        const std::string service = fmt::format(
+            "{}", uri.port_number().value_or(static_cast<std::uint16_t>(0)));
+        asio::error_code error;
+        auto results = resolver_.resolve(uri.host(), service, error);
+        if (error) {
+            const auto message =
+                fmt::format("Failed to resolve {}: {}", uri, error.message());
+            MSGPACK_RPC_ERROR(logger_, "({}) {}", log_name_, message);
+            throw MsgpackRPCException(StatusCode::HOST_UNRESOLVED, message);
+        }
+
+        if (logger_->output_log_level() <= logging::LogLevel::TRACE) {
+            for (const auto& result : results) {
+                MSGPACK_RPC_TRACE(logger_, "({}) Result of resolving {}: {}.",
+                    log_name_, uri, fmt::streamed(result.endpoint()));
+            }
+        }
+
+        return results;
+    }
+
     /*!
      * \brief Handle the result of connect operation.
      *
      * \param[in] error Error.
      * \param[in] socket Socket.
      * \param[in] on_connected Callback function to tell the result to user.
-     * \param[in] address Address.
+     * \param[in] asio_address Address in asio library.
+     * \param[in] uri URI.
      */
     void on_connect(const asio::error_code& error, AsioSocket&& socket,
-        const ConnectionCallback& on_connected,
-        const addresses::Address& address) {
+        const ConnectionCallback& on_connected, const AsioAddress& asio_address,
+        const addresses::URI& uri) {
         if (error) {
             const auto message = fmt::format(
-                "Failed to connect to {}: {}", address, error.message());
+                "Failed to connect to {}: {}", uri, error.message());
             MSGPACK_RPC_WARN(logger_, "({}) {}", log_name_, message);
             on_connected(
                 Status(StatusCode::CONNECTION_FAILURE, message), nullptr);
         }
+        MSGPACK_RPC_TRACE(logger_, "({}) Connected to {}.", log_name_,
+            fmt::streamed(asio_address));
 
         auto connection = std::make_shared<ConnectionType>(
             std::move(socket), message_parser_config_, logger_);
@@ -130,6 +183,9 @@ private:
 
     //! Configuration of parsers of messages.
     config::MessageParserConfig message_parser_config_;
+
+    //! Resolver.
+    AsioResolver resolver_;
 
     //! Scheme.
     std::string scheme_;
