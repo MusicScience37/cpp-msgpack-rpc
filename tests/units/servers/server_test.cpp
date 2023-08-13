@@ -29,7 +29,6 @@
 #include "../methods/mock_method.h"
 #include "../transport/mock_acceptor.h"
 #include "../transport/mock_connection.h"
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"

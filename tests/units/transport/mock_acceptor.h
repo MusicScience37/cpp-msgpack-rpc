@@ -19,7 +19,6 @@
  */
 #pragma once
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "trompeloeil_catch2.h"
 

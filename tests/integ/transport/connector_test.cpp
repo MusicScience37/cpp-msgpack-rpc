@@ -17,6 +17,7 @@
  * \file
  * \brief Test of connectors.
  */
+#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"

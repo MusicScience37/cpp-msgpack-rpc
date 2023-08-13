@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/uri.h"
 namespace msgpack_rpc::servers {
 

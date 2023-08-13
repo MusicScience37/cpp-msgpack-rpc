@@ -28,7 +28,6 @@
 #include "../transport/mock_acceptor.h"
 #include "../transport/mock_acceptor_factory.h"
 #include "../transport/mock_backend.h"
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/executors.h"
