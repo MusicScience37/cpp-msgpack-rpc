@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/transport/backend_list.h"
@@ -93,7 +94,11 @@ private:
     void async_connect() {
         connector_ =
             backends_->find(current_uri_->scheme())->create_connector();
-        connector_->async_connect(*current_uri_, *this);
+        try {
+            connector_->async_connect(*current_uri_, *this);
+        } catch (const MsgpackRPCException& e) {
+            (*this)(e.status(), nullptr);
+        }
     }
 
     //! Backends.
@@ -124,7 +129,7 @@ private:
  *
  * \warning This class holds only reference to backends and URIs.
  */
-void async_connect(const BackendList& backends,
+inline void async_connect(const BackendList& backends,
     const std::vector<addresses::URI>& uris,
     std::function<void(const Status&, std::shared_ptr<IConnection>)>
         on_connection) {

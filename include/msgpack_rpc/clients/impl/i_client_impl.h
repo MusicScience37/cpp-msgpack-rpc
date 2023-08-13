@@ -34,6 +34,16 @@ namespace msgpack_rpc::clients::impl {
 class IClientImpl {
 public:
     /*!
+     * \brief Start processing of this client.
+     */
+    virtual void start() = 0;
+
+    /*!
+     * \brief Stop processing of this client.
+     */
+    virtual void stop() = 0;
+
+    /*!
      * \brief Asynchronously call a method.
      *
      * \param[in] method_name Name of the method.
