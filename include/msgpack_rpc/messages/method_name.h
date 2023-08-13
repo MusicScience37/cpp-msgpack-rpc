@@ -19,11 +19,12 @@
  */
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 namespace msgpack_rpc::messages {
 

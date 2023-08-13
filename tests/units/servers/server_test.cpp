@@ -22,7 +22,9 @@
 #include <functional>
 #include <memory>
 
+#include <asio/io_context.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <trompeloeil.hpp>
 
 #include "../create_test_logger.h"
 #include "../methods/mock_method.h"
@@ -35,7 +37,11 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_request.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
+#include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_processor.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/transport/i_acceptor.h"

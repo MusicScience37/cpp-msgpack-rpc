@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <exception>
+
 #include "msgpack_rpc/executors/i_executor.h"
 
 namespace msgpack_rpc::executors {

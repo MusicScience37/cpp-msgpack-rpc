@@ -20,8 +20,10 @@
 #pragma once
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
+#include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"

@@ -19,8 +19,6 @@
  */
 #include "msgpack_rpc/config/server_config.h"
 
-#include <string_view>
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "msgpack_rpc/addresses/schemes.h"

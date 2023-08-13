@@ -20,15 +20,23 @@
 #include "msgpack_rpc/messages/message_serializer.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <variant>
 
 #include <catch2/catch_test_macros.hpp>
 
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/messages/buffer_view.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_parser.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_parameters.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"

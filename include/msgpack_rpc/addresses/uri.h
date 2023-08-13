@@ -20,11 +20,12 @@
 #pragma once
 
 #include <cstdint>
+#include <iosfwd>
 #include <optional>
 #include <string>
 #include <string_view>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 

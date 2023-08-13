@@ -23,6 +23,7 @@
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <trompeloeil.hpp>
 
 #include "mock_backend.h"
 #include "msgpack_rpc/transport/i_backend.h"

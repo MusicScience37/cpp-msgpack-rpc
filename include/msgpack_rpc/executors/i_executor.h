@@ -19,8 +19,6 @@
  */
 #pragma once
 
-#include <exception>
-
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/operation_type.h"
 

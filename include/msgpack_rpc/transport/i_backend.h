@@ -22,7 +22,6 @@
 #include <memory>
 #include <string_view>
 
-#include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_connector.h"
 

@@ -19,7 +19,13 @@
  */
 #pragma once
 
-#include <spdlog/spdlog.h>
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+
+#include <spdlog/common.h>
+#include <spdlog/logger.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"

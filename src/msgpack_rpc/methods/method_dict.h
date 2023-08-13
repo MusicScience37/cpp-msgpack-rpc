@@ -19,12 +19,16 @@
  */
 #pragma once
 
+#include <functional>
 #include <memory>
+#include <string>
 #include <unordered_map>
+#include <utility>
+
+#include <fmt/core.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/methods/i_method.h"
 

@@ -20,6 +20,8 @@
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/servers/impl/server_builder_impl.h"

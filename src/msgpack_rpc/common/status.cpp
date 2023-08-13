@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "msgpack_rpc/common/status_code.h"
 

@@ -19,10 +19,14 @@
  */
 #pragma once
 
+#include <memory>
+#include <string_view>
+#include <utility>
+
 #include <msgpack.hpp>
-#include <msgpack/v3/object_fwd_decl.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 
 namespace msgpack_rpc::messages {
 

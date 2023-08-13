@@ -30,6 +30,7 @@
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
+#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"

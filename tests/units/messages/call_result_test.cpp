@@ -20,6 +20,7 @@
 #include "msgpack_rpc/messages/call_result.h"
 
 #include <memory>
+#include <string>
 
 #include <catch2/catch_test_macros.hpp>
 #include <msgpack.hpp>

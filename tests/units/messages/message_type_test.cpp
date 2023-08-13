@@ -19,9 +19,11 @@
  */
 #include "msgpack_rpc/messages/message_type.h"
 
+#include <string>
 #include <string_view>
 #include <unordered_map>
 
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("msgpack_rpc::messages::format_message_type") {

@@ -23,7 +23,6 @@
 #include <optional>
 
 #include <msgpack.hpp>
-#include <msgpack/v1/unpack_decl.hpp>
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"

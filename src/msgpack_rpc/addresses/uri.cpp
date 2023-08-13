@@ -19,7 +19,9 @@
  */
 #include "msgpack_rpc/addresses/uri.h"
 
-#include <fmt/format.h>
+#include <ostream>
+
+#include <absl/strings/string_view.h>
 #include <re2/re2.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

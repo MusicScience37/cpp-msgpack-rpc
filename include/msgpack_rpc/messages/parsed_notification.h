@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <utility>
+
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_parameters.h"
 

@@ -21,14 +21,13 @@
 
 #include <cstdint>
 #include <ostream>
+#include <string>
 #include <string_view>
 
 #include <asio/ip/tcp.hpp>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <fmt/core.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
-#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 

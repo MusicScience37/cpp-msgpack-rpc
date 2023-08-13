@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/messages/parsed_parameters.h"
 
+#include <string>
+
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("msgpack_rpc::messages::ParsedParameters") {

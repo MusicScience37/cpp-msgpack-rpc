@@ -19,11 +19,14 @@
  */
 #pragma once
 
+// IWYU pragma: no_include <typeindex>
+
+#include <cstddef>
 #include <functional>
 #include <string>
 #include <string_view>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 #include "msgpack_rpc/messages/method_name.h"
 

@@ -20,6 +20,9 @@
 #include "msgpack_rpc/messages/impl/parse_message_from_object.h"
 
 #include <memory>
+#include <string>
+#include <tuple>
+#include <variant>
 
 #include <catch2/catch_test_macros.hpp>
 #include <msgpack.hpp>

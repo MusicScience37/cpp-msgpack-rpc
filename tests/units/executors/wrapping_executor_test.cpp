@@ -18,13 +18,16 @@
  * \brief Test of WrappingExecutor class.
  */
 #include <memory>
+#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <trompeloeil.hpp>
 
 #include "mock_executor.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
 TEST_CASE("msgpack_rpc::executors::WrappingExecutor") {
