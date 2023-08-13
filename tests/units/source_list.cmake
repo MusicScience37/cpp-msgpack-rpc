@@ -31,6 +31,7 @@ set(SOURCE_FILES
     servers/server_builder_test.cpp
     servers/server_test.cpp
     test_main.cpp
+    transport/async_connect_test.cpp
     transport/backend_list_test.cpp
     transport/connection_wrapper_test.cpp
 )
