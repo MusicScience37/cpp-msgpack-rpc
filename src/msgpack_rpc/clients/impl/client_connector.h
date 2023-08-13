@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <atomic>
 #include <cassert>
 #include <chrono>
 #include <functional>
@@ -92,6 +93,22 @@ public:
     }
 
     /*!
+     * \brief Stop processing.
+     */
+    void stop() {
+        if (is_stopped_.exchange(true, std::memory_order_acquire)) {
+            return;
+        }
+
+        std::unique_lock<std::mutex> lock(connection_mutex_);
+        if (connection_) {
+            connection_->async_close();
+            connection_.reset();
+        }
+        lock.unlock();
+    }
+
+    /*!
      * \brief Get the connection.
      *
      * \return Connection. (Null if not connected.)
@@ -137,6 +154,9 @@ private:
      * \brief Handle failure to connect.
      */
     void on_connection_failure() {
+        if (is_stopped_.load(std::memory_order_relaxed)) {
+            return;
+        }
         // TODO configuration of cycle to retry.
         // TODO use timer.
         MSGPACK_RPC_TRACE(
@@ -149,6 +169,12 @@ private:
      * \brief Handle connection closed.
      */
     void on_connection_closed() {
+        if (is_stopped_.load(std::memory_order_relaxed)) {
+            return;
+        }
+        std::unique_lock<std::mutex> lock(connection_mutex_);
+        connection_.reset();
+        lock.unlock();
         MSGPACK_RPC_TRACE(logger_, "Connection closed, so reconnect now.");
         async_connect();
     }
@@ -179,6 +205,9 @@ private:
 
     //! Mutex of connection_ and is_connecting_.
     std::mutex connection_mutex_{};
+
+    //! Whether this connector is stopped.
+    std::atomic<bool> is_stopped_{false};
 
     //! Callback function called when a connection is established.
     ConnectionCallback on_connection_{};

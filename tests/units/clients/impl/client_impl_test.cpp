@@ -79,14 +79,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
 
     const auto server_uris = std::vector<URI>{URI(scheme, "host1")};
 
-    const auto client_connector = std::make_shared<ClientConnector>(
-        executor, backends, server_uris, logger);
-    const std::shared_ptr<IClientImpl> client =
-        std::make_shared<ClientImpl>(client_connector, async_executor, logger);
-
     SECTION("connect successfully") {
-        post([&client] { client->start(); });
-
         const auto connection = std::make_shared<MockConnection>();
         IConnection::MessageReceivedCallback on_received =
             [](auto /*message*/) { FAIL(); };
@@ -99,6 +92,15 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             .LR_SIDE_EFFECT(on_received = _1)
             .LR_SIDE_EFFECT(on_sent = _2)
             .LR_SIDE_EFFECT(on_closed = _3);
+        REQUIRE_CALL(*connection, async_close()).TIMES(1);
+
+        const auto client_connector = std::make_shared<ClientConnector>(
+            executor, backends, server_uris, logger);
+        const std::shared_ptr<IClientImpl> client =
+            std::make_shared<ClientImpl>(
+                client_connector, async_executor, logger);
+
+        post([&client] { client->start(); });
 
         const auto connector = std::make_shared<MockConnector>();
         REQUIRE_CALL(*backend, create_connector()).TIMES(1).RETURN(connector);
@@ -108,7 +110,9 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
                 on_connect(Status(), connection);
             }));
 
-        SECTION("and no exception thrown") { REQUIRE_NOTHROW(executor->run()); }
+        SECTION("and no exception is thrown") {
+            REQUIRE_NOTHROW(executor->run());
+        }
 
         SECTION("and asynchronously call a method") {
             const auto method_name = MethodNameView("method1");
@@ -118,13 +122,24 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
                 MessageSerializer::serialize_request(
                     method_name, request_id, param1);
 
-            post([&client, &method_name, &serialized_request] {
-                const std::shared_ptr<ICallFutureImpl> future =
-                    client->async_call(
-                        method_name, request_id, serialized_request);
+            std::shared_ptr<ICallFutureImpl> future;
+            post([&client, &method_name, &serialized_request, &future] {
+                future = client->async_call(
+                    method_name, request_id, serialized_request);
             });
 
             REQUIRE_NOTHROW(executor->run());
         }
+    }
+
+    SECTION("stop without starting") {
+        const auto client_connector = std::make_shared<ClientConnector>(
+            executor, backends, server_uris, logger);
+        const std::shared_ptr<IClientImpl> client =
+            std::make_shared<ClientImpl>(
+                client_connector, async_executor, logger);
+
+        REQUIRE_NOTHROW(client->stop());
+        REQUIRE_NOTHROW(executor->run());
     }
 }

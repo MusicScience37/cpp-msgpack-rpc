@@ -59,6 +59,25 @@ public:
           executor_(std::move(executor)),
           logger_(std::move(logger)) {}
 
+    /*!
+     * \brief Destructor.
+     */
+    ~ClientImpl() override {
+        try {
+            stop();
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_CRITICAL(logger_,
+                "An exception was thrown when destructing a client but "
+                "ignored: {}",
+                e.what());
+        }
+    }
+
+    ClientImpl(const ClientImpl&) = delete;
+    ClientImpl(ClientImpl&&) = delete;
+    ClientImpl& operator=(const ClientImpl&) = delete;
+    ClientImpl& operator=(ClientImpl&&) = delete;
+
     //! \copydoc msgpack_rpc::clients::impl::IClientImpl::start
     void start() override {
         if (is_started_.exchange(true)) {
@@ -96,6 +115,7 @@ public:
         if (is_stopped_.exchange(true)) {
             return;
         }
+        connector_->stop();
         executor_->stop();
     }
 
