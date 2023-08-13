@@ -24,6 +24,8 @@
 #include <asio/system_error.hpp>
 #include <fmt/core.h>
 
+#include "msgpack_rpc/addresses/schemes.h"
+#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 
@@ -40,15 +42,15 @@ void check_connectivity(const msgpack_rpc::addresses::TCPAddress& address) {
     }
 }
 
-void check_connectivity(const msgpack_rpc::addresses::Address& address) {
-    address.visit([](const auto& concrete_address) {
-        check_connectivity(concrete_address);
-    });
+void check_connectivity(const msgpack_rpc::addresses::URI& uri) {
+    if (uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
+        check_connectivity(msgpack_rpc::addresses::TCPAddress(
+            uri.host(), uri.port_number().value()));
+    }
 }
 
-void check_connectivity(
-    const std::vector<msgpack_rpc::addresses::Address>& addresses) {
-    for (const auto& address : addresses) {
-        check_connectivity(address);
+void check_connectivity(const std::vector<msgpack_rpc::addresses::URI>& uris) {
+    for (const auto& uri : uris) {
+        check_connectivity(uri);
     }
 }

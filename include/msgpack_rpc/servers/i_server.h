@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 namespace msgpack_rpc::servers {
 
 /*!
@@ -40,11 +41,11 @@ public:
     virtual void stop() = 0;
 
     /*!
-     * \brief Get the addresses of the local endpoints in this server.
+     * \brief Get the URIs of the local endpoints in this server.
      *
-     * \return Addresses.
+     * \return URIs.
      */
-    [[nodiscard]] virtual std::vector<addresses::Address> local_addresses() = 0;
+    [[nodiscard]] virtual std::vector<addresses::URI> local_endpoint_uris() = 0;
 
     IServer(const IServer&) = delete;
     IServer(IServer&&) = delete;

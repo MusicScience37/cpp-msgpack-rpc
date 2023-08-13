@@ -114,14 +114,14 @@ public:
         executor_->stop();
     }
 
-    //! \copydoc msgpack_rpc::servers::IServer::local_addresses
-    [[nodiscard]] std::vector<addresses::Address> local_addresses() override {
-        std::vector<addresses::Address> addresses;
-        addresses.reserve(acceptors_.size());
+    //! \copydoc msgpack_rpc::servers::IServer::local_endpoint_uris
+    [[nodiscard]] std::vector<addresses::URI> local_endpoint_uris() override {
+        std::vector<addresses::URI> uris;
+        uris.reserve(acceptors_.size());
         for (const auto& acceptor : acceptors_) {
-            addresses.push_back(acceptor->local_address());
+            uris.push_back(acceptor->local_address().to_uri());
         }
-        return addresses;
+        return uris;
     }
 
 private:

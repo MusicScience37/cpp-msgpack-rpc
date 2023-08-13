@@ -21,8 +21,8 @@
 
 #include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 
 /*!
  * \brief Check whether an address is accepting connections.
@@ -32,16 +32,15 @@
 void check_connectivity(const msgpack_rpc::addresses::TCPAddress& address);
 
 /*!
- * \brief Check whether an address is accepting connections.
+ * \brief Check whether a URI is accepting connections.
  *
- * \param[in] address Address.
+ * \param[in] uri URI.
  */
-void check_connectivity(const msgpack_rpc::addresses::Address& address);
+void check_connectivity(const msgpack_rpc::addresses::URI& uri);
 
 /*!
- * \brief Check whether addresses are accepting connections.
+ * \brief Check whether URIs are accepting connections.
  *
- * \param[in] addresses Addresses.
+ * \param[in] uris URIs.
  */
-void check_connectivity(
-    const std::vector<msgpack_rpc::addresses::Address>& addresses);
+void check_connectivity(const std::vector<msgpack_rpc::addresses::URI>& uris);

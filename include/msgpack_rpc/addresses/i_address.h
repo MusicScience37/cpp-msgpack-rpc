@@ -36,6 +36,7 @@ public:
     [[nodiscard]] virtual URI to_uri() const = 0;
 
 #ifndef MSGPACK_RPC_DOCUMENTATION
+    // TODO delete these functions.
     IAddress(const IAddress&) = default;
     IAddress(IAddress&&) = default;
     IAddress& operator=(const IAddress&) = default;

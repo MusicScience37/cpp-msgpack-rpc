@@ -25,7 +25,7 @@
 
 #include "../transport/transport_helper.h"
 #include "create_test_logger.h"
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/config/server_config.h"
@@ -40,7 +40,7 @@
 #include "msgpack_rpc/transport/i_connection.h"
 
 SCENARIO("Use a server") {
-    using msgpack_rpc::addresses::Address;
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::ServerConfig;
     using msgpack_rpc::servers::ServerBuilder;
 
@@ -68,10 +68,9 @@ SCENARIO("Use a server") {
         auto server = builder.build();
         server->start();
 
-        const auto addresses = server->local_addresses();
-        MSGPACK_RPC_DEBUG(
-            logger, "Server addresses: {}", fmt::join(addresses, ", "));
-        REQUIRE(addresses != std::vector<Address>{});  // NOLINT
+        const auto uris = server->local_endpoint_uris();
+        MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
+        REQUIRE(uris != std::vector<URI>{});  // NOLINT
 
         WHEN("A client connect to the server") {
             using msgpack_rpc::MsgpackRPCException;
@@ -104,11 +103,10 @@ SCENARIO("Use a server") {
             const auto client_connection_callbacks =
                 std::make_shared<ConnectionCallbacks>();
             post([&backend, &on_connected, &client_connection,
-                     &client_connection_callbacks,
-                     address = addresses.front()] {
+                     &client_connection_callbacks, uri = uris.front()] {
                 const auto connector = backend->create_connector();
 
-                connector->async_connect(address.to_uri(),
+                connector->async_connect(uri,
                     [&on_connected, &client_connection,
                         &client_connection_callbacks](const Status& status,
                         std::shared_ptr<IConnection> connection) {
