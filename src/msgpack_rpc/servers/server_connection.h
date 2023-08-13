@@ -31,12 +31,12 @@
 #include <variant>
 #include <vector>
 
-#include <asio/post.hpp>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -106,8 +106,8 @@ private:
             [this, executor](auto&& concrete_message) {
                 if constexpr (std::is_same_v<messages::ParsedRequest,
                                   std::decay_t<decltype(concrete_message)>>) {
-                    asio::post(
-                        executor->context(executors::OperationType::CALLBACK),
+                    executors::async_invoke(executor,
+                        executors::OperationType::CALLBACK,
                         [self = this->shared_from_this(),
                             // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
                             request = std::move(concrete_message)] {
@@ -117,8 +117,8 @@ private:
                                          messages::ParsedNotification,
                                          std::decay_t<
                                              decltype(concrete_message)>>) {
-                    asio::post(
-                        executor->context(executors::OperationType::CALLBACK),
+                    executors::async_invoke(executor,
+                        executors::OperationType::CALLBACK,
                         [self = this->shared_from_this(),
                             // NOLINTNEXTLINE(bugprone-move-forwarding-reference): This actually always moves rvalue.
                             notification = std::move(concrete_message)] {

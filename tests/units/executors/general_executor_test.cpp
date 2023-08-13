@@ -24,19 +24,20 @@
 #include <stdexcept>
 #include <thread>
 
-#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/config/executor_config.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
 
 TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     using msgpack_rpc::config::ExecutorConfig;
+    using msgpack_rpc::executors::async_invoke;
     using msgpack_rpc::executors::create_executor;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc_test::create_test_logger;
@@ -52,8 +53,8 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(asio::post(
-            executor->context(operation_type), [&is_called, &executor] {
+        CHECK_NOTHROW(
+            async_invoke(executor, operation_type, [&is_called, &executor] {
                 is_called.store(true);
                 executor->interrupt();
             }));
@@ -71,8 +72,8 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(asio::post(
-            executor->context(operation_type), [&is_called, &message] {
+        CHECK_NOTHROW(
+            async_invoke(executor, operation_type, [&is_called, &message] {
                 is_called.store(true);
                 throw std::runtime_error(message);
             }));
@@ -92,7 +93,7 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(asio::post(executor->context(operation_type),
+        CHECK_NOTHROW(async_invoke(executor, operation_type,
             [&called_promise] { called_promise.set_value(); }));
 
         CHECK(future.wait_for(std::chrono::seconds(1)) ==
@@ -110,7 +111,7 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         INFO("Operation type: " << static_cast<int>(operation_type));
         MSGPACK_RPC_DEBUG(
             logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(asio::post(executor->context(operation_type),
+        CHECK_NOTHROW(async_invoke(executor, operation_type,
             [&message] { throw std::runtime_error(message); }));
 
         std::exception_ptr last_exception;

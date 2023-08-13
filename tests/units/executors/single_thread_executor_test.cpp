@@ -20,15 +20,16 @@
 #include <atomic>
 #include <stdexcept>
 
-#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_exception.hpp>
 
 #include "../create_test_logger.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
 TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
+    using msgpack_rpc::executors::async_invoke;
     using msgpack_rpc::executors::create_single_thread_executor;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc_test::create_test_logger;
@@ -43,7 +44,7 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
 
     SECTION("run with a task") {
         std::atomic<bool> is_called{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
+        CHECK_NOTHROW(async_invoke(executor, OperationType::CALLBACK,
             [&is_called] { is_called.store(true); }));
 
         CHECK_NOTHROW(executor->run());
@@ -54,13 +55,13 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
     SECTION("run with a task throwing an exception") {
         std::atomic<bool> is_called1{false};
         const std::string message = "Test exception message.";
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
-            [&is_called1, &message] {
+        CHECK_NOTHROW(async_invoke(
+            executor, OperationType::CALLBACK, [&is_called1, &message] {
                 is_called1.store(true);
                 throw std::runtime_error(message);
             }));
         std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
+        CHECK_NOTHROW(async_invoke(executor, OperationType::CALLBACK,
             [&is_called2] { is_called2.store(true); }));
 
         CHECK_THROWS_WITH(executor->run(), message);
@@ -71,13 +72,13 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
 
     SECTION("run with a task stopping the executor") {
         std::atomic<bool> is_called1{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
-            [&is_called1, &executor] {
+        CHECK_NOTHROW(async_invoke(
+            executor, OperationType::CALLBACK, [&is_called1, &executor] {
                 is_called1.store(true);
                 executor->interrupt();
             }));
         std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(asio::post(executor->context(OperationType::CALLBACK),
+        CHECK_NOTHROW(async_invoke(executor, OperationType::CALLBACK,
             [&is_called2] { is_called2.store(true); }));
 
         CHECK_NOTHROW(executor->run());

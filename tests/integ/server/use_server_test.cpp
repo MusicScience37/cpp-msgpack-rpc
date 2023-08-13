@@ -21,7 +21,6 @@
 #include <future>
 #include <string_view>
 
-#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "../transport/transport_helper.h"
@@ -30,6 +29,8 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/executors/async_invoke.h"
+#include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
@@ -90,8 +91,8 @@ SCENARIO("Use a server") {
             const auto executor =
                 msgpack_rpc::executors::create_single_thread_executor(logger);
             const auto post = [&executor](std::function<void()> function) {
-                asio::post(executor->context(OperationType::CALLBACK),
-                    std::move(function));
+                msgpack_rpc::executors::async_invoke(
+                    executor, OperationType::CALLBACK, std::move(function));
             };
 
             const auto backend = msgpack_rpc::transport::create_tcp_backend(
