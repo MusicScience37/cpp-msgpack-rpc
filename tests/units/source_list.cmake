@@ -2,6 +2,8 @@ set(SOURCE_FILES
     addresses/tcp_address_test.cpp
     addresses/uri_test.cpp
     catch_event_listener.cpp
+    clients/impl/call_future_impl_test.cpp
+    clients/impl/client_impl_test.cpp
     common/status_code_test.cpp
     common/status_test.cpp
     config/executor_config_test.cpp
