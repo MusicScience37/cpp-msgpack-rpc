@@ -76,7 +76,7 @@ public:
         : acceptor_(executor->context(executors::OperationType::TRANSPORT),
               local_address.asio_address()),
           executor_(executor),
-          local_address_(ConcreteAddress(acceptor_.local_endpoint())),
+          local_address_(acceptor_.local_endpoint()),
           message_parser_config_(message_parser_config),
           log_name_(fmt::format("Acceptor(local={})", local_address_)),
           logger_(std::move(logger)) {
@@ -103,7 +103,7 @@ public:
     }
 
     //! \copydoc msgpack_rpc::transport::IConnection::local_address
-    [[nodiscard]] const addresses::Address& local_address()
+    [[nodiscard]] const addresses::IAddress& local_address()
         const noexcept override {
         return local_address_;
     }
@@ -190,7 +190,7 @@ private:
     ConnectionCallback on_connection_{};
 
     //! Address of the local endpoint.
-    addresses::Address local_address_;
+    ConcreteAddress local_address_;
 
     //! Configuration of parsers of messages.
     config::MessageParserConfig message_parser_config_;

@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <string>
+
 #include "msgpack_rpc/addresses/uri.h"
 
 namespace msgpack_rpc::addresses {
@@ -29,11 +31,18 @@ namespace msgpack_rpc::addresses {
 class IAddress {
 public:
     /*!
-     * \brief Convert to URI.
+     * \brief Convert to a URI.
      *
      * \return URI.
      */
     [[nodiscard]] virtual URI to_uri() const = 0;
+
+    /*!
+     * \brief Convert to a string specifying URI.
+     *
+     * \return String.
+     */
+    [[nodiscard]] virtual std::string to_string() const = 0;
 
 #ifndef MSGPACK_RPC_DOCUMENTATION
     // TODO delete these functions.

@@ -73,12 +73,11 @@ public:
      */
     [[nodiscard]] std::uint16_t port_number() const;
 
-    /*!
-     * \brief Convert to URI.
-     *
-     * \return URI.
-     */
+    //! \copydoc msgpack_rpc::addresses::IAddress::to_uri
     [[nodiscard]] URI to_uri() const override;
+
+    //! \copydoc msgpack_rpc::addresses::IAddress::to_string
+    [[nodiscard]] std::string to_string() const override;
 
     /*!
      * \brief Get the address in asio library.

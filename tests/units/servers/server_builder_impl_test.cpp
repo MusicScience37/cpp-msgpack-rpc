@@ -36,7 +36,6 @@
 #include "msgpack_rpc/transport/i_acceptor.h"
 
 TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
-    using msgpack_rpc::addresses::Address;
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::messages::MethodNameView;

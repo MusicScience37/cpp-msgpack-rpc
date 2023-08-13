@@ -44,7 +44,6 @@
 #include "msgpack_rpc_test/create_parsed_messages.h"
 
 TEST_CASE("msgpack_rpc::servers::Server") {
-    using msgpack_rpc::addresses::Address;
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
@@ -105,7 +104,7 @@ TEST_CASE("msgpack_rpc::servers::Server") {
         SECTION("then no error happens") { REQUIRE_NOTHROW(executor->run()); }
 
         SECTION("and accept an connection") {
-            const Address remote_address = TCPAddress("127.0.0.1", 20000);
+            const auto remote_address = TCPAddress("127.0.0.1", 20000);
             const auto connection = std::make_shared<MockConnection>();
             ALLOW_CALL(*connection, remote_address()).RETURN(remote_address);
 

@@ -43,6 +43,8 @@ URI TCPAddress::to_uri() const {
     return URI("tcp", address_.address().to_string(), address_.port());
 }
 
+std::string TCPAddress::to_string() const { return fmt::format("{}", *this); }
+
 const AsioTCPAddress& TCPAddress::asio_address() const { return address_; }
 
 bool TCPAddress::operator==(const TCPAddress& right) const {

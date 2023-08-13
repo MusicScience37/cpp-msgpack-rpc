@@ -31,7 +31,7 @@ public:
 
     MAKE_MOCK0(stop, void(), override);
 
-    MAKE_CONST_MOCK0(local_address, const msgpack_rpc::addresses::Address&(),
+    MAKE_CONST_MOCK0(local_address, const msgpack_rpc::addresses::IAddress&(),
         noexcept override);
 };
 

@@ -72,8 +72,7 @@ public:
           executor_(std::move(executor)),
           processor_(std::move(processor)),
           logger_(std::move(logger)),
-          formatted_remote_address_(
-              fmt::format("{}", connection->remote_address())) {}
+          formatted_remote_address_(connection->remote_address().to_string()) {}
 
     /*!
      * \brief Start processing.
