@@ -23,7 +23,6 @@
 #include <variant>
 
 #include <asio/error_code.hpp>
-#include <asio/post.hpp>
 #include <asio/system_error.hpp>
 #include <catch2/catch_test_macros.hpp>
 
@@ -34,6 +33,7 @@
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -76,8 +76,8 @@ SCENARIO("Send messages") {
 
     ALLOW_CALL(*executor, on_context(OperationType::CALLBACK));
     const auto post = [&executor](std::function<void()> function) {
-        asio::post(
-            executor->context(OperationType::CALLBACK), std::move(function));
+        msgpack_rpc::executors::async_invoke(
+            executor, OperationType::CALLBACK, std::move(function));
     };
 
     GIVEN("A connection is established") {

@@ -17,12 +17,12 @@
  * \file
  * \brief Test of connectors.
  */
-#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/transport/backends.h"
@@ -38,8 +38,8 @@ SCENARIO("Create a connector") {
     const auto executor =
         msgpack_rpc::executors::create_single_thread_executor(logger);
     const auto post = [&executor](std::function<void()> function) {
-        asio::post(
-            executor->context(OperationType::CALLBACK), std::move(function));
+        msgpack_rpc::executors::async_invoke(
+            executor, OperationType::CALLBACK, std::move(function));
     };
 
     const auto backend = msgpack_rpc::transport::create_tcp_backend(

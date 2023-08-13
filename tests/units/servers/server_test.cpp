@@ -22,7 +22,6 @@
 #include <functional>
 #include <memory>
 
-#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "../create_test_logger.h"
@@ -30,6 +29,7 @@
 #include "../transport/mock_acceptor.h"
 #include "../transport/mock_connection.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/messages/message_id.h"
@@ -66,8 +66,8 @@ TEST_CASE("msgpack_rpc::servers::Server") {
     const auto executor =
         msgpack_rpc::executors::create_single_thread_executor(logger);
     const auto post_transport = [&executor](std::function<void()> function) {
-        asio::post(
-            executor->context(OperationType::TRANSPORT), std::move(function));
+        msgpack_rpc::executors::async_invoke(
+            executor, OperationType::TRANSPORT, std::move(function));
     };
 
     const auto executor_wrapper =

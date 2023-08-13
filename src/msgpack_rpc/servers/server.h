@@ -30,7 +30,6 @@
 #include <variant>
 #include <vector>
 
-#include <asio/post.hpp>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
