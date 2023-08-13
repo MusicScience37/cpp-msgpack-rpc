@@ -58,6 +58,7 @@
     "INLINES",
     "INTEG",
     "interruptible",
+    "isystem",
     "IWYU",
     "Kabashima",
     "Kenta",
@@ -92,13 +93,15 @@
     "swappable",
     "toctree",
     "TOUPPER",
+    "tqdm",
     "trompeloeil",
     "ubsan",
     "vcpkg",
     "venv",
     "virtualenv",
     "virtualenvs",
-    "Wextra"
+    "Wextra",
+    "Xiwyu"
   ],
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
