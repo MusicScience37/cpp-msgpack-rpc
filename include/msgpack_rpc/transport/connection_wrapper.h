@@ -153,7 +153,7 @@ public:
      *
      * \return Address.
      */
-    [[nodiscard]] const addresses::Address& local_address() const noexcept {
+    [[nodiscard]] const addresses::IAddress& local_address() const noexcept {
         return connection_->local_address();
     }
 
@@ -162,7 +162,7 @@ public:
      *
      * \return Address.
      */
-    [[nodiscard]] const addresses::Address& remote_address() const noexcept {
+    [[nodiscard]] const addresses::IAddress& remote_address() const noexcept {
         return connection_->remote_address();
     }
 

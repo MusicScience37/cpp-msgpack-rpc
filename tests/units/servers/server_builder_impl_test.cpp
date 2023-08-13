@@ -26,7 +26,6 @@
 #include "../transport/mock_acceptor.h"
 #include "../transport/mock_acceptor_factory.h"
 #include "../transport/mock_backend.h"
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/executors.h"
@@ -36,7 +35,6 @@
 #include "msgpack_rpc/transport/i_acceptor.h"
 
 TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
-    using msgpack_rpc::addresses::Address;
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::messages::MethodNameView;

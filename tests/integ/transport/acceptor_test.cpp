@@ -17,11 +17,10 @@
  * \file
  * \brief Test of acceptors.
  */
+#include <asio/post.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"
-#include "msgpack_rpc/addresses/address.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/executors.h"

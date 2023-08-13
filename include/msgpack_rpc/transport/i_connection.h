@@ -22,7 +22,7 @@
 #include <functional>
 #include <memory>
 
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/serialized_message.h"
@@ -90,7 +90,7 @@ public:
      *
      * \return Address.
      */
-    [[nodiscard]] virtual const addresses::Address& local_address()
+    [[nodiscard]] virtual const addresses::IAddress& local_address()
         const noexcept = 0;
 
     /*!
@@ -98,7 +98,7 @@ public:
      *
      * \return Address.
      */
-    [[nodiscard]] virtual const addresses::Address& remote_address()
+    [[nodiscard]] virtual const addresses::IAddress& remote_address()
         const noexcept = 0;
 
     IConnection(const IConnection&) = delete;

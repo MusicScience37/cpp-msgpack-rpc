@@ -22,6 +22,7 @@
 #include <functional>
 #include <memory>
 
+#include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
 namespace msgpack_rpc::transport {
@@ -59,7 +60,7 @@ public:
      *
      * \return Address.
      */
-    [[nodiscard]] virtual const addresses::Address& local_address()
+    [[nodiscard]] virtual const addresses::IAddress& local_address()
         const noexcept = 0;
 
     IAcceptor(const IAcceptor&) = delete;

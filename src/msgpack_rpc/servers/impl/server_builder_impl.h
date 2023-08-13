@@ -25,7 +25,6 @@
 #include <utility>
 #include <vector>
 
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"

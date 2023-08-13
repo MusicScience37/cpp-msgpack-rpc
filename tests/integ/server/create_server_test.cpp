@@ -23,12 +23,12 @@
 
 #include "check_connectivity.h"
 #include "create_test_logger.h"
-#include "msgpack_rpc/addresses/address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Create a server") {
-    using msgpack_rpc::addresses::Address;
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::ServerConfig;
     using msgpack_rpc::servers::ServerBuilder;
 
@@ -61,13 +61,12 @@ SCENARIO("Create a server") {
                         AND_THEN("The server can be connectable") {
                             server->start();
 
-                            const auto addresses = server->local_addresses();
-                            MSGPACK_RPC_DEBUG(logger, "Server addresses: {}",
-                                fmt::join(addresses, ", "));
-                            CHECK(
-                                addresses != std::vector<Address>{});  // NOLINT
+                            const auto uris = server->local_endpoint_uris();
+                            MSGPACK_RPC_DEBUG(logger, "Server URIs: {}",
+                                fmt::join(uris, ", "));
+                            CHECK(uris != std::vector<URI>{});  // NOLINT
 
-                            CHECK_NOTHROW(check_connectivity(addresses));
+                            CHECK_NOTHROW(check_connectivity(uris));
                         }
                     }
                 }
@@ -96,12 +95,12 @@ SCENARIO("Create a server") {
                     AND_THEN("The server can be connectable") {
                         server->start();
 
-                        const auto addresses = server->local_addresses();
-                        MSGPACK_RPC_DEBUG(logger, "Server addresses: {}",
-                            fmt::join(addresses, ", "));
-                        CHECK(addresses != std::vector<Address>{});  // NOLINT
+                        const auto uris = server->local_endpoint_uris();
+                        MSGPACK_RPC_DEBUG(
+                            logger, "Server URIs: {}", fmt::join(uris, ", "));
+                        CHECK(uris != std::vector<URI>{});  // NOLINT
 
-                        CHECK_NOTHROW(check_connectivity(addresses));
+                        CHECK_NOTHROW(check_connectivity(uris));
                     }
                 }
             }

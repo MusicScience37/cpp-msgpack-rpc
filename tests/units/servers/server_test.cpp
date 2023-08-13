@@ -29,7 +29,6 @@
 #include "../methods/mock_method.h"
 #include "../transport/mock_acceptor.h"
 #include "../transport/mock_connection.h"
-#include "msgpack_rpc/addresses/address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -44,7 +43,6 @@
 #include "msgpack_rpc_test/create_parsed_messages.h"
 
 TEST_CASE("msgpack_rpc::servers::Server") {
-    using msgpack_rpc::addresses::Address;
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
@@ -105,9 +103,9 @@ TEST_CASE("msgpack_rpc::servers::Server") {
         SECTION("then no error happens") { REQUIRE_NOTHROW(executor->run()); }
 
         SECTION("and accept an connection") {
-            const Address remote_address = TCPAddress("127.0.0.1", 20000);
+            const auto remote_address = TCPAddress("127.0.0.1", 20000);
             const auto connection = std::make_shared<MockConnection>();
-            ALLOW_CALL(*connection, remote_address()).RETURN(remote_address);
+            ALLOW_CALL(*connection, remote_address()).LR_RETURN(remote_address);
 
             post_transport(
                 [&on_connection, &connection] { on_connection(connection); });

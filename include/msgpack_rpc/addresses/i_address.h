@@ -15,48 +15,46 @@
  */
 /*!
  * \file
- * \brief Definition of IServer class.
+ * \brief Definition of IAddress.
  */
 #pragma once
 
-#include <vector>
+#include <string>
 
 #include "msgpack_rpc/addresses/uri.h"
-namespace msgpack_rpc::servers {
+
+namespace msgpack_rpc::addresses {
 
 /*!
- * \brief Interface of servers.
+ * \brief Interface of addresses.
  */
-class IServer {
+class IAddress {
 public:
     /*!
-     * \brief Start processing of this server.
-     */
-    virtual void start() = 0;
-
-    /*!
-     * \brief Stop processing of this server.
-     */
-    virtual void stop() = 0;
-
-    /*!
-     * \brief Get the URIs of the local endpoints in this server.
+     * \brief Convert to a URI.
      *
-     * \return URIs.
+     * \return URI.
      */
-    [[nodiscard]] virtual std::vector<addresses::URI> local_endpoint_uris() = 0;
+    [[nodiscard]] virtual URI to_uri() const = 0;
 
-    IServer(const IServer&) = delete;
-    IServer(IServer&&) = delete;
-    IServer& operator=(const IServer&) = delete;
-    IServer& operator=(IServer&&) = delete;
+    /*!
+     * \brief Convert to a string specifying URI.
+     *
+     * \return String.
+     */
+    [[nodiscard]] virtual std::string to_string() const = 0;
+
+    IAddress(const IAddress&) = delete;
+    IAddress(IAddress&&) = delete;
+    IAddress& operator=(const IAddress&) = delete;
+    IAddress& operator=(IAddress&&) = delete;
 
     //! Destructor.
-    virtual ~IServer() noexcept = default;
+    virtual ~IAddress() noexcept = default;
 
 protected:
     //! Constructor.
-    IServer() noexcept = default;
+    IAddress() noexcept = default;
 };
 
-}  // namespace msgpack_rpc::servers
+}  // namespace msgpack_rpc::addresses

@@ -75,8 +75,8 @@ public:
         std::shared_ptr<logging::Logger> logger)
         : socket_(std::move(socket)),
           message_parser_(message_parser_config),
-          local_address_(ConcreteAddress(socket_.local_endpoint())),
-          remote_address_(ConcreteAddress(socket_.remote_endpoint())),
+          local_address_(socket_.local_endpoint()),
+          remote_address_(socket_.remote_endpoint()),
           log_name_(fmt::format("Connection(local={}, remote={})",
               local_address_, remote_address_)),
           logger_(std::move(logger)) {}
@@ -117,13 +117,13 @@ public:
     }
 
     //! \copydoc msgpack_rpc::transport::IConnection::local_address
-    [[nodiscard]] const addresses::Address& local_address()
+    [[nodiscard]] const addresses::IAddress& local_address()
         const noexcept override {
         return local_address_;
     }
 
     //! \copydoc msgpack_rpc::transport::IConnection::remote_address
-    [[nodiscard]] const addresses::Address& remote_address()
+    [[nodiscard]] const addresses::IAddress& remote_address()
         const noexcept override {
         return remote_address_;
     }
@@ -265,10 +265,10 @@ private:
     messages::MessageParser message_parser_;
 
     //! Address of the local endpoint.
-    addresses::Address local_address_;
+    ConcreteAddress local_address_;
 
     //! Address of the remote endpoint.
-    addresses::Address remote_address_;
+    ConcreteAddress remote_address_;
 
     //! Name of the connection for logs.
     std::string log_name_;
