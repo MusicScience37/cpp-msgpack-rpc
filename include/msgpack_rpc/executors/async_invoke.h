@@ -23,7 +23,8 @@
 #include <type_traits>
 #include <utility>
 
-#include <asio/post.hpp>
+#include <asio/io_context.hpp>  // IWYU pragma: export
+#include <asio/post.hpp>        // IWYU pragma: export
 
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"

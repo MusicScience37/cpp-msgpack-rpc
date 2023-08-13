@@ -23,7 +23,6 @@
 #include <string>
 #include <type_traits>
 
-#include <asio/io_context.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
 

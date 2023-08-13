@@ -992,8 +992,16 @@
   { include: ["<asio/ssl/impl/error.ipp>", private, "<asio/ssl/error.hpp>", public ] },
   { include: ["<asio/ssl/impl/host_name_verification.ipp>", private, "<asio/ssl/host_name_verification.hpp>", public ] },
   { include: ["<asio/ssl/impl/rfc2818_verification.ipp>", private, "<asio/ssl/rfc2818_verification.hpp>", public ] },
-  # Additional mappings of asio library
+  # Custom (additional mappings of asio library)
   { include: ["<asio/impl/any_io_executor.ipp>", private, "<asio/any_io_executor.hpp>", public ] },
+  { include: ["<asio/ip/detail/impl/endpoint.ipp>", private, "<asio/ip/basic_endpoint.hpp>", public ] },
   # Custom (msgpack library)
   { include: ["@<msgpack/.*>", private, "<msgpack.hpp>", public ] },
+  # Custom (lyra library)
+  # Use of headers other than lyra.hpp causes compile error.
+  { include: ["<lyra/cli.hpp>", private, "<lyra/lyra.hpp>", public ] },
+  { include: ["<lyra/opt.hpp>", private, "<lyra/lyra.hpp>", public ] },
+  { include: ["<lyra/parser.hpp>", private, "<lyra/lyra.hpp>", public ] },
+  # Custom (trompeloeil library)
+  { include: ["<trompeloeil.hpp>", private, "\"trompeloeil_catch2.h\"", public ] },
 ]

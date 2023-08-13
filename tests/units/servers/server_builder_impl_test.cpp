@@ -26,7 +26,6 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
 
 #include "../create_test_logger.h"
 #include "../methods/mock_method.h"
@@ -41,6 +40,7 @@
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
     using msgpack_rpc::addresses::TCPAddress;

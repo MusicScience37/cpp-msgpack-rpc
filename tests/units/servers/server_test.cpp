@@ -22,9 +22,7 @@
 #include <functional>
 #include <memory>
 
-#include <asio/io_context.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
 
 #include "../create_test_logger.h"
 #include "../methods/mock_method.h"
@@ -47,6 +45,7 @@
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::Server") {
     using msgpack_rpc::addresses::TCPAddress;

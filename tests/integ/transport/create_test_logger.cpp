@@ -19,6 +19,7 @@
  */
 #include "create_test_logger.h"
 
+#include <cstddef>
 #include <memory>
 #include <string_view>
 

@@ -28,7 +28,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <msgpack.hpp>
-#include <trompeloeil.hpp>
 
 #include "mock_connection.h"
 #include "msgpack_rpc/messages/call_result.h"
@@ -40,6 +39,7 @@
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc_test/parse_messages.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
     using msgpack_rpc::messages::MessageID;

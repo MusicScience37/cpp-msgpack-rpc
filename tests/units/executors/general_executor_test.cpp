@@ -28,7 +28,6 @@
 #include <thread>
 #include <type_traits>
 
-#include <asio/io_context.hpp>
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>

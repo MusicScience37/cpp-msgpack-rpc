@@ -23,10 +23,10 @@
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
 
 #include "mock_backend.h"
 #include "msgpack_rpc/transport/i_backend.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::transport::BackendList") {
     using msgpack_rpc::transport::BackendList;

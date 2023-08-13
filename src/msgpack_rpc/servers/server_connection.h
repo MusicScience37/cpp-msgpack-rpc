@@ -29,8 +29,6 @@
 #include <utility>
 #include <variant>
 
-#include <asio/io_context.hpp>
-
 #include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/async_invoke.h"
