@@ -2,6 +2,7 @@
 #include "msgpack_rpc/addresses/uri.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/common/status.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/common/status_code.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/config/client_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/executor_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/logging_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/message_parser_config.cpp"  // NOLINT(bugprone-suspicious-include)

@@ -6,6 +6,7 @@ set(SOURCE_FILES
     clients/impl/client_impl_test.cpp
     common/status_code_test.cpp
     common/status_test.cpp
+    config/client_config_test.cpp
     config/executor_config_test.cpp
     config/logging_config_test.cpp
     config/message_parser_config_test.cpp
