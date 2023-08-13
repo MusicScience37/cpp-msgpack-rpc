@@ -31,7 +31,7 @@ line count:
       --exclude-dir=extern,line_count
       --force-lang=C++,h
       --json --out=line_count/line_count.json
-    - cloc ./include
+    - cloc ./include ./src
       --force-lang=C++,h
       --json --out=line_count/src_line_count.json
   artifacts:
