@@ -20,32 +20,40 @@
 #include "check_connectivity.h"
 
 #include <asio/io_context.hpp>
+#include <asio/ip/address.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/system_error.hpp>
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/schemes.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 
-void check_connectivity(const msgpack_rpc::addresses::TCPAddress& address) {
+/*!
+ * \brief Check whether a TCP endpoint is accepting connections.
+ *
+ * \param[in] uri URI of the TCP endpoint.
+ */
+void check_connectivity_tcp(const msgpack_rpc::addresses::URI& uri) {
     asio::io_context context;
     asio::ip::tcp::socket socket{context};
+    const auto endpoint = asio::ip::tcp::endpoint(
+        asio::ip::make_address(uri.host()), uri.port_number().value());
 
     try {
-        socket.connect(address.asio_address());
+        socket.connect(endpoint);
     } catch (const asio::system_error& e) {
         throw msgpack_rpc::MsgpackRPCException(
             msgpack_rpc::StatusCode::UNEXPECTED_ERROR,
-            fmt::format("Failed to connect to {}: {}.", address, e.what()));
+            fmt::format("Failed to connect to {}: {}.", fmt::streamed(endpoint),
+                e.what()));
     }
 }
 
 void check_connectivity(const msgpack_rpc::addresses::URI& uri) {
     if (uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
-        check_connectivity(msgpack_rpc::addresses::TCPAddress(
-            uri.host(), uri.port_number().value()));
+        check_connectivity_tcp(uri);
     }
 }
 

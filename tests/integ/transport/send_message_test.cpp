@@ -28,7 +28,6 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "create_test_logger.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"

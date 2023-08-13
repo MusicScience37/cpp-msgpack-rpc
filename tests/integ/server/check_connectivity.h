@@ -21,15 +21,7 @@
 
 #include <vector>
 
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
-
-/*!
- * \brief Check whether an address is accepting connections.
- *
- * \param[in] address Address.
- */
-void check_connectivity(const msgpack_rpc::addresses::TCPAddress& address);
 
 /*!
  * \brief Check whether a URI is accepting connections.

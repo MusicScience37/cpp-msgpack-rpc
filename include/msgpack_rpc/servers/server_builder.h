@@ -24,7 +24,7 @@
 #include <string_view>
 #include <utility>
 
-#include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/executors/executors.h"
