@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include <asio/post.hpp>
 
@@ -39,7 +40,7 @@ namespace msgpack_rpc::executors {
 template <typename Function>
 void async_invoke(const std::shared_ptr<IExecutor>& executor,
     OperationType type, Function&& function) {
-    asio::post(executor->context(type), function);
+    asio::post(executor->context(type), std::forward<Function>(function));
 }
 
 }  // namespace msgpack_rpc::executors
