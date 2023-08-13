@@ -27,6 +27,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
@@ -41,7 +42,7 @@ using AsioTCPAddress = asio::ip::tcp::endpoint;
 /*!
  * \brief Class of addresses of TCP.
  */
-class MSGPACK_RPC_EXPORT TCPAddress {
+class MSGPACK_RPC_EXPORT TCPAddress final : public IAddress {
 public:
     /*!
      * \brief Constructor.
@@ -77,7 +78,7 @@ public:
      *
      * \return URI.
      */
-    [[nodiscard]] URI to_uri() const;
+    [[nodiscard]] URI to_uri() const override;
 
     /*!
      * \brief Get the address in asio library.
