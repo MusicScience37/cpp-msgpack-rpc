@@ -35,12 +35,17 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_request.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
+#include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_processor.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::Server") {
     using msgpack_rpc::addresses::TCPAddress;

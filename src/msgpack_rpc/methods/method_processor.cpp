@@ -20,6 +20,7 @@
 #include "msgpack_rpc/methods/method_processor.h"
 
 #include <memory>
+#include <utility>
 
 #include "msgpack_rpc/methods/method_processor_impl.h"
 

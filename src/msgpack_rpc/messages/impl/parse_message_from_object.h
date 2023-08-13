@@ -20,11 +20,16 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdlib>
+#include <memory>
 #include <string_view>
 #include <utility>
 
 #include <msgpack.hpp>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_type.h"
 #include "msgpack_rpc/messages/method_name_view.h"

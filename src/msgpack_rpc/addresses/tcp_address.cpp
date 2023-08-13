@@ -19,10 +19,14 @@
  */
 #include "msgpack_rpc/addresses/tcp_address.h"
 
+#include <optional>
 #include <utility>
 
 #include <asio/ip/address.hpp>
+#include <asio/ip/basic_endpoint.hpp>
+#include <fmt/ostream.h>
 
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 
 namespace msgpack_rpc::addresses {

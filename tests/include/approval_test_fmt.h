@@ -15,17 +15,11 @@
  */
 /*!
  * \file
- * \brief Definition of AsioContextType class.
+ * \brief Include ApprovalTest with fmt library.
  */
 #pragma once
 
-#include <asio/io_context.hpp>  // IWYU pragma: export
-
-namespace msgpack_rpc::executors {
-
-/*!
- * \brief Type of context in asio library.
- */
-using AsioContextType = asio::io_context;
-
-}  // namespace msgpack_rpc::executors
+// clang-format off
+#include <fmt/format.h>         // IWYU pragma: keep
+#include <ApprovalTests.hpp>    // IWYU pragma: export
+// clang-format on

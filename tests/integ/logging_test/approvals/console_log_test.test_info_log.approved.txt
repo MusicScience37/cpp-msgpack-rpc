@@ -1,10 +1,10 @@
 exit code: 0
 stdout:
-[<time-stamp>] [info] Information. (write_log.cpp:59, <function-name>)
-[<time-stamp>] [warning] Warning. (write_log.cpp:60, <function-name>)
-[<time-stamp>] [error] Error. (write_log.cpp:61, <function-name>)
-[<time-stamp>] [critical] Critical. (write_log.cpp:62, <function-name>)
-[<time-stamp>] [info] Log with an argument: 123 (write_log.cpp:64, <function-name>)
+[<time-stamp>] [info] Information. (write_log.cpp:58, <function-name>)
+[<time-stamp>] [warning] Warning. (write_log.cpp:59, <function-name>)
+[<time-stamp>] [error] Error. (write_log.cpp:60, <function-name>)
+[<time-stamp>] [critical] Critical. (write_log.cpp:61, <function-name>)
+[<time-stamp>] [info] Log with an argument: 123 (write_log.cpp:63, <function-name>)
 
 stderr:
 

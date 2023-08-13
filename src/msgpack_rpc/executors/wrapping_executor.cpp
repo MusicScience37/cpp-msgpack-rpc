@@ -17,11 +17,16 @@
  * \file
  * \brief Definition of WrappingExecutor class.
  */
+#include <exception>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
+#include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
+#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/operation_type.h"
 
 namespace msgpack_rpc::executors {
 

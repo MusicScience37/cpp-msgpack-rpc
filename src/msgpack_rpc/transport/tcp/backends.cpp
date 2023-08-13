@@ -20,6 +20,7 @@
 #include "msgpack_rpc/transport/backends.h"
 
 #include <memory>
+#include <utility>
 
 #include "msgpack_rpc/transport/tcp/tcp_backend.h"
 

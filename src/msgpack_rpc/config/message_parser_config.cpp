@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/config/message_parser_config.h"
 
+#include <string_view>
+
 #include <msgpack.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

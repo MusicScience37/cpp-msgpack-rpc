@@ -19,10 +19,8 @@
  */
 #include "msgpack_rpc/config/server_config.h"
 
-#include <cstdint>
 #include <string_view>
 
-#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 
 namespace msgpack_rpc::config {

@@ -1,5 +1,9 @@
+#include <memory>
+#include <type_traits>
+
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/log_sinks.h"
 #include "msgpack_rpc/logging/logger.h"

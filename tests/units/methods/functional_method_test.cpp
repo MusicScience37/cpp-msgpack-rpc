@@ -19,16 +19,21 @@
  */
 #include "msgpack_rpc/methods/functional_method.h"
 
+#include <functional>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <fmt/core.h>
 
 #include "../create_test_logger.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_exception.h"

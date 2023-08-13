@@ -20,12 +20,18 @@
 #include "msgpack_rpc/messages/message_parser.h"
 
 #include <algorithm>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <variant>
 
 #include <catch2/catch_test_macros.hpp>
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/messages/message_id.h"
+#include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_message.h"
+#include "msgpack_rpc/messages/parsed_parameters.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 
 TEST_CASE("msgpack_rpc::messages::MessageParser") {

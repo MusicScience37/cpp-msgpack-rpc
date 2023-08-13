@@ -19,10 +19,17 @@
  */
 #pragma once
 
+// IWYU pragma: no_include <asio/ip/basic_endpoint.hpp>
+// IWYU pragma: no_include <asio/ip/detail/impl/endpoint.ipp>
+// IWYU pragma: no_include <catch2/catch_message.hpp>
+
 #include <iterator>
 #include <memory>
+#include <string_view>
+#include <type_traits>
 #include <utility>
 
+#include <fmt/core.h>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/config/logging_config.h"

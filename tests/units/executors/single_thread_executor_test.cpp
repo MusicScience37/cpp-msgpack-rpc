@@ -18,14 +18,18 @@
  * \brief Test of SingleThreadExecutor class.
  */
 #include <atomic>
+#include <memory>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
 TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {

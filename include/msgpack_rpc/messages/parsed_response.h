@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <utility>
+
 #include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 

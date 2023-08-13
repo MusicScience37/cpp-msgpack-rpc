@@ -17,13 +17,22 @@
  * \file
  * \brief Test of connectors.
  */
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_connector.h"

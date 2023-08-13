@@ -19,8 +19,13 @@
  */
 #include "check_connectivity.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include <asio/io_context.hpp>
 #include <asio/ip/address.hpp>
+#include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/system_error.hpp>
 #include <fmt/core.h>

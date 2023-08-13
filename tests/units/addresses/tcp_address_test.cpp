@@ -21,8 +21,9 @@
 
 #include <string_view>
 
-#include <ApprovalTests.hpp>
 #include <catch2/catch_test_macros.hpp>
+
+#include "approval_test_fmt.h"
 
 TEST_CASE("msgpack_rpc::addresses::TCPAddress") {
     using msgpack_rpc::addresses::TCPAddress;

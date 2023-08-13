@@ -21,17 +21,25 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
+#include <msgpack.hpp>
 
 #include "mock_connection.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_parameters.h"
+#include "msgpack_rpc/messages/parsed_request.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc_test/parse_messages.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
     using msgpack_rpc::messages::MessageID;

@@ -17,7 +17,13 @@
  * \file
  * \brief Test of ServerBuilderImpl class.
  */
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -30,9 +36,11 @@
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
     using msgpack_rpc::addresses::TCPAddress;
