@@ -44,13 +44,10 @@ public:
      */
     [[nodiscard]] virtual std::string to_string() const = 0;
 
-#ifndef MSGPACK_RPC_DOCUMENTATION
-    // TODO delete these functions.
-    IAddress(const IAddress&) = default;
-    IAddress(IAddress&&) = default;
-    IAddress& operator=(const IAddress&) = default;
-    IAddress& operator=(IAddress&&) = default;
-#endif
+    IAddress(const IAddress&) = delete;
+    IAddress(IAddress&&) = delete;
+    IAddress& operator=(const IAddress&) = delete;
+    IAddress& operator=(IAddress&&) = delete;
 
     //! Destructor.
     virtual ~IAddress() noexcept = default;

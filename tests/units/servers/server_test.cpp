@@ -105,7 +105,7 @@ TEST_CASE("msgpack_rpc::servers::Server") {
         SECTION("and accept an connection") {
             const auto remote_address = TCPAddress("127.0.0.1", 20000);
             const auto connection = std::make_shared<MockConnection>();
-            ALLOW_CALL(*connection, remote_address()).RETURN(remote_address);
+            ALLOW_CALL(*connection, remote_address()).LR_RETURN(remote_address);
 
             post_transport(
                 [&on_connection, &connection] { on_connection(connection); });
