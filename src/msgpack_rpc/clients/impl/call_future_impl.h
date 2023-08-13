@@ -51,11 +51,9 @@ public:
     [[nodiscard]] messages::CallResult get() override { return future_.get(); }
 
     //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_within
-    [[nodiscard]] messages::CallResult get_within(double timeout_sec) override {
-        if (future_.wait_for(
-                std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::duration<double>(timeout_sec))) !=
-            std::future_status::ready) {
+    [[nodiscard]] messages::CallResult get_within(
+        std::chrono::nanoseconds timeout) override {
+        if (future_.wait_for(timeout) != std::future_status::ready) {
             throw MsgpackRPCException(StatusCode::TIMEOUT,
                 "Result of an RPC couldn't be received within a timeout.");
         }

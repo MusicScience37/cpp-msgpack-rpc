@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <chrono>
+
 #include "msgpack_rpc/messages/call_result.h"
 
 namespace msgpack_rpc::clients::impl {
@@ -41,14 +43,14 @@ public:
     /*!
      * \brief Get the result of RPC within a timeout.
      *
-     * \param[in] timeout_sec Timeout in seconds.
+     * \param[in] timeout Timeout.
      * \return Result.
      *
      * \note This function will wait for the result if not received, and throw
      * an exception when no result can be received within the given timeout.
      */
     [[nodiscard]] virtual messages::CallResult get_within(
-        double timeout_sec) = 0;
+        std::chrono::nanoseconds timeout) = 0;
 
     ICallFutureImpl(const ICallFutureImpl&) = delete;
     ICallFutureImpl(ICallFutureImpl&&) = delete;

@@ -19,6 +19,7 @@
  */
 #include "msgpack_rpc/clients/impl/call_future_impl.h"
 
+#include <chrono>
 #include <memory>
 #include <string_view>
 
@@ -51,16 +52,15 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
         }
 
         SECTION("wait the result") {
-            const double timeout_sec = 1.0;
-            const CallResult received_result =
-                user_future->get_within(timeout_sec);
+            const auto timeout = std::chrono::seconds(1);
+            const CallResult received_result = user_future->get_within(timeout);
 
             CHECK(received_result.result_as<std::string_view>() == "abc");
         }
     }
 
     SECTION("wait the result without a result") {
-        const double timeout_sec = 1.0e-3;
-        REQUIRE_THROWS((void)user_future->get_within(timeout_sec));
+        const auto timeout = std::chrono::milliseconds(1);
+        REQUIRE_THROWS((void)user_future->get_within(timeout));
     }
 }
