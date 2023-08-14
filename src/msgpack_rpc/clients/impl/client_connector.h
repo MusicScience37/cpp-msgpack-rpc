@@ -36,6 +36,7 @@
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/async_connect.h"
 #include "msgpack_rpc/transport/backend_list.h"
@@ -66,13 +67,14 @@ public:
      * \param[in] server_uris URIs of servers.
      * \param[in] logger Logger.
      */
-    ClientConnector(std::weak_ptr<executors::IExecutor> executor,
+    ClientConnector(const std::shared_ptr<executors::IExecutor>& executor,
         transport::BackendList backends,
         std::vector<addresses::URI> server_uris,
         std::shared_ptr<logging::Logger> logger)
-        : executor_(std::move(executor)),
+        : executor_(executor),
           backends_(std::move(backends)),
           server_uris_(std::move(server_uris)),
+          retry_timer_(executor, executors::OperationType::TRANSPORT),
           logger_(std::move(logger)) {}
 
     /*!
@@ -106,6 +108,7 @@ public:
             connection_.reset();
         }
         lock.unlock();
+        retry_timer_.cancel();
     }
 
     /*!
@@ -158,11 +161,10 @@ private:
             return;
         }
         // TODO configuration of cycle to retry.
-        // TODO use timer.
         MSGPACK_RPC_TRACE(
             logger_, "Failed to connect to all URIs, so retry after 100 ms.");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));  // NOLINT
-        async_connect();
+        retry_timer_.async_sleep_for(std::chrono::milliseconds(100),  // NOLINT
+            [self = this->shared_from_this()] { self->async_connect(); });
     }
 
     /*!
@@ -208,6 +210,9 @@ private:
 
     //! Whether this connector is stopped.
     std::atomic<bool> is_stopped_{false};
+
+    //! Timer to sleep until next retry.
+    executors::Timer retry_timer_;
 
     //! Callback function called when a connection is established.
     ConnectionCallback on_connection_{};
