@@ -1,5 +1,6 @@
 #include "msgpack_rpc/addresses/tcp_address.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/addresses/uri.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/clients/impl/client_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/common/status.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/common/status_code.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/client_config.cpp"  // NOLINT(bugprone-suspicious-include)
