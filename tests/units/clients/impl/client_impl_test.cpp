@@ -19,6 +19,7 @@
  */
 #include "msgpack_rpc/clients/impl/client_impl.h"
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -30,6 +31,7 @@
 #include "../../transport/mock_connection.h"
 #include "../../transport/mock_connector.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/clients/impl/call_list.h"
 #include "msgpack_rpc/clients/impl/client_connector.h"
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
@@ -44,10 +46,13 @@
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "msgpack_rpc_test/create_parsed_messages.h"
+#include "msgpack_rpc_test/parse_messages.h"
 
 TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::Status;
     using msgpack_rpc::addresses::URI;
+    using msgpack_rpc::clients::impl::CallList;
     using msgpack_rpc::clients::impl::ClientConnector;
     using msgpack_rpc::clients::impl::ClientImpl;
     using msgpack_rpc::clients::impl::ICallFutureImpl;
@@ -58,9 +63,11 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::messages::MessageSerializer;
     using msgpack_rpc::messages::MethodNameView;
     using msgpack_rpc::transport::IConnection;
+    using msgpack_rpc_test::create_parsed_successful_response;
     using msgpack_rpc_test::MockBackend;
     using msgpack_rpc_test::MockConnection;
     using msgpack_rpc_test::MockConnector;
+    using msgpack_rpc_test::parse_request;
     using trompeloeil::_;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
@@ -72,6 +79,10 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
         msgpack_rpc::executors::async_invoke(
             executor, OperationType::CALLBACK, std::move(function));
     };
+
+    constexpr auto request_timeout = std::chrono::seconds(1);
+    const auto call_list =
+        std::make_shared<CallList>(request_timeout, executor, logger);
 
     msgpack_rpc::transport::BackendList backends;
     const auto backend = std::make_shared<MockBackend>();
@@ -100,7 +111,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             executor, backends, server_uris, logger);
         const std::shared_ptr<IClientImpl> client =
             std::make_shared<ClientImpl>(
-                client_connector, async_executor, logger);
+                client_connector, call_list, async_executor, logger);
 
         post([&client] { client->start(); });
 
@@ -126,6 +137,16 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
                     method_name, ParametersSerializer<std::string>{param1});
             });
 
+            REQUIRE_CALL(*connection, async_send(_))
+                .TIMES(1)
+                .LR_SIDE_EFFECT(post(on_sent))
+                .LR_SIDE_EFFECT(post([&on_received, serialized_request = _1] {
+                    const auto request = parse_request(*serialized_request);
+                    const auto request_id = request.id();
+                    on_received(create_parsed_successful_response(
+                        request_id, "result"));
+                }));
+
             REQUIRE_NOTHROW(executor->run());
         }
     }
@@ -135,7 +156,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             executor, backends, server_uris, logger);
         const std::shared_ptr<IClientImpl> client =
             std::make_shared<ClientImpl>(
-                client_connector, async_executor, logger);
+                client_connector, call_list, async_executor, logger);
 
         REQUIRE_NOTHROW(client->stop());
         REQUIRE_NOTHROW(executor->run());

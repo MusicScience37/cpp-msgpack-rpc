@@ -26,8 +26,10 @@
 
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/impl/call_future_impl.h"
+#include "msgpack_rpc/clients/impl/call_list.h"
 #include "msgpack_rpc/clients/impl/client_connector.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
+#include "msgpack_rpc/clients/impl/sent_message_queue.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -49,13 +51,16 @@ public:
      * \brief Constructor.
      *
      * \param[in] connector Connector.
+     * \param[in] call_list List of RPCs.
      * \param[in] executor Executor.
      * \param[in] logger Logger.
      */
     ClientImpl(std::shared_ptr<ClientConnector> connector,
+        std::shared_ptr<CallList> call_list,
         std::shared_ptr<executors::IAsyncExecutor> executor,
         std::shared_ptr<logging::Logger> logger)
         : connector_(std::move(connector)),
+          call_list_(std::move(call_list)),
           executor_(std::move(executor)),
           logger_(std::move(logger)) {}
 
@@ -101,7 +106,7 @@ public:
             [weak_self = this->weak_from_this()] {
                 const auto self = weak_self.lock();
                 if (self) {
-                    self->send_next();
+                    self->on_sent();
                 }
             });
         executor_->start();
@@ -123,10 +128,10 @@ public:
     [[nodiscard]] std::shared_ptr<ICallFutureImpl> async_call(
         messages::MethodNameView method_name,
         const IParametersSerializer& parameters) override {
-        // TODO
-        (void)method_name;
-        (void)parameters;
-        return std::shared_ptr<CallFutureImpl>();
+        const auto& call = call_list_->create(method_name, parameters);
+        sent_messages_.push(call.serialized_request(), call.id());
+        send_next();
+        return call.future();
     }
 
 private:
@@ -134,7 +139,28 @@ private:
      * \brief Send the next message if possible.
      */
     void send_next() {
-        // TODO
+        const auto connection = connector_->connection();
+        if (!connection) {
+            MSGPACK_RPC_TRACE(
+                logger_, "No connection now, so wait for connection.");
+            return;
+        }
+        const auto [message, request_id] = sent_messages_.next();
+        if (!message) {
+            MSGPACK_RPC_TRACE(logger_, "No message to be sent for now.");
+            return;
+        }
+
+        connection->async_send(message);
+        MSGPACK_RPC_TRACE(logger_, "Sending next message.");
+    }
+
+    /*!
+     * \brief Handle a message sent.
+     */
+    void on_sent() {
+        sent_messages_.pop();
+        send_next();
     }
 
     //! States of sending process.
@@ -154,6 +180,12 @@ private:
 
     //! Connector.
     std::shared_ptr<ClientConnector> connector_;
+
+    //! List of RPCs.
+    std::shared_ptr<CallList> call_list_;
+
+    //! Queue of messages to be sent.
+    SentMessageQueue sent_messages_{};
 
     //! Executor.
     std::shared_ptr<executors::IAsyncExecutor> executor_;

@@ -36,6 +36,7 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_response.h"
+#include "msgpack_rpc/messages/serialized_message.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -67,11 +68,13 @@ public:
      */
     [[nodiscard]] Call& create(messages::MethodNameView method_name,
         const IParametersSerializer& parameters) {
-        std::unique_lock<std::mutex> lock(mutex_);
         const messages::MessageID request_id = request_id_generator_.generate();
+        auto serialized_request = std::make_shared<messages::SerializedMessage>(
+            parameters.create_serialized_request(method_name, request_id));
+
+        std::unique_lock<std::mutex> lock(mutex_);
         const auto [iter, is_success] = list_.try_emplace(request_id,
-            std::make_unique<Call>(request_id,
-                parameters.create_serialized_request(method_name, request_id),
+            std::make_unique<Call>(request_id, std::move(serialized_request),
                 executor(),
                 [weak_self = this->weak_from_this()](
                     messages::MessageID request_id) {
@@ -85,8 +88,12 @@ public:
             throw MsgpackRPCException(
                 StatusCode::UNEXPECTED_ERROR, "Duplicate request ID.");
         }
-        iter->second->set_timeout_after(timeout_);
-        return *(iter->second);
+        auto& call = *(iter->second);
+        lock.unlock();
+
+        call.set_timeout_after(timeout_);
+
+        return call;
     }
 
     /*!

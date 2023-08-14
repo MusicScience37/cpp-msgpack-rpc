@@ -151,6 +151,8 @@ private:
         connection->start(on_received_, on_sent_,
             [self = shared_from_this()](
                 const Status& /*status*/) { self->on_connection_closed(); });
+
+        on_connection_();
     }
 
     /*!

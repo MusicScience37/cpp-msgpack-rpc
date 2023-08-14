@@ -48,7 +48,8 @@ public:
      * \param[in] executor Executor.
      * \param[in] on_timeout Callback function called when timeout occurs.
      */
-    Call(messages::MessageID id, messages::SerializedMessage serialized_request,
+    Call(messages::MessageID id,
+        std::shared_ptr<messages::SerializedMessage> serialized_request,
         const std::shared_ptr<executors::IExecutor>& executor,
         std::function<void(messages::MessageID)> on_timeout)
         : id_(id),
@@ -68,8 +69,8 @@ public:
      *
      * \return Serialized request data.
      */
-    [[nodiscard]] const messages::SerializedMessage& serialized_request()
-        const noexcept {
+    [[nodiscard]] const std::shared_ptr<messages::SerializedMessage>&
+    serialized_request() const noexcept {
         return serialized_request_;
     }
 
@@ -111,7 +112,7 @@ private:
     messages::MessageID id_;
 
     //! Serialized request data.
-    messages::SerializedMessage serialized_request_;
+    std::shared_ptr<messages::SerializedMessage> serialized_request_;
 
     //! Future object to set and get the result of this RPC.
     std::shared_ptr<CallFutureImpl> future_;
