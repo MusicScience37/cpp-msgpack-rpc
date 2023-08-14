@@ -83,4 +83,18 @@ TEST_CASE("msgpack_rpc::executors::Timer") {
 
         CHECK(num_calls == 1);
     }
+
+    SECTION("cancel waiting") {
+        int num_calls = 0;
+        const auto function = [&num_calls] { ++num_calls; };
+
+        post([&timer, &function] {
+            static constexpr auto duration = std::chrono::seconds(1);
+            timer.async_sleep_for(duration, function);
+            timer.cancel();
+        });
+        executor->run();
+
+        CHECK(num_calls == 0);
+    }
 }

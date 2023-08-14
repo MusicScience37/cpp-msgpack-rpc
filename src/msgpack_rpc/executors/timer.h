@@ -82,6 +82,11 @@ public:
         });
     }
 
+    /*!
+     * \brief Cancel this timer.
+     */
+    void cancel() { timer_.cancel(); }
+
 private:
     //! Timer in asio library.
     asio::steady_timer timer_;
