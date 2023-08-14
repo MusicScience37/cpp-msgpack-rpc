@@ -59,8 +59,8 @@ public:
     }
 
     //! \copydoc msgpack_rpc::clients::impl::IClientBuilderImpl::connect_to
-    void connect_to(const addresses::URI& uri) override {
-        config_.add_uri(uri);
+    void connect_to(addresses::URI uri) override {
+        config_.add_uri(std::move(uri));
     }
 
     //! \copydoc msgpack_rpc::clients::impl::IClientBuilderImpl::build

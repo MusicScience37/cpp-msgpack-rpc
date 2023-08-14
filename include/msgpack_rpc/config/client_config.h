@@ -50,7 +50,7 @@ public:
      * \param[in] uri URI.
      * \return This.
      */
-    ClientConfig& add_uri(const addresses::URI& uri);
+    ClientConfig& add_uri(addresses::URI uri);
 
     /*!
      * \brief Add a URI of the server.

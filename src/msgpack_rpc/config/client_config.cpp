@@ -36,8 +36,8 @@ constexpr auto CLIENT_CONFIG_CALL_TIMEOUT = std::chrono::seconds(15);
 
 ClientConfig::ClientConfig() : call_timeout_(CLIENT_CONFIG_CALL_TIMEOUT) {}
 
-ClientConfig& ClientConfig::add_uri(const addresses::URI& uri) {
-    uris_.push_back(uri);
+ClientConfig& ClientConfig::add_uri(addresses::URI uri) {
+    uris_.push_back(std::move(uri));
     return *this;
 }
 

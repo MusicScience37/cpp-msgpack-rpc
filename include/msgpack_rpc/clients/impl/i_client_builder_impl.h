@@ -48,7 +48,7 @@ public:
      *
      * \param[in] uri URI.
      */
-    virtual void connect_to(const addresses::URI& uri) = 0;
+    virtual void connect_to(addresses::URI uri) = 0;
 
     /*!
      * \brief Build a client.
