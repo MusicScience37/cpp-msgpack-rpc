@@ -4,6 +4,7 @@ set(SOURCE_FILES
     catch_event_listener.cpp
     clients/client_test.cpp
     clients/impl/call_future_impl_test.cpp
+    clients/impl/call_list_test.cpp
     clients/impl/client_impl_test.cpp
     clients/impl/parameters_serializer_test.cpp
     common/status_code_test.cpp

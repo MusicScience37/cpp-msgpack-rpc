@@ -3,6 +3,7 @@
 #include "catch_event_listener.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "clients/client_test.cpp"   // NOLINT(bugprone-suspicious-include)
 #include "clients/impl/call_future_impl_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "clients/impl/call_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "clients/impl/client_impl_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "clients/impl/parameters_serializer_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "common/status_code_test.cpp"    // NOLINT(bugprone-suspicious-include)
