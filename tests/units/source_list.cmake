@@ -17,6 +17,7 @@ set(SOURCE_FILES
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
+    executors/timer_test.cpp
     executors/wrapping_executor_test.cpp
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
