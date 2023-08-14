@@ -97,7 +97,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
         IConnection::MessageReceivedCallback on_received =
             [](auto /*message*/) { FAIL(); };
         IConnection::MessageSentCallback on_sent = [] { FAIL(); };
-        IConnection::ConnectionClosedCallback on_closed = [](auto /*message*/) {
+        IConnection::ConnectionClosedCallback on_closed = [](auto /*status*/) {
             FAIL();
         };
         REQUIRE_CALL(*connection, start(_, _, _))
@@ -105,7 +105,9 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             .LR_SIDE_EFFECT(on_received = _1)
             .LR_SIDE_EFFECT(on_sent = _2)
             .LR_SIDE_EFFECT(on_closed = _3);
-        REQUIRE_CALL(*connection, async_close()).TIMES(1);
+        REQUIRE_CALL(*connection, async_close())
+            .TIMES(1)
+            .LR_SIDE_EFFECT(on_closed(Status()));
 
         const auto client_connector = std::make_shared<ClientConnector>(
             executor, backends, server_uris, logger);

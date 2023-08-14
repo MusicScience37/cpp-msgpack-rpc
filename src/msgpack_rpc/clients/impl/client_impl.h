@@ -108,6 +108,13 @@ public:
                 if (self) {
                     self->on_sent();
                 }
+            },
+            // on_closed
+            [weak_self = this->weak_from_this()] {
+                const auto self = weak_self.lock();
+                if (self) {
+                    self->on_connection_closed();
+                }
             });
         executor_->start();
     }
@@ -139,6 +146,10 @@ private:
      * \brief Send the next message if possible.
      */
     void send_next() {
+        if (is_sending_.load(std::memory_order_relaxed)) {
+            MSGPACK_RPC_TRACE(logger_, "Another message is being sent.");
+            return;
+        }
         const auto connection = connector_->connection();
         if (!connection) {
             MSGPACK_RPC_TRACE(
@@ -150,6 +161,10 @@ private:
             MSGPACK_RPC_TRACE(logger_, "No message to be sent for now.");
             return;
         }
+        if (is_sending_.exchange(true, std::memory_order_acquire)) {
+            MSGPACK_RPC_TRACE(logger_, "Another message is being sent.");
+            return;
+        }
 
         connection->async_send(message);
         MSGPACK_RPC_TRACE(logger_, "Sending next message.");
@@ -159,24 +174,19 @@ private:
      * \brief Handle a message sent.
      */
     void on_sent() {
+        MSGPACK_RPC_TRACE(logger_, "A message has been sent.");
+        is_sending_.store(false, std::memory_order_release);
         sent_messages_.pop();
         send_next();
     }
 
-    //! States of sending process.
-    enum class SendingState {
-        //! No connection exists.
-        NO_CONNECTION,
-
-        //! Connecting to a server.
-        CONNECTING,
-
-        //! Idle state with a connection but without a sending message.
-        IDLE,
-
-        //! Sending a message.
-        SENDING
-    };
+    /*!
+     * \brief Handle a connection closed.
+     */
+    void on_connection_closed() {
+        MSGPACK_RPC_TRACE(logger_, "Connection closed, so reconnecting.");
+        is_sending_.store(false, std::memory_order_release);
+    }
 
     //! Connector.
     std::shared_ptr<ClientConnector> connector_;
@@ -193,11 +203,14 @@ private:
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
 
-    //! Whether this server has been started.
+    //! Whether this client has been started.
     std::atomic<bool> is_started_{false};
 
-    //! Whether this server has been stopped.
+    //! Whether this client has been stopped.
     std::atomic<bool> is_stopped_{false};
+
+    //! Whether this client is sending a message.
+    std::atomic<bool> is_sending_{false};
 };
 
 }  // namespace msgpack_rpc::clients::impl

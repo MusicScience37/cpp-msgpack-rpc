@@ -59,6 +59,9 @@ public:
     //! \copydoc msgpack_rpc::transport::IConnection::MessageSentCallback
     using MessageSentCallback = transport::IConnection::MessageSentCallback;
 
+    //! Type of callback functions called when a connection is closed.
+    using ConnectionClosedCallback = std::function<void()>;
+
     /*!
      * \brief Constructor.
      *
@@ -85,12 +88,16 @@ public:
      * \param[in] on_received Callback function called when a message is
      * received.
      * \param[in] on_sent Callback function called when a message is sent.
+     * \param[in] on_closed Callback function called when a connection is
+     * closed.
      */
     void start(ConnectionCallback on_connection,
-        MessageReceivedCallback on_received, MessageSentCallback on_sent) {
+        MessageReceivedCallback on_received, MessageSentCallback on_sent,
+        ConnectionClosedCallback on_closed) {
         on_connection_ = std::move(on_connection);
         on_received_ = std::move(on_received);
         on_sent_ = std::move(on_sent);
+        on_closed_ = std::move(on_closed);
         async_connect();
     }
 
@@ -180,6 +187,7 @@ private:
         connection_.reset();
         lock.unlock();
         MSGPACK_RPC_TRACE(logger_, "Connection closed, so reconnect now.");
+        on_closed_();
         async_connect();
     }
 
@@ -224,6 +232,9 @@ private:
 
     //! Callback function called when a message is sent.
     MessageSentCallback on_sent_{};
+
+    //! Callback function called when a connection is closed.
+    ConnectionClosedCallback on_closed_{};
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
