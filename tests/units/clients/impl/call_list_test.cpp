@@ -27,6 +27,7 @@
 #include "../../create_test_logger.h"
 #include "msgpack_rpc/clients/impl/call.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
+#include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
 #include "msgpack_rpc_test/parse_messages.h"
@@ -35,6 +36,7 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
     using msgpack_rpc::clients::impl::Call;
     using msgpack_rpc::clients::impl::CallList;
     using msgpack_rpc::clients::impl::make_parameters_serializer;
+    using msgpack_rpc::messages::MessageID;
     using msgpack_rpc_test::create_parsed_successful_response;
     using msgpack_rpc_test::create_test_logger;
     using msgpack_rpc_test::parse_request;
@@ -66,6 +68,13 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             list.handle(response);
 
             const auto result = call.future()->get_result();
+        }
+
+        SECTION("and try to handle different response") {
+            const auto response = create_parsed_successful_response(
+                request.id() + static_cast<MessageID>(1), "def");
+
+            list.handle(response);
         }
     }
 
