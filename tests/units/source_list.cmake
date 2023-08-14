@@ -2,6 +2,7 @@ set(SOURCE_FILES
     addresses/tcp_address_test.cpp
     addresses/uri_test.cpp
     catch_event_listener.cpp
+    clients/client_test.cpp
     clients/impl/call_future_impl_test.cpp
     clients/impl/client_impl_test.cpp
     clients/impl/parameters_serializer_test.cpp

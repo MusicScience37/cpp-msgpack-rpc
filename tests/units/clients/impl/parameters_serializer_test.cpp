@@ -32,6 +32,7 @@
 
 TEST_CASE("msgpack_rpc::clients::impl::ParametersSerializer") {
     using msgpack_rpc::clients::impl::IParametersSerializer;
+    using msgpack_rpc::clients::impl::make_parameters_serializer;
     using msgpack_rpc::clients::impl::ParametersSerializer;
     using msgpack_rpc::messages::MessageID;
     using msgpack_rpc::messages::MethodNameView;
@@ -40,7 +41,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ParametersSerializer") {
     using msgpack_rpc_test::parse_request;
 
     SECTION("created without parameters") {
-        ParametersSerializer<> params;
+        auto params = make_parameters_serializer();
         const IParametersSerializer& i_params = params;
 
         SECTION("create serialized request") {
@@ -71,7 +72,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ParametersSerializer") {
 
     SECTION("created with a parameter") {
         const auto param1 = std::string("abc");
-        ParametersSerializer<std::string> params{param1};
+        auto params = make_parameters_serializer(param1);
         const IParametersSerializer& i_params = params;
 
         SECTION("create serialized request") {
@@ -102,10 +103,42 @@ TEST_CASE("msgpack_rpc::clients::impl::ParametersSerializer") {
         }
     }
 
+    SECTION("created with a raw string") {
+        auto params = make_parameters_serializer("abc");
+        const IParametersSerializer& i_params = params;
+
+        SECTION("create serialized request") {
+            const auto method_name = MethodNameView("method1");
+            const auto request_id = static_cast<MessageID>(12345);
+
+            const SerializedMessage serialized_request =
+                i_params.create_serialized_request(method_name, request_id);
+
+            const auto parsed_request = parse_request(serialized_request);
+            CHECK(parsed_request.method_name() == method_name);
+            CHECK(parsed_request.id() == request_id);
+            CHECK(parsed_request.parameters().as<std::string_view>() ==
+                std::forward_as_tuple("abc"));
+        }
+
+        SECTION("create serialized notification") {
+            const auto method_name = MethodNameView("method2");
+
+            const SerializedMessage serialized_notification =
+                i_params.create_serialized_notification(method_name);
+
+            const auto parsed_notification =
+                parse_notification(serialized_notification);
+            CHECK(parsed_notification.method_name() == method_name);
+            CHECK(parsed_notification.parameters().as<std::string_view>() ==
+                std::forward_as_tuple("abc"));
+        }
+    }
+
     SECTION("created with two parameters") {
         const auto param1 = std::string("abc");
         const int param2 = 123;
-        ParametersSerializer<std::string, int> params{param1, param2};
+        auto params = make_parameters_serializer(param1, param2);
         const IParametersSerializer& i_params = params;
 
         SECTION("create serialized request") {

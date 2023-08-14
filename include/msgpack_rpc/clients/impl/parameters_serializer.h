@@ -58,9 +58,20 @@ public:
         messages::MethodNameView method_name) const = 0;
 
     IParametersSerializer(const IParametersSerializer&) = delete;
-    IParametersSerializer(IParametersSerializer&&) = delete;
     IParametersSerializer& operator=(const IParametersSerializer&) = delete;
-    IParametersSerializer& operator=(IParametersSerializer&&) = delete;
+
+    /*!
+     * \brief Move constructor.
+     */
+    IParametersSerializer(IParametersSerializer&&) noexcept = default;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * \return This.
+     */
+    IParametersSerializer& operator=(
+        IParametersSerializer&&) noexcept = default;
 
 protected:
     //! Constructor.
@@ -83,7 +94,7 @@ public:
      *
      * \param[in] parameters Parameters.
      */
-    explicit ParametersSerializer(const std::decay_t<Parameters>&... parameters)
+    explicit ParametersSerializer(const Parameters&... parameters)
         : parameters_(parameters...) {}
 
     //! \copydoc msgpack_rpc::clients::impl::IParametersSerializer::create_serialized_request
@@ -102,9 +113,19 @@ public:
     }
 
     ParametersSerializer(const ParametersSerializer&) = delete;
-    ParametersSerializer(ParametersSerializer&&) = delete;
     ParametersSerializer& operator=(const ParametersSerializer&) = delete;
-    ParametersSerializer& operator=(ParametersSerializer&&) = delete;
+
+    /*!
+     * \brief Move constructor.
+     */
+    ParametersSerializer(ParametersSerializer&&) noexcept = default;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * \return This.
+     */
+    ParametersSerializer& operator=(ParametersSerializer&&) noexcept = default;
 
     //! Destructor.
     ~ParametersSerializer() = default;
@@ -142,7 +163,20 @@ private:
     }
 
     //! Parameters.
-    std::tuple<const std::decay_t<Parameters>&...> parameters_;
+    std::tuple<const Parameters&...> parameters_;
 };
+
+/*!
+ * \brief Create ParametersSerializer object.
+ *
+ * \tparam Parameters Types of parameters.
+ * \param[in] parameters Parameters.
+ * \return ParametersSerializer object.
+ */
+template <typename... Parameters>
+[[nodiscard]] ParametersSerializer<Parameters...> make_parameters_serializer(
+    const Parameters&... parameters) {
+    return ParametersSerializer<Parameters...>(parameters...);
+}
 
 }  // namespace msgpack_rpc::clients::impl
