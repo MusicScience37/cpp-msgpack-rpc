@@ -21,8 +21,7 @@
 
 #include <tuple>
 #include <type_traits>
-
-#include <__utility/integer_sequence.h>
+#include <utility>
 
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
