@@ -150,6 +150,8 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
                 }));
 
             REQUIRE_NOTHROW(executor->run());
+
+            CHECK(future->get_result().result_as<std::string>() == "result");
         }
     }
 

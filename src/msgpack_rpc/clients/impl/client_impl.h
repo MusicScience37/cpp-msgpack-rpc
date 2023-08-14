@@ -22,6 +22,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
+#include <variant>
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
@@ -36,6 +37,7 @@
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/parsed_message.h"
+#include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
@@ -98,9 +100,12 @@ public:
                 }
             },
             // on_received
-            [](const messages::ParsedMessage& message) {
-                // TODO
-                (void)message;
+            [weak_self = this->weak_from_this()](
+                const messages::ParsedMessage& message) {
+                const auto self = weak_self.lock();
+                if (self) {
+                    self->on_received(message);
+                }
             },
             // on_sent
             [weak_self = this->weak_from_this()] {
@@ -178,6 +183,20 @@ private:
         is_sending_.store(false, std::memory_order_release);
         sent_messages_.pop();
         send_next();
+    }
+
+    /*!
+     * \brief Handle a received message.
+     *
+     * \param[in] message Message.
+     */
+    void on_received(const messages::ParsedMessage& message) {
+        const auto* response = std::get_if<messages::ParsedResponse>(&message);
+        if (response == nullptr) {
+            MSGPACK_RPC_WARN(logger_, "Received an invalid message.");
+            return;
+        }
+        call_list_->handle(*response);
     }
 
     /*!
