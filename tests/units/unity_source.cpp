@@ -12,6 +12,7 @@
 #include "config/executor_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "config/logging_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "config/message_parser_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "config/reconnection_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "config/server_config_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "create_test_logger.cpp"         // NOLINT(bugprone-suspicious-include)
 #include "executors/general_executor_test.cpp"  // NOLINT(bugprone-suspicious-include)

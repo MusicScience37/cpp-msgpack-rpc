@@ -24,6 +24,7 @@
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::config {
@@ -93,6 +94,20 @@ public:
      */
     [[nodiscard]] const ExecutorConfig& executor() const noexcept;
 
+    /*!
+     * \brief Get the configuration of reconnection.
+     *
+     * \return Configuration of reconnection.
+     */
+    [[nodiscard]] ReconnectionConfig& reconnection() noexcept;
+
+    /*!
+     * \brief Get the configuration of reconnection.
+     *
+     * \return Configuration of reconnection.
+     */
+    [[nodiscard]] const ReconnectionConfig& reconnection() const noexcept;
+
 private:
     //! URIs.
     std::vector<addresses::URI> uris_;
@@ -102,6 +117,9 @@ private:
 
     //! Configuration of executors.
     ExecutorConfig executor_;
+
+    //! Configuration of reconnection.
+    ReconnectionConfig reconnection_;
 };
 
 }  // namespace msgpack_rpc::config

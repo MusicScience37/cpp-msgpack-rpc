@@ -53,4 +53,12 @@ TEST_CASE("msgpack_rpc::config::ClientConfig") {
         CHECK_NOTHROW(
             (void)static_cast<const ClientConfig&>(config).executor());
     }
+
+    SECTION("get the configuration of reconnection") {
+        ClientConfig config;
+
+        CHECK_NOTHROW((void)config.reconnection());
+        CHECK_NOTHROW(
+            (void)static_cast<const ClientConfig&>(config).reconnection());
+    }
 }

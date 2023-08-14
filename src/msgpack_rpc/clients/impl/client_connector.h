@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/clients/impl/reconnection_timer.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -68,17 +69,19 @@ public:
      * \param[in] executor Executor.
      * \param[in] backends Backends.
      * \param[in] server_uris URIs of servers.
+     * \param[in] reconnection_config Configuration of reconnection.
      * \param[in] logger Logger.
      */
     ClientConnector(const std::shared_ptr<executors::IExecutor>& executor,
         transport::BackendList backends,
         std::vector<addresses::URI> server_uris,
-        std::shared_ptr<logging::Logger> logger)
+        const config::ReconnectionConfig& reconnection_config,
+        const std::shared_ptr<logging::Logger>& logger)
         : executor_(executor),
           backends_(std::move(backends)),
           server_uris_(std::move(server_uris)),
-          retry_timer_(executor, executors::OperationType::TRANSPORT),
-          logger_(std::move(logger)) {}
+          retry_timer_(executor, logger, reconnection_config),
+          logger_(logger) {}
 
     /*!
      * \brief Start processing.
@@ -169,10 +172,7 @@ private:
         if (is_stopped_.load(std::memory_order_relaxed)) {
             return;
         }
-        // TODO configuration of cycle to retry.
-        MSGPACK_RPC_TRACE(
-            logger_, "Failed to connect to all URIs, so retry after 100 ms.");
-        retry_timer_.async_sleep_for(std::chrono::milliseconds(100),  // NOLINT
+        retry_timer_.async_wait(
             [self = this->shared_from_this()] { self->async_connect(); });
     }
 
@@ -222,7 +222,7 @@ private:
     std::atomic<bool> is_stopped_{false};
 
     //! Timer to sleep until next retry.
-    executors::Timer retry_timer_;
+    ReconnectionTimer retry_timer_;
 
     //! Callback function called when a connection is established.
     ConnectionCallback on_connection_{};

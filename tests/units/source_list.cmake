@@ -13,6 +13,7 @@ set(SOURCE_FILES
     config/executor_config_test.cpp
     config/logging_config_test.cpp
     config/message_parser_config_test.cpp
+    config/reconnection_config_test.cpp
     config/server_config_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp

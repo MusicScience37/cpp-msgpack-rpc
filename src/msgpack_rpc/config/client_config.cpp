@@ -54,4 +54,12 @@ const ExecutorConfig& ClientConfig::executor() const noexcept {
     return executor_;
 }
 
+ReconnectionConfig& ClientConfig::reconnection() noexcept {
+    return reconnection_;
+}
+
+const ReconnectionConfig& ClientConfig::reconnection() const noexcept {
+    return reconnection_;
+}
+
 }  // namespace msgpack_rpc::config

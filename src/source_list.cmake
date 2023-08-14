@@ -7,6 +7,7 @@ set(SOURCE_FILES
     msgpack_rpc/config/executor_config.cpp
     msgpack_rpc/config/logging_config.cpp
     msgpack_rpc/config/message_parser_config.cpp
+    msgpack_rpc/config/reconnection_config.cpp
     msgpack_rpc/config/server_config.cpp
     msgpack_rpc/executors/general_executor.cpp
     msgpack_rpc/executors/single_thread_executor.cpp

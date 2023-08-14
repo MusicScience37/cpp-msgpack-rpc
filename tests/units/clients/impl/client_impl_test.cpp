@@ -37,6 +37,8 @@
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/common/status.h"
+#include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -51,6 +53,7 @@
 
 TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::Status;
+    using msgpack_rpc::StatusCode;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::clients::impl::CallList;
     using msgpack_rpc::clients::impl::ClientConnector;
@@ -58,6 +61,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::clients::impl::ICallFutureImpl;
     using msgpack_rpc::clients::impl::IClientImpl;
     using msgpack_rpc::clients::impl::ParametersSerializer;
+    using msgpack_rpc::config::ReconnectionConfig;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
     using msgpack_rpc::messages::MessageSerializer;
@@ -69,6 +73,8 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc_test::MockConnector;
     using msgpack_rpc_test::parse_request;
     using trompeloeil::_;
+
+    // TODO notification.
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
@@ -110,7 +116,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             .LR_SIDE_EFFECT(on_closed(Status()));
 
         const auto client_connector = std::make_shared<ClientConnector>(
-            executor, backends, server_uris, logger);
+            executor, backends, server_uris, ReconnectionConfig(), logger);
         const std::shared_ptr<IClientImpl> client =
             std::make_shared<ClientImpl>(
                 client_connector, call_list, async_executor, logger);
@@ -155,9 +161,55 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
         }
     }
 
+    SECTION("reconnect") {
+        const auto connection = std::make_shared<MockConnection>();
+        IConnection::MessageReceivedCallback on_received =
+            [](auto /*message*/) { FAIL(); };
+        IConnection::MessageSentCallback on_sent = [] { FAIL(); };
+        IConnection::ConnectionClosedCallback on_closed = [](auto /*status*/) {
+            FAIL();
+        };
+        REQUIRE_CALL(*connection, start(_, _, _))
+            .TIMES(1)
+            .LR_SIDE_EFFECT(on_received = _1)
+            .LR_SIDE_EFFECT(on_sent = _2)
+            .LR_SIDE_EFFECT(on_closed = _3);
+        REQUIRE_CALL(*connection, async_close())
+            .TIMES(1)
+            .LR_SIDE_EFFECT(on_closed(Status()));
+
+        const auto client_connector = std::make_shared<ClientConnector>(
+            executor, backends, server_uris, ReconnectionConfig(), logger);
+        const std::shared_ptr<IClientImpl> client =
+            std::make_shared<ClientImpl>(
+                client_connector, call_list, async_executor, logger);
+
+        post([&client] { client->start(); });
+
+        const auto connector = std::make_shared<MockConnector>();
+        REQUIRE_CALL(*backend, create_connector()).TIMES(2).RETURN(connector);
+        REQUIRE_CALL(*connector, async_connect(_, _))
+            .TIMES(2)
+            .LR_SIDE_EFFECT(post([on_connect = _2, &connection] {
+                static int calls = 0;
+                ++calls;
+                if (calls == 1) {
+                    on_connect(
+                        Status(StatusCode::CONNECTION_FAILURE, "Test error."),
+                        nullptr);
+                } else {
+                    on_connect(Status(), connection);
+                }
+            }));
+
+        SECTION("and no exception is thrown") {
+            REQUIRE_NOTHROW(executor->run());
+        }
+    }
+
     SECTION("stop without starting") {
         const auto client_connector = std::make_shared<ClientConnector>(
-            executor, backends, server_uris, logger);
+            executor, backends, server_uris, ReconnectionConfig(), logger);
         const std::shared_ptr<IClientImpl> client =
             std::make_shared<ClientImpl>(
                 client_connector, call_list, async_executor, logger);
