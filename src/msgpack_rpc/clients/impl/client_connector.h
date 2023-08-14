@@ -156,11 +156,10 @@ private:
         const std::shared_ptr<transport::IConnection>& connection) {
         std::unique_lock<std::mutex> lock(connection_mutex_);
         connection_ = connection;
-        lock.unlock();
-
         connection->start(on_received_, on_sent_,
             [self = shared_from_this()](
                 const Status& /*status*/) { self->on_connection_closed(); });
+        lock.unlock();
 
         on_connection_();
     }

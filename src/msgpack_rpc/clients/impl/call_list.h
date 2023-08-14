@@ -66,7 +66,7 @@ public:
      * \param[in] parameters Parameters.
      * \return Registered RPC.
      */
-    [[nodiscard]] Call& create(messages::MethodNameView method_name,
+    [[nodiscard]] Call create(messages::MethodNameView method_name,
         const IParametersSerializer& parameters) {
         const messages::MessageID request_id = request_id_generator_.generate();
         auto serialized_request = std::make_shared<messages::SerializedMessage>(
@@ -88,7 +88,7 @@ public:
             throw MsgpackRPCException(
                 StatusCode::UNEXPECTED_ERROR, "Duplicate request ID.");
         }
-        auto& call = *(iter->second);
+        auto call = *(iter->second);
         lock.unlock();
 
         call.set_timeout_after(timeout_);

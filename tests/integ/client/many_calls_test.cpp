@@ -17,6 +17,7 @@
  * \file
  * \brief Test to call methods many times from clients.
  */
+#include <chrono>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
@@ -26,6 +27,7 @@
 #include "msgpack_rpc/clients/call_future.h"
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/client_builder.h"
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
@@ -34,6 +36,7 @@ SCENARIO("Call methods many times") {
     using msgpack_rpc::clients::CallFuture;
     using msgpack_rpc::clients::Client;
     using msgpack_rpc::clients::ClientBuilder;
+    using msgpack_rpc::config::ClientConfig;
     using msgpack_rpc::config::ServerConfig;
     using msgpack_rpc::servers::ServerBuilder;
 
@@ -47,8 +50,11 @@ SCENARIO("Call methods many times") {
 
         server_builder.listen_to(server_uri);
 
-        server_builder.add_method<int(int, int)>(
-            "add", [](int x, int y) { return x + y; });
+        server_builder.add_method<std::size_t(std::size_t)>(
+            "echo", [&logger](std::size_t x) {
+                MSGPACK_RPC_INFO(logger, "Received {}.", x);
+                return x;
+            });
 
         auto server = server_builder.build();
         server->start();
@@ -58,7 +64,8 @@ SCENARIO("Call methods many times") {
         REQUIRE(uris != std::vector<URI>{});  // NOLINT
 
         WHEN("A client is configured correctly") {
-            ClientBuilder client_builder{logger};
+            ClientBuilder client_builder{
+                ClientConfig().call_timeout(std::chrono::seconds(1)), logger};
 
             for (const auto& uri : uris) {
                 client_builder.connect_to(uri);
@@ -68,20 +75,19 @@ SCENARIO("Call methods many times") {
             client.start();
 
             AND_WHEN("The client calls a method multiple times") {
-                constexpr std::size_t count =
-                    1;  // TODO actually many messages caused timeout...
-                std::vector<CallFuture<int>> futures;
+                constexpr std::size_t count = 100;
+                std::vector<CallFuture<std::size_t>> futures;
                 futures.reserve(count);
                 for (std::size_t i = 0; i < count; ++i) {
                     INFO("i = " << i);
-                    REQUIRE_NOTHROW(
-                        futures.push_back(client.async_call<int>("add", 1, 2)));
+                    REQUIRE_NOTHROW(futures.push_back(
+                        client.async_call<std::size_t>("echo", i)));
                 }
 
                 THEN("All calls are processed properly") {
                     for (std::size_t i = 0; i < count; ++i) {
                         INFO("i = " << i);
-                        REQUIRE(futures.at(i).get_result() == 3);
+                        CHECK(futures.at(i).get_result() == i);
                     }
                 }
             }

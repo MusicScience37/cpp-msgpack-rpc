@@ -103,6 +103,7 @@ public:
     void async_send(
         std::shared_ptr<const messages::SerializedMessage> message) override {
         if (!state_machine_.is_processing()) {
+            MSGPACK_RPC_TRACE(logger_, "Not processing now.");
             return;
         }
         asio::post(socket_.get_executor(),
@@ -170,19 +171,27 @@ private:
         MSGPACK_RPC_TRACE(logger_, "({}) Read {} bytes.", log_name_, size);
         message_parser_.consumed(size);
 
-        std::optional<messages::ParsedMessage> message;
-        try {
-            message = message_parser_.try_parse();
-        } catch (const MsgpackRPCException& e) {
-            MSGPACK_RPC_ERROR(
-                logger_, "({}) {}", log_name_, e.status().message());
-            close_in_thread(e.status());
-            return;
-        }
-        if (message) {
-            MSGPACK_RPC_TRACE(
-                logger_, "({}) Received a message.", log_name_, size);
-            on_received_(std::move(*message));
+        while (true) {
+            std::optional<messages::ParsedMessage> message;
+            try {
+                message = message_parser_.try_parse();
+            } catch (const MsgpackRPCException& e) {
+                MSGPACK_RPC_ERROR(
+                    logger_, "({}) {}", log_name_, e.status().message());
+                close_in_thread(e.status());
+                return;
+            }
+            if (message) {
+                MSGPACK_RPC_TRACE(
+                    logger_, "({}) Received a message.", log_name_, size);
+                on_received_(std::move(*message));
+                message.reset();
+            } else {
+                MSGPACK_RPC_TRACE(logger_,
+                    "({}) More bytes are needed to parse a message.",
+                    log_name_);
+                break;
+            }
         }
 
         if (!state_machine_.is_processing()) {

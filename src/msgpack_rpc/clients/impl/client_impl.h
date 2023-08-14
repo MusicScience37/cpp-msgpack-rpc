@@ -185,8 +185,8 @@ private:
      */
     void on_sent() {
         MSGPACK_RPC_TRACE(logger_, "A message has been sent.");
-        is_sending_.store(false, std::memory_order_release);
         sent_messages_.pop();
+        is_sending_.store(false, std::memory_order_release);
         send_next();
     }
 

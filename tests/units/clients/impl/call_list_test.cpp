@@ -59,7 +59,7 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             msgpack_rpc::messages::MethodNameView("method1");
         const auto param1 = std::string("abc");
 
-        Call& call =
+        Call call =
             list->create(method_name, make_parameters_serializer(param1));
 
         const auto request = parse_request(*call.serialized_request());
@@ -99,9 +99,9 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             msgpack_rpc::messages::MethodNameView("method1");
         const auto param1 = std::string("abc");
 
-        const Call& call1 =
+        const Call call1 =
             list->create(method_name, make_parameters_serializer(param1));
-        const Call& call2 =
+        const Call call2 =
             list->create(method_name, make_parameters_serializer(param1));
 
         CHECK(call1.id() != call2.id());
