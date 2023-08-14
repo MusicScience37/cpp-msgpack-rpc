@@ -140,9 +140,14 @@ public:
     [[nodiscard]] std::shared_ptr<ICallFutureImpl> async_call(
         messages::MethodNameView method_name,
         const IParametersSerializer& parameters) override {
-        const auto& call = call_list_->create(method_name, parameters);
+        const auto call = call_list_->create(method_name, parameters);
+
         sent_messages_.push(call.serialized_request(), call.id());
         send_next();
+
+        MSGPACK_RPC_DEBUG(
+            logger_, "Send request {} (id: {})", method_name, call.id());
+
         return call.future();
     }
 
@@ -196,6 +201,8 @@ private:
             MSGPACK_RPC_WARN(logger_, "Received an invalid message.");
             return;
         }
+        MSGPACK_RPC_DEBUG(
+            logger_, "Received response (id: {})", response->id());
         call_list_->handle(*response);
     }
 
