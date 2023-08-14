@@ -38,7 +38,7 @@ public:
      *
      * \note This function will wait for the result if not received.
      */
-    [[nodiscard]] virtual messages::CallResult get() = 0;
+    [[nodiscard]] virtual messages::CallResult get_result() = 0;
 
     /*!
      * \brief Get the result of RPC within a timeout.
@@ -49,7 +49,7 @@ public:
      * \note This function will wait for the result if not received, and throw
      * an exception when no result can be received within the given timeout.
      */
-    [[nodiscard]] virtual messages::CallResult get_within(
+    [[nodiscard]] virtual messages::CallResult get_result_within(
         std::chrono::nanoseconds timeout) = 0;
 
     ICallFutureImpl(const ICallFutureImpl&) = delete;

@@ -46,14 +46,15 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
         REQUIRE_NOTHROW(internal_future->set(result));
 
         SECTION("get the result") {
-            const CallResult received_result = user_future->get();
+            const CallResult received_result = user_future->get_result();
 
             CHECK(received_result.result_as<std::string_view>() == "abc");
         }
 
         SECTION("wait the result") {
             const auto timeout = std::chrono::seconds(1);
-            const CallResult received_result = user_future->get_within(timeout);
+            const CallResult received_result =
+                user_future->get_result_within(timeout);
 
             CHECK(received_result.result_as<std::string_view>() == "abc");
         }
@@ -61,6 +62,6 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
 
     SECTION("wait the result without a result") {
         const auto timeout = std::chrono::milliseconds(1);
-        REQUIRE_THROWS((void)user_future->get_within(timeout));
+        REQUIRE_THROWS((void)user_future->get_result_within(timeout));
     }
 }

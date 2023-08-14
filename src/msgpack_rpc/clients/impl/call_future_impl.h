@@ -47,11 +47,13 @@ public:
         promise_.set_value(std::move(result));
     }
 
-    //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get
-    [[nodiscard]] messages::CallResult get() override { return future_.get(); }
+    //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result
+    [[nodiscard]] messages::CallResult get_result() override {
+        return future_.get();
+    }
 
-    //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_within
-    [[nodiscard]] messages::CallResult get_within(
+    //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result_within
+    [[nodiscard]] messages::CallResult get_result_within(
         std::chrono::nanoseconds timeout) override {
         if (future_.wait_for(timeout) != std::future_status::ready) {
             throw MsgpackRPCException(StatusCode::TIMEOUT,
