@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <chrono>
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
@@ -67,6 +68,21 @@ public:
     [[nodiscard]] const std::vector<addresses::URI>& uris() const noexcept;
 
     /*!
+     * \brief Set the duration of timeout of RPCs.
+     *
+     * \param[in] value Value.
+     * \return This.
+     */
+    ClientConfig& call_timeout(std::chrono::nanoseconds value);
+
+    /*!
+     * \brief Get the duration of timeout of RPCs.
+     *
+     * \return Duration.
+     */
+    [[nodiscard]] std::chrono::nanoseconds call_timeout() const noexcept;
+
+    /*!
      * \brief Get the configuration of parsers of messages.
      *
      * \return Configuration.
@@ -111,6 +127,9 @@ public:
 private:
     //! URIs.
     std::vector<addresses::URI> uris_;
+
+    //! Duration of timeout of RPCs.
+    std::chrono::nanoseconds call_timeout_;
 
     //! Configuration of parsers of messages.
     MessageParserConfig message_parser_;

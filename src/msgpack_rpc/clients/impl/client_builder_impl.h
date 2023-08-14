@@ -68,9 +68,8 @@ public:
         const auto connector = std::make_shared<ClientConnector>(executor_,
             backends_, config_.uris(), config_.reconnection(), logger_);
 
-        const auto timeout = std::chrono::milliseconds(1);  // TODO
-        const auto call_list =
-            std::make_shared<CallList>(timeout, executor_, logger_);
+        const auto call_list = std::make_shared<CallList>(
+            config_.call_timeout(), executor_, logger_);
 
         return std::make_shared<ClientImpl>(
             connector, call_list, executor_, logger_);

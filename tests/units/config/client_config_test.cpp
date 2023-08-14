@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/config/client_config.h"
 
+#include <chrono>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "msgpack_rpc/addresses/schemes.h"
@@ -36,6 +38,20 @@ TEST_CASE("msgpack_rpc::config::ClientConfig") {
 
         CHECK(config.uris() ==
             std::vector<URI>{URI::parse("tcp://localhost:12345")});
+    }
+
+    SECTION("set timeout of RPC") {
+        ClientConfig config;
+
+        config.call_timeout(std::chrono::seconds(2));
+
+        CHECK(config.call_timeout() == std::chrono::seconds(2));
+    }
+
+    SECTION("set timeout of RPC to an invalid value") {
+        ClientConfig config;
+
+        CHECK_THROWS(config.call_timeout(std::chrono::seconds(0)));
     }
 
     SECTION("get the configuration of parsers of messages") {

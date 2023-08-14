@@ -19,13 +19,22 @@
  */
 #include "msgpack_rpc/config/client_config.h"
 
+#include <chrono>
 #include <string_view>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 
 namespace msgpack_rpc::config {
 
-ClientConfig::ClientConfig() = default;
+namespace {
+
+constexpr auto CLIENT_CONFIG_CALL_TIMEOUT = std::chrono::seconds(15);
+
+}  // namespace
+
+ClientConfig::ClientConfig() : call_timeout_(CLIENT_CONFIG_CALL_TIMEOUT) {}
 
 ClientConfig& ClientConfig::add_uri(const addresses::URI& uri) {
     uris_.push_back(uri);
@@ -38,6 +47,19 @@ ClientConfig& ClientConfig::add_uri(std::string_view uri) {
 
 const std::vector<addresses::URI>& ClientConfig::uris() const noexcept {
     return uris_;
+}
+
+ClientConfig& ClientConfig::call_timeout(std::chrono::nanoseconds value) {
+    if (value <= std::chrono::nanoseconds(0)) {
+        throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+            "Duration of timeout must be longer than zero.");
+    }
+    call_timeout_ = value;
+    return *this;
+}
+
+std::chrono::nanoseconds ClientConfig::call_timeout() const noexcept {
+    return call_timeout_;
 }
 
 MessageParserConfig& ClientConfig::message_parser() noexcept {
