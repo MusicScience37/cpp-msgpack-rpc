@@ -25,6 +25,7 @@
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/i_backend.h"
 
@@ -83,5 +84,16 @@ protected:
 create_empty_client_builder_impl(
     std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger, config::ClientConfig config);
+
+/*!
+ * \brief Create an IClientBuilderImpl object with default protocols.
+ *
+ * \param[in] config Configuration.
+ * \param[in] logger Logger.
+ * \return IClientBuilderImpl object.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::unique_ptr<IClientBuilderImpl>
+create_default_client_builder_impl(config::ClientConfig config,
+    const std::shared_ptr<logging::Logger>& logger);
 
 };  // namespace msgpack_rpc::clients::impl

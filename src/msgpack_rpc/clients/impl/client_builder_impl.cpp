@@ -22,6 +22,8 @@
 #include <memory>
 
 #include "msgpack_rpc/clients/impl/i_client_builder_impl.h"
+#include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/transport/backends.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -30,6 +32,20 @@ std::unique_ptr<IClientBuilderImpl> create_empty_client_builder_impl(
     std::shared_ptr<logging::Logger> logger, config::ClientConfig config) {
     return std::make_unique<ClientBuilderImpl>(
         std::move(executor), std::move(logger), std::move(config));
+}
+
+std::unique_ptr<IClientBuilderImpl> create_default_client_builder_impl(
+    config::ClientConfig config,
+    const std::shared_ptr<logging::Logger>& logger) {
+    const auto executor = executors::create_executor(logger, config.executor());
+
+    auto builder =
+        create_empty_client_builder_impl(executor, logger, std::move(config));
+
+    builder->register_protocol(transport::create_tcp_backend(
+        executor, config.message_parser(), logger));
+
+    return builder;
 }
 
 }  // namespace msgpack_rpc::clients::impl

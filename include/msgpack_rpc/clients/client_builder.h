@@ -22,11 +22,14 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/impl/i_client_builder_impl.h"
+#include "msgpack_rpc/config/client_config.h"
+#include "msgpack_rpc/logging/logger.h"
 
 namespace msgpack_rpc::clients {
 
@@ -35,6 +38,27 @@ namespace msgpack_rpc::clients {
  */
 class ClientBuilder {
 public:
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] logger Logger.
+     */
+    explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger =
+                               logging::Logger::create())
+        : ClientBuilder(config::ClientConfig(), logger) {}
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] client_config Configuration of the client.
+     * \param[in] logger Logger.
+     */
+    explicit ClientBuilder(config::ClientConfig client_config,
+        const std::shared_ptr<logging::Logger>& logger =
+            logging::Logger::create())
+        : impl_(impl::create_default_client_builder_impl(
+              std::move(client_config), logger)) {}
+
     /*!
      * \brief Constructor.
      *
