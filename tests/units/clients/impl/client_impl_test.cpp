@@ -33,6 +33,7 @@
 #include "msgpack_rpc/clients/impl/client_connector.h"
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
+#include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
@@ -51,6 +52,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::clients::impl::ClientImpl;
     using msgpack_rpc::clients::impl::ICallFutureImpl;
     using msgpack_rpc::clients::impl::IClientImpl;
+    using msgpack_rpc::clients::impl::ParametersSerializer;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
     using msgpack_rpc::messages::MessageSerializer;
@@ -116,16 +118,12 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
 
         SECTION("and asynchronously call a method") {
             const auto method_name = MethodNameView("method1");
-            const auto request_id = static_cast<MessageID>(12345);
             const auto param1 = std::string("param1");
-            const auto serialized_request =
-                MessageSerializer::serialize_request(
-                    method_name, request_id, param1);
 
             std::shared_ptr<ICallFutureImpl> future;
-            post([&client, &method_name, &serialized_request, &future] {
+            post([&client, &method_name, &param1, &future] {
                 future = client->async_call(
-                    method_name, request_id, serialized_request);
+                    method_name, ParametersSerializer<std::string>{param1});
             });
 
             REQUIRE_NOTHROW(executor->run());

@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
+#include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/serialized_message.h"
@@ -47,16 +48,12 @@ public:
      * \brief Asynchronously call a method.
      *
      * \param[in] method_name Name of the method.
-     * \param[in] request_id Message ID of this request.
-     * \param[in] serialized_request Serialized request data.
+     * \param[in] parameters Parameters.
      * \return Future object to wait the result of the call.
-     *
-     * \note This function assumes that request_id is same with the message ID
-     * serialized in serialized_request.
      */
     [[nodiscard]] virtual std::shared_ptr<ICallFutureImpl> async_call(
-        messages::MethodNameView method_name, messages::MessageID request_id,
-        messages::SerializedMessage serialized_request) = 0;
+        messages::MethodNameView method_name,
+        const IParametersSerializer& parameters) = 0;
 
     IClientImpl(const IClientImpl&) = delete;
     IClientImpl(IClientImpl&&) = delete;

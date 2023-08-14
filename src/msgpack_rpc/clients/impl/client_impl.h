@@ -121,12 +121,11 @@ public:
 
     //! \copydoc msgpack_rpc::clients::impl::IClientImpl::async_call
     [[nodiscard]] std::shared_ptr<ICallFutureImpl> async_call(
-        messages::MethodNameView method_name, messages::MessageID request_id,
-        messages::SerializedMessage serialized_request) override {
+        messages::MethodNameView method_name,
+        const IParametersSerializer& parameters) override {
         // TODO
         (void)method_name;
-        (void)request_id;
-        (void)serialized_request;
+        (void)parameters;
         return std::make_shared<CallFutureImpl>();
     }
 
