@@ -27,6 +27,7 @@
 
 #include "msgpack_rpc/clients/impl/call.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
+#include "msgpack_rpc/clients/impl/request_id_generator.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -67,7 +68,7 @@ public:
     [[nodiscard]] Call& create(messages::MethodNameView method_name,
         const IParametersSerializer& parameters) {
         std::unique_lock<std::mutex> lock(mutex_);
-        const messages::MessageID request_id = next_request_id_++;
+        const messages::MessageID request_id = request_id_generator_.generate();
         const auto [iter, is_success] = list_.try_emplace(request_id,
             std::make_unique<Call>(request_id,
                 parameters.create_serialized_request(method_name, request_id),
@@ -139,8 +140,8 @@ private:
     //! List.
     std::unordered_map<messages::MessageID, std::unique_ptr<Call>> list_{};
 
-    //! Next request ID.
-    messages::MessageID next_request_id_{0};
+    //! Generator of message IDs of requests.
+    RequestIDGenerator request_id_generator_{};
 
     //! Mutex of data.
     std::mutex mutex_{};
