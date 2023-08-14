@@ -126,7 +126,7 @@ public:
         // TODO
         (void)method_name;
         (void)parameters;
-        return std::make_shared<CallFutureImpl>();
+        return std::shared_ptr<CallFutureImpl>();
     }
 
 private:

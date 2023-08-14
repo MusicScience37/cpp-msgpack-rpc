@@ -53,9 +53,8 @@ public:
         std::function<void(messages::MessageID)> on_timeout)
         : id_(id),
           serialized_request_(std::move(serialized_request)),
-          future_(std::make_shared<CallFutureImpl>()),
-          timer_(executor, executors::OperationType::CALLBACK),
-          on_timeout_(std::move(on_timeout)) {}
+          future_(std::make_shared<CallFutureImpl>(
+              id, executor, std::move(on_timeout))) {}
 
     /*!
      * \brief Get the Message ID of the request.
@@ -89,20 +88,14 @@ public:
      *
      * \param[in] result Result.
      */
-    void handle(const messages::CallResult& result) {
-        future_->set(result);
-        timer_.cancel();
-    }
+    void handle(const messages::CallResult& result) { future_->set(result); }
 
     /*!
      * \brief Handle an error.
      *
      * \param[in] error Error.
      */
-    void handle(const Status& error) {
-        future_->set(error);
-        timer_.cancel();
-    }
+    void handle(const Status& error) { future_->set(error); }
 
     /*!
      * \brief Set timeout.
@@ -110,8 +103,7 @@ public:
      * \param[in] timeout Duration of timeout.
      */
     void set_timeout_after(std::chrono::nanoseconds timeout) {
-        timer_.async_sleep_for(
-            timeout, [id = id_, on_timeout = on_timeout_] { on_timeout(id); });
+        future_->set_timeout_after(timeout);
     }
 
 private:
@@ -123,12 +115,6 @@ private:
 
     //! Future object to set and get the result of this RPC.
     std::shared_ptr<CallFutureImpl> future_;
-
-    //! Timer to check timeout.
-    executors::Timer timer_;
-
-    //! Callback function called when timeout occurs.
-    std::function<void(messages::MessageID)> on_timeout_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

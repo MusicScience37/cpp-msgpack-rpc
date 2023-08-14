@@ -132,8 +132,7 @@ private:
         if (iter == list_.end()) {
             return;
         }
-        iter->second->handle(
-            Status(StatusCode::TIMEOUT, "Timeout of the RPC."));
+        // CallFutureImpl class sets error to future.
         list_.erase(iter);
     }
 
