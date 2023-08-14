@@ -20,10 +20,12 @@
 #pragma once
 
 #include <chrono>
+#include <exception>
 #include <future>
 
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/messages/call_result.h"
 
@@ -45,6 +47,16 @@ public:
      */
     void set(messages::CallResult result) {
         promise_.set_value(std::move(result));
+    }
+
+    /*!
+     * \brief Set an error.
+     *
+     * \param[in] error Error.
+     */
+    void set(const Status& error) {
+        promise_.set_exception(
+            std::make_exception_ptr(MsgpackRPCException(error)));
     }
 
     //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result

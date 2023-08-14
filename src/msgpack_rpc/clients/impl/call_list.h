@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <cassert>
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <unordered_map>
@@ -26,7 +28,9 @@
 #include "msgpack_rpc/clients/impl/call.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
@@ -37,15 +41,21 @@ namespace msgpack_rpc::clients::impl {
 /*!
  * \brief Class of lists of RPCs.
  */
-class CallList {
+class CallList : public std::enable_shared_from_this<CallList> {
 public:
     /*!
      * \brief Constructor.
      *
+     * \param[in] timeout Timeout of RPCs.
+     * \param[in] executor Executor.
      * \param[in] logger Logger.
      */
-    explicit CallList(std::shared_ptr<logging::Logger> logger)
-        : logger_(std::move(logger)) {}
+    explicit CallList(std::chrono::nanoseconds timeout,
+        std::weak_ptr<executors::IExecutor> executor,
+        std::shared_ptr<logging::Logger> logger)
+        : timeout_(timeout),
+          executor_(std::move(executor)),
+          logger_(std::move(logger)) {}
 
     /*!
      * \brief Register an RPC.
@@ -58,15 +68,24 @@ public:
         const IParametersSerializer& parameters) {
         std::unique_lock<std::mutex> lock(mutex_);
         const messages::MessageID request_id = next_request_id_++;
-        const auto [iter, is_success] =
-            list_.try_emplace(request_id, request_id,
-                parameters.create_serialized_request(method_name, request_id));
+        const auto [iter, is_success] = list_.try_emplace(request_id,
+            std::make_unique<Call>(request_id,
+                parameters.create_serialized_request(method_name, request_id),
+                executor(),
+                [weak_self = this->weak_from_this()](
+                    messages::MessageID request_id) {
+                    const auto self = weak_self.lock();
+                    if (self) {
+                        self->on_timeout(request_id);
+                    }
+                }));
         if (!is_success) {
             // This won't occur in the ordinary condition.
             throw MsgpackRPCException(
                 StatusCode::UNEXPECTED_ERROR, "Duplicate request ID.");
         }
-        return iter->second;
+        iter->second->set_timeout_after(timeout_);
+        return *(iter->second);
     }
 
     /*!
@@ -83,18 +102,55 @@ public:
                 response.id());
             return;
         }
-        iter->second.handle(response.result());
+        iter->second->handle(response.result());
+        list_.erase(iter);
     }
 
 private:
+    /*!
+     * \brief Get the executor.
+     *
+     * \return Executor.
+     */
+    [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() {
+        auto res = executor_.lock();
+        // This won't occur without a bug.
+        assert(res);
+        return res;
+    }
+
+    /*!
+     * \brief Handle timeout of a RPC.
+     *
+     * \param[in] request_id Message ID of the request of the RPC.
+     */
+    void on_timeout(messages::MessageID request_id) {
+        MSGPACK_RPC_WARN(
+            logger_, "Timeout of an RPC (request ID: {}).", request_id);
+        std::unique_lock<std::mutex> lock(mutex_);
+        const auto iter = list_.find(request_id);
+        if (iter == list_.end()) {
+            return;
+        }
+        iter->second->handle(
+            Status(StatusCode::TIMEOUT, "Timeout of the RPC."));
+        list_.erase(iter);
+    }
+
     //! List.
-    std::unordered_map<messages::MessageID, Call> list_{};
+    std::unordered_map<messages::MessageID, std::unique_ptr<Call>> list_{};
 
     //! Next request ID.
     messages::MessageID next_request_id_{0};
 
     //! Mutex of data.
     std::mutex mutex_{};
+
+    //! Timeout of RPCs.
+    std::chrono::nanoseconds timeout_;
+
+    //! Executor.
+    std::weak_ptr<executors::IExecutor> executor_;
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
