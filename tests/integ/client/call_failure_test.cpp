@@ -15,54 +15,48 @@
  */
 /*!
  * \file
- * \brief Test to call methods from clients.
+ * \brief Test of failures in method calls.
  */
-#include <exception>
-#include <memory>
 #include <string>
-#include <string_view>
-#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_tostring.hpp>
-#include <fmt/format.h>
-#include <msgpack.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/client_builder.h"
+#include "msgpack_rpc/clients/server_exception.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/config/server_config.h"
-#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/method_exception.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
-SCENARIO("Call methods") {
+SCENARIO("Call methods to fail") {
+    using msgpack_rpc::MsgpackRPCException;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::clients::Client;
     using msgpack_rpc::clients::ClientBuilder;
+    using msgpack_rpc::clients::ServerException;
     using msgpack_rpc::config::ServerConfig;
+    using msgpack_rpc::methods::MethodException;
     using msgpack_rpc::servers::ServerBuilder;
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
     // TODO Parametrize here when additional protocols are tested.
     const auto server_uri = std::string_view("tcp://localhost:0");
-
     GIVEN("A server") {
         ServerBuilder server_builder{logger};
 
         server_builder.listen_to(server_uri);
 
-        server_builder.add_method<int(int, int)>(
-            "add", [](int x, int y) { return x + y; });
-
         server_builder.add_method<std::string(std::string)>(
             "echo", [](const std::string& str) { return "Reply to " + str; });
 
         server_builder.add_method<std::string()>(
-            "get_message", []() { return "Sample text."; });
+            "exception", []() -> std::string {
+                throw MethodException("Test error in methods.");
+            });
 
         auto server = server_builder.build();
         server->start();
@@ -81,39 +75,41 @@ SCENARIO("Call methods") {
             Client client = client_builder.build();
             client.start();
 
-            THEN(
-                "The client can call methods with two parameters "
-                "using future") {
-                const int result =
-                    client.async_call<int>("add", 1, 2).get_result();
-
-                CHECK(result == 3);
+            THEN("The client can call a method with correct parameters") {
+                CHECK(client.call<std::string>("echo", "Hello.") ==
+                    "Reply to Hello.");
             }
 
             THEN(
-                "The client can call methods with two parameters "
-                "synchronously") {
-                const int result = client.call<int>("add", 1, 2);
-
-                CHECK(result == 3);
+                "The client will receive an exception for wrong parameter "
+                "types") {
+                CHECK_THROWS_AS(
+                    client.call<std::string>("echo", 1), ServerException);
             }
 
             THEN(
-                "The client can call methods with one parameter "
-                "synchronously") {
-                const std::string result =
-                    client.call<std::string>("echo", "Hello.");
-
-                CHECK(result == "Reply to Hello.");
+                "The client will receive an exception for wrong result "
+                "types") {
+                CHECK_THROWS_AS(
+                    client.call<int>("echo", "Hello."), MsgpackRPCException);
             }
 
             THEN(
-                "The client can call methods without parameters "
-                "synchronously") {
-                const std::string result =
-                    client.call<std::string>("get_message");
+                "The client will receive an exception for too many "
+                "parameters") {
+                CHECK_THROWS_AS(client.call<std::string>("echo", "Hello.", 1),
+                    ServerException);
+            }
 
-                CHECK(result == "Sample text.");
+            THEN(
+                "The client will receive an exception for lack of parameters") {
+                CHECK_THROWS_AS(
+                    client.call<std::string>("echo"), ServerException);
+            }
+
+            THEN("The client will receive an exception occurred in methods") {
+                CHECK_THROWS_AS(
+                    client.call<std::string>("exception"), ServerException);
             }
         }
     }
