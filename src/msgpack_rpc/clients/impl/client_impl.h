@@ -33,6 +33,7 @@
 #include "msgpack_rpc/clients/impl/client_connector.h"
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
+#include "msgpack_rpc/clients/impl/message_sender.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/clients/impl/received_message_processor.h"
 #include "msgpack_rpc/clients/impl/sent_message_queue.h"
@@ -66,10 +67,11 @@ public:
         std::shared_ptr<CallList> call_list,
         std::shared_ptr<executors::IAsyncExecutor> executor,
         std::shared_ptr<logging::Logger> logger)
-        : connector_(std::move(connector)),
+        : executor_(std::move(executor)),
+          connector_(std::move(connector)),
           call_list_(std::move(call_list)),
-          executor_(std::move(executor)),
-          logger_(std::move(logger)) {}
+          logger_(std::move(logger)),
+          sender_(std::make_shared<MessageSender>(connector_, logger_)) {}
 
     /*!
      * \brief Destructor.
@@ -98,28 +100,16 @@ public:
         }
         connector_->start(
             // on_connection
-            [weak_self = this->weak_from_this()] {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->send_next();
-                }
-            },
+            [sender = sender_] { sender->send_next(); },
             // on_received
             ReceivedMessageProcessor(logger_, call_list_),
             // on_sent
-            [weak_self = this->weak_from_this()] {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->on_sent();
-                }
+            [sender = sender_] {
+                sender->handle_sent_message();
+                sender->send_next();
             },
             // on_closed
-            [weak_self = this->weak_from_this()] {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->on_connection_closed();
-                }
-            });
+            [sender = sender_] { sender->handle_disconnection(); });
         executor_->start();
     }
 
@@ -134,6 +124,7 @@ public:
         connector_->stop();
         connector_.reset();
         call_list_.reset();
+        sender_.reset();
         executor_->stop();
         executor_.reset();
     }
@@ -144,8 +135,7 @@ public:
         const IParametersSerializer& parameters) override {
         const auto call = call_list_->create(method_name, parameters);
 
-        sent_messages_.push(call.serialized_request(), call.id());
-        send_next();
+        sender_->send(call.serialized_request(), call.id());
 
         MSGPACK_RPC_DEBUG(
             logger_, "Send request {} (id: {})", method_name, call.id());
@@ -160,58 +150,14 @@ public:
             std::make_shared<messages::SerializedMessage>(
                 parameters.create_serialized_notification(method_name));
 
-        sent_messages_.push(serialized_notification);
-        send_next();
+        sender_->send(serialized_notification);
 
         MSGPACK_RPC_DEBUG(logger_, "Send notification {}", method_name);
     }
 
 private:
-    /*!
-     * \brief Send the next message if possible.
-     */
-    void send_next() {
-        if (is_sending_.load(std::memory_order_relaxed)) {
-            MSGPACK_RPC_TRACE(logger_, "Another message is being sent.");
-            return;
-        }
-        const auto connection = connector_->connection();
-        if (!connection) {
-            MSGPACK_RPC_TRACE(
-                logger_, "No connection now, so wait for connection.");
-            return;
-        }
-        const auto [message, request_id] = sent_messages_.next();
-        if (!message) {
-            MSGPACK_RPC_TRACE(logger_, "No message to be sent for now.");
-            return;
-        }
-        if (is_sending_.exchange(true, std::memory_order_acquire)) {
-            MSGPACK_RPC_TRACE(logger_, "Another message is being sent.");
-            return;
-        }
-
-        connection->async_send(message);
-        MSGPACK_RPC_TRACE(logger_, "Sending next message.");
-    }
-
-    /*!
-     * \brief Handle a message sent.
-     */
-    void on_sent() {
-        MSGPACK_RPC_TRACE(logger_, "A message has been sent.");
-        sent_messages_.pop();
-        is_sending_.store(false, std::memory_order_release);
-        send_next();
-    }
-
-    /*!
-     * \brief Handle a connection closed.
-     */
-    void on_connection_closed() {
-        MSGPACK_RPC_TRACE(logger_, "Connection closed, so reconnecting.");
-        is_sending_.store(false, std::memory_order_release);
-    }
+    //! Executor.
+    std::shared_ptr<executors::IAsyncExecutor> executor_;
 
     //! Connector.
     std::shared_ptr<ClientConnector> connector_;
@@ -219,23 +165,17 @@ private:
     //! List of RPCs.
     std::shared_ptr<CallList> call_list_;
 
-    //! Queue of messages to be sent.
-    SentMessageQueue sent_messages_{};
-
-    //! Executor.
-    std::shared_ptr<executors::IAsyncExecutor> executor_;
-
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
+
+    //! Sender of messages.
+    std::shared_ptr<MessageSender> sender_;
 
     //! Whether this client has been started.
     std::atomic<bool> is_started_{false};
 
     //! Whether this client has been stopped.
     std::atomic<bool> is_stopped_{false};
-
-    //! Whether this client is sending a message.
-    std::atomic<bool> is_sending_{false};
 };
 
 }  // namespace msgpack_rpc::clients::impl
