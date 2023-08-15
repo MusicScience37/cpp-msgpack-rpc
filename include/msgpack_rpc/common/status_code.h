@@ -57,6 +57,9 @@ enum class StatusCode {
     //! Timeout.
     TIMEOUT,
 
+    //! Error in servers.
+    SERVER_ERROR,
+
     //! Unexpected errors. (Maybe a bug.)
     UNEXPECTED_ERROR
 };

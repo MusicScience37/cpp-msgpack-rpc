@@ -22,6 +22,8 @@
 #include <memory>
 
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
+#include "msgpack_rpc/clients/server_exception.h"
+#include "msgpack_rpc/messages/call_result.h"
 
 namespace msgpack_rpc::clients {
 
@@ -50,7 +52,7 @@ public:
      */
     [[nodiscard]] Result get_result() {
         const auto call_result = impl_->get_result();
-        return call_result.result_as<Result>();
+        return get_from_call_result(call_result);
     }
 
     /*!
@@ -64,10 +66,24 @@ public:
      */
     [[nodiscard]] Result get_result_within(std::chrono::nanoseconds timeout) {
         const auto call_result = impl_->get_result_within(timeout);
-        return call_result.result_as<Result>();
+        return get_from_call_result(call_result);
     }
 
 private:
+    /*!
+     * \brief Get the result from CallResult object.
+     *
+     * \param[in] call_result CallResult object.
+     * \return Result.
+     */
+    [[nodiscard]] Result get_from_call_result(
+        const messages::CallResult& call_result) {
+        if (call_result.is_success()) {
+            return call_result.result_as<Result>();
+        }
+        throw ServerException(call_result.object(), call_result.zone());
+    }
+
     //! Object of the internal implementation.
     std::shared_ptr<impl::ICallFutureImpl> impl_;
 };

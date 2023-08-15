@@ -21,15 +21,21 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "impl/mock_call_future_impl.h"
 #include "impl/mock_client_impl.h"
+#include "msgpack_rpc/clients/server_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/messages/call_result.h"
 
 TEST_CASE("msgpack_rpc::clients::Client") {
+    using msgpack_rpc::StatusCode;
     using msgpack_rpc::clients::Client;
+    using msgpack_rpc::clients::ServerException;
     using msgpack_rpc::messages::CallResult;
     using msgpack_rpc_test::MockCallFutureImpl;
     using msgpack_rpc_test::MockClientImpl;
@@ -38,8 +44,6 @@ TEST_CASE("msgpack_rpc::clients::Client") {
     const auto client_impl = std::make_shared<MockClientImpl>();
 
     Client client{client_impl};
-
-    // TODO exception in methods.
 
     SECTION("start processing") {
         REQUIRE_CALL(*client_impl, start()).TIMES(1);
@@ -65,6 +69,29 @@ TEST_CASE("msgpack_rpc::clients::Client") {
                     .RETURN(call_result);
 
                 const std::string result = future.get_result();
+            }
+
+            SECTION("and get the error") {
+                const auto result_zone = std::make_shared<msgpack::zone>();
+                const auto result_object =
+                    msgpack::object("test message", *result_zone);
+                const auto call_result =
+                    CallResult::create_error(result_object, result_zone);
+                REQUIRE_CALL(*call_future_impl, get_result())
+                    .TIMES(1)
+                    .RETURN(call_result);
+
+                try {
+                    (void)future.get_result();
+                    FAIL();
+                } catch (const ServerException& e) {
+                    CHECK(e.status().code() == StatusCode::SERVER_ERROR);
+                    // TODO include some information for error objects.
+                    CHECK_THAT(std::string(e.status().message()),
+                        Catch::Matchers::ContainsSubstring(
+                            "An error in a server."));
+                    CHECK(e.error_as<std::string_view>() == "test message");
+                }
             }
         }
 

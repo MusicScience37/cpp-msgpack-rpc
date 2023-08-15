@@ -42,6 +42,8 @@ std::string_view format_status_code(StatusCode code) noexcept {
         return "CONNECTION_FAILURE";
     case StatusCode::TIMEOUT:
         return "TIMEOUT";
+    case StatusCode::SERVER_ERROR:
+        return "SERVER_ERROR";
     case StatusCode::UNEXPECTED_ERROR:
         return "UNEXPECTED_ERROR";
     }

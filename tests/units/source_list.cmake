@@ -9,6 +9,7 @@ set(SOURCE_FILES
     clients/impl/client_builder_impl_test.cpp
     clients/impl/client_impl_test.cpp
     clients/impl/parameters_serializer_test.cpp
+    clients/server_exception_test.cpp
     common/status_code_test.cpp
     common/status_test.cpp
     config/client_config_test.cpp

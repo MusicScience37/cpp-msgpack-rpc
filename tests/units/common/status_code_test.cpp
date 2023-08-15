@@ -42,6 +42,7 @@ TEST_CASE("using msgpack_rpc::format_status_code") {
                 {StatusCode::HOST_UNRESOLVED, "HOST_UNRESOLVED"},
                 {StatusCode::CONNECTION_FAILURE, "CONNECTION_FAILURE"},
                 {StatusCode::TIMEOUT, "TIMEOUT"},
+                {StatusCode::SERVER_ERROR, "SERVER_ERROR"},
                 {StatusCode::UNEXPECTED_ERROR, "UNEXPECTED_ERROR"},
                 {static_cast<StatusCode>(
                      static_cast<int>(StatusCode::UNEXPECTED_ERROR) + 1),
