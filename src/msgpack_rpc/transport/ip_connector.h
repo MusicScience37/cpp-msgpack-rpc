@@ -168,6 +168,7 @@ private:
             MSGPACK_RPC_WARN(logger_, "({}) {}", log_name_, message);
             on_connected(
                 Status(StatusCode::CONNECTION_FAILURE, message), nullptr);
+            return;
         }
         MSGPACK_RPC_TRACE(logger_, "({}) Connected to {}.", log_name_,
             fmt::streamed(asio_address));
