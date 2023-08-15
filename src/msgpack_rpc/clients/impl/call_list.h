@@ -136,12 +136,8 @@ private:
         MSGPACK_RPC_WARN(
             logger_, "Timeout of an RPC (request ID: {}).", request_id);
         std::unique_lock<std::mutex> lock(mutex_);
-        const auto iter = list_.find(request_id);
-        if (iter == list_.end()) {
-            return;
-        }
-        // CallFutureImpl class sets error to future.
-        list_.erase(iter);
+        // CallFutureImpl class sets the error to the future object.
+        list_.erase(request_id);
     }
 
     //! List.
