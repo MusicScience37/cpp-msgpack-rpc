@@ -38,8 +38,8 @@ SCENARIO("Clients reconnect to servers") {
 
     // TODO Parametrize here when additional protocols are tested.
     const auto server_uris =
-        std::vector<std::string_view>{"tcp://127.0.0.1:23400",
-            "tcp://127.0.0.1:23401", "tcp://127.0.0.1:23402"};
+        std::vector<std::string_view>{"tcp://localhost:23400",
+            "tcp://localhost:23401", "tcp://localhost:23402"};
 
     // reconnect soon for faster test
     constexpr auto min_reconnection_waiting_time =
