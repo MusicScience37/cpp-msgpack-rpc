@@ -77,8 +77,7 @@ public:
         std::vector<addresses::URI> server_uris,
         const config::ReconnectionConfig& reconnection_config,
         const std::shared_ptr<logging::Logger>& logger)
-        : executor_(executor),
-          backends_(std::move(backends)),
+        : backends_(std::move(backends)),
           server_uris_(std::move(server_uris)),
           retry_timer_(executor, logger, reconnection_config),
           logger_(logger) {}
@@ -189,21 +188,6 @@ private:
         on_closed_();
         async_connect();
     }
-
-    /*!
-     * \brief Get the executor.
-     *
-     * \return Executor.
-     */
-    [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() {
-        auto res = executor_.lock();
-        // Executor exists here unless a bug exists.
-        assert(res);
-        return res;
-    }
-
-    //! Executor.
-    std::weak_ptr<executors::IExecutor> executor_;
 
     //! Backends.
     transport::BackendList backends_;
