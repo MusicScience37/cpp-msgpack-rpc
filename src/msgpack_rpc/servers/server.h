@@ -102,7 +102,10 @@ public:
             return;
         }
         stop_acceptors();
+        acceptors_.clear();
+        processor_.reset();
         executor_->stop();
+        executor_.reset();
     }
 
     //! \copydoc msgpack_rpc::servers::IServer::local_endpoint_uris

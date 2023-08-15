@@ -137,7 +137,10 @@ public:
             return;
         }
         connector_->stop();
+        connector_.reset();
+        call_list_.reset();
         executor_->stop();
+        executor_.reset();
     }
 
     //! \copydoc msgpack_rpc::clients::impl::IClientImpl::async_call
