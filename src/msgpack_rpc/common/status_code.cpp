@@ -40,6 +40,10 @@ std::string_view format_status_code(StatusCode code) noexcept {
         return "HOST_UNRESOLVED";
     case StatusCode::CONNECTION_FAILURE:
         return "CONNECTION_FAILURE";
+    case StatusCode::TIMEOUT:
+        return "TIMEOUT";
+    case StatusCode::SERVER_ERROR:
+        return "SERVER_ERROR";
     case StatusCode::UNEXPECTED_ERROR:
         return "UNEXPECTED_ERROR";
     }

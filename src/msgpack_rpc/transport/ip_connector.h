@@ -88,7 +88,7 @@ public:
           message_parser_config_(message_parser_config),
           resolver_(executor->context(executors::OperationType::TRANSPORT)),
           scheme_("tcp"),
-          log_name_(fmt::format("Resolver({})", scheme_)),
+          log_name_(fmt::format("Connector({})", scheme_)),
           logger_(std::move(logger)) {}
 
     //! \copydoc msgpack_rpc::transport::IConnector::async_connect

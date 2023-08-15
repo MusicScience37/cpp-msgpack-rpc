@@ -116,6 +116,22 @@ public:
     }
 
     /*!
+     * \brief Get the internal object in msgpack library.
+     *
+     * \return Object.
+     */
+    [[nodiscard]] msgpack::object object() const noexcept { return object_; }
+
+    /*!
+     * \brief Get the internal zone in msgpack library.
+     *
+     * \return Zone.
+     */
+    [[nodiscard]] std::shared_ptr<msgpack::zone> zone() const noexcept {
+        return zone_;
+    }
+
+    /*!
      * \brief Copy constructor.
      */
     CallResult(const CallResult&) = default;

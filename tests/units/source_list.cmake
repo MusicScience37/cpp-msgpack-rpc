@@ -2,15 +2,26 @@ set(SOURCE_FILES
     addresses/tcp_address_test.cpp
     addresses/uri_test.cpp
     catch_event_listener.cpp
+    clients/client_builder_test.cpp
+    clients/client_test.cpp
+    clients/impl/call_future_impl_test.cpp
+    clients/impl/call_list_test.cpp
+    clients/impl/client_builder_impl_test.cpp
+    clients/impl/client_impl_test.cpp
+    clients/impl/parameters_serializer_test.cpp
+    clients/server_exception_test.cpp
     common/status_code_test.cpp
     common/status_test.cpp
+    config/client_config_test.cpp
     config/executor_config_test.cpp
     config/logging_config_test.cpp
     config/message_parser_config_test.cpp
+    config/reconnection_config_test.cpp
     config/server_config_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
+    executors/timer_test.cpp
     executors/wrapping_executor_test.cpp
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
@@ -28,6 +39,7 @@ set(SOURCE_FILES
     servers/server_builder_test.cpp
     servers/server_test.cpp
     test_main.cpp
+    transport/async_connect_test.cpp
     transport/backend_list_test.cpp
     transport/connection_wrapper_test.cpp
 )

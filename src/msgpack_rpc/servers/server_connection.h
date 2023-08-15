@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <atomic>
 #include <cassert>
 #include <functional>
 #include <memory>
@@ -179,15 +180,22 @@ private:
      */
     void send_next_if_exists() {
         std::unique_lock<std::mutex> lock(message_queue_mutex_);
+        if (is_sending_.load(std::memory_order_acquire)) {
+            MSGPACK_RPC_TRACE(logger_, "Another message is being sent.");
+            return;
+        }
         if (message_queue_.empty()) {
+            MSGPACK_RPC_TRACE(logger_, "No message to be sent for now.");
             return;
         }
         const auto next_message = std::move(message_queue_.front());
         message_queue_.pop();
+        is_sending_.store(true, std::memory_order_relaxed);
         lock.unlock();
 
         const auto connection = connection_.lock();
         if (connection) {
+            MSGPACK_RPC_TRACE(logger_, "Sending next message.");
             connection->async_send(next_message);
         }
     }
@@ -195,7 +203,11 @@ private:
     /*!
      * \brief Handle the condition that a message is sent.
      */
-    void on_sent() { send_next_if_exists(); }
+    void on_sent() {
+        MSGPACK_RPC_TRACE(logger_, "A message has been sent.");
+        is_sending_.store(false, std::memory_order_release);
+        send_next_if_exists();
+    }
 
     //! Connection.
     std::weak_ptr<transport::IConnection> connection_;
@@ -218,6 +230,9 @@ private:
 
     //! Mutex of message_queue_.
     std::mutex message_queue_mutex_{};
+
+    //! Whether this connection is sending a message.
+    std::atomic<bool> is_sending_{false};
 };
 
 }  // namespace msgpack_rpc::servers

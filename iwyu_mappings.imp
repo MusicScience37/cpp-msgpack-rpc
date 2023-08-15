@@ -19,6 +19,7 @@
   { include: ["@<__variant/.*>", private, "<variant>", public ] },
   { include: ["@<__numeric/.*>", private, "<numeric>", public ] },
   { include: ["@<__type_traits/.*>", private, "<type_traits>", public ] },
+  { include: ["@<__random/.*>", private, "<random>", public ] },
   { include: ["<__tuple>", private, "<tuple>", public ] },
   { include: ["<__tuple>", private, "<utility>", public ] },
   { include: ["<__tuple>", private, "<unordered_map>", public ] },

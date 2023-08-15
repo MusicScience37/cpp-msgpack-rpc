@@ -54,6 +54,12 @@ enum class StatusCode {
     //! Failure in connecting to an endpoint.
     CONNECTION_FAILURE,
 
+    //! Timeout.
+    TIMEOUT,
+
+    //! Error in servers.
+    SERVER_ERROR,
+
     //! Unexpected errors. (Maybe a bug.)
     UNEXPECTED_ERROR
 };
