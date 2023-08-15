@@ -34,6 +34,7 @@
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
+#include "msgpack_rpc/clients/impl/received_message_processor.h"
 #include "msgpack_rpc/clients/impl/sent_message_queue.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -104,13 +105,7 @@ public:
                 }
             },
             // on_received
-            [weak_self = this->weak_from_this()](
-                const messages::ParsedMessage& message) {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->on_received(message);
-                }
-            },
+            ReceivedMessageProcessor(logger_, call_list_),
             // on_sent
             [weak_self = this->weak_from_this()] {
                 const auto self = weak_self.lock();
@@ -208,22 +203,6 @@ private:
         sent_messages_.pop();
         is_sending_.store(false, std::memory_order_release);
         send_next();
-    }
-
-    /*!
-     * \brief Handle a received message.
-     *
-     * \param[in] message Message.
-     */
-    void on_received(const messages::ParsedMessage& message) {
-        const auto* response = std::get_if<messages::ParsedResponse>(&message);
-        if (response == nullptr) {
-            MSGPACK_RPC_WARN(logger_, "Received an invalid message.");
-            return;
-        }
-        MSGPACK_RPC_DEBUG(
-            logger_, "Received response (id: {})", response->id());
-        call_list_->handle(*response);
     }
 
     /*!
