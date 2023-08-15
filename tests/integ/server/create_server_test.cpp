@@ -46,7 +46,7 @@ SCENARIO("Create a server") {
     const auto logger = msgpack_rpc_test::create_test_logger();
 
     // TODO Parametrize here when additional protocols are tested.
-    const auto server_uri = std::string_view("tcp://127.0.0.1:0");
+    const auto server_uri = std::string_view("tcp://localhost:0");
 
     GIVEN("A default configuration") {
         const ServerConfig config;

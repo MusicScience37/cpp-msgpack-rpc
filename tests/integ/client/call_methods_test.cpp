@@ -19,6 +19,7 @@
  */
 #include <exception>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -47,7 +48,7 @@ SCENARIO("Call methods") {
     const auto logger = msgpack_rpc_test::create_test_logger();
 
     // TODO Parametrize here when additional protocols are tested.
-    const auto server_uri = std::string_view("tcp://127.0.0.1:0");
+    const auto server_uri = std::string_view("tcp://localhost:0");
 
     GIVEN("A server") {
         ServerBuilder server_builder{logger};
@@ -56,6 +57,12 @@ SCENARIO("Call methods") {
 
         server_builder.add_method<int(int, int)>(
             "add", [](int x, int y) { return x + y; });
+
+        server_builder.add_method<std::string(std::string)>(
+            "echo", [](const std::string& str) { return "Reply to " + str; });
+
+        server_builder.add_method<std::string()>(
+            "get_message", []() { return "Sample text."; });
 
         auto server = server_builder.build();
         server->start();
@@ -74,10 +81,39 @@ SCENARIO("Call methods") {
             Client client = client_builder.build();
             client.start();
 
-            THEN("The client can call methods") {
+            THEN(
+                "The client can call methods with two parameters "
+                "using future") {
+                const int result =
+                    client.async_call<int>("add", 1, 2).get_result();
+
+                CHECK(result == 3);
+            }
+
+            THEN(
+                "The client can call methods with two parameters "
+                "synchronously") {
                 const int result = client.call<int>("add", 1, 2);
 
                 CHECK(result == 3);
+            }
+
+            THEN(
+                "The client can call methods with one parameter "
+                "synchronously") {
+                const std::string result =
+                    client.call<std::string>("echo", "Hello.");
+
+                CHECK(result == "Reply to Hello.");
+            }
+
+            THEN(
+                "The client can call methods without parameters "
+                "synchronously") {
+                const std::string result =
+                    client.call<std::string>("get_message");
+
+                CHECK(result == "Sample text.");
             }
         }
     }

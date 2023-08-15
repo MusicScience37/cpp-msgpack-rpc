@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <exception>
 #include <memory>
 #include <utility>
 
@@ -58,10 +59,11 @@ public:
         const messages::ParsedRequest& request) override {
         try {
             return methods_.get(request.method_name())->call(request);
-        } catch (const MsgpackRPCException& e) {
-            MSGPACK_RPC_DEBUG(logger_, e.status().message());
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_DEBUG(logger_, "Error when calling a method {}: {}",
+                request.method_name(), e.what());
             return messages::MessageSerializer::serialize_error_response(
-                request.id(), e.status().message());
+                request.id(), e.what());
         }
     }
 
@@ -69,8 +71,10 @@ public:
     void notify(const messages::ParsedNotification& notification) override {
         try {
             methods_.get(notification.method_name())->notify(notification);
-        } catch (const MsgpackRPCException& e) {
-            MSGPACK_RPC_DEBUG(logger_, e.status().message());
+        } catch (const std::exception& e) {
+            MSGPACK_RPC_DEBUG(logger_,
+                "Error when notifying to a method {}: {}",
+                notification.method_name(), e.what());
         }
     }
 
