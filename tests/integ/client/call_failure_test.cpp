@@ -17,7 +17,9 @@
  * \file
  * \brief Test of failures in method calls.
  */
+#include <chrono>
 #include <string>
+#include <thread>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -27,6 +29,7 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/clients/server_exception.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc/servers/server_builder.h"
@@ -37,6 +40,7 @@ SCENARIO("Call methods to fail") {
     using msgpack_rpc::clients::Client;
     using msgpack_rpc::clients::ClientBuilder;
     using msgpack_rpc::clients::ServerException;
+    using msgpack_rpc::config::ClientConfig;
     using msgpack_rpc::config::ServerConfig;
     using msgpack_rpc::methods::MethodException;
     using msgpack_rpc::servers::ServerBuilder;
@@ -57,6 +61,12 @@ SCENARIO("Call methods to fail") {
             "exception", []() -> std::string {
                 throw MethodException("Test error in methods.");
             });
+
+        server_builder.add_method<void(double)>("wait", [](double time_sec) {
+            std::this_thread::sleep_for(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::duration<double>(time_sec)));
+        });
 
         auto server = server_builder.build();
         server->start();
@@ -110,6 +120,25 @@ SCENARIO("Call methods to fail") {
             THEN("The client will receive an exception occurred in methods") {
                 CHECK_THROWS_AS(
                     client.call<std::string>("exception"), ServerException);
+            }
+        }
+
+        WHEN("A client is configured with small timeout") {
+            const auto client_config =
+                ClientConfig().call_timeout(std::chrono::milliseconds(1));
+            ClientBuilder client_builder{client_config, logger};
+
+            for (const auto& uri : uris) {
+                client_builder.connect_to(uri);
+            }
+
+            Client client = client_builder.build();
+            client.start();
+
+            THEN("The client will receive an exception for timeout") {
+                const double param = 0.01;
+                // TODO exception type is not preserved in exception_ptr...
+                CHECK_THROWS(client.call<std::string>("wait", param));
             }
         }
     }
