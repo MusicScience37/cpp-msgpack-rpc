@@ -19,10 +19,42 @@
  */
 #include "msgpack_rpc/config/reconnection_config.h"
 
+#include <chrono>
+
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("msgpack_rpc::config::ReconnectionConfig") {
-    // using msgpack_rpc::config::ReconnectionConfig;
+    using msgpack_rpc::config::ReconnectionConfig;
 
-    // TODO
+    ReconnectionConfig config;
+
+    SECTION("has correct value as default") {
+        CHECK(config.initial_waiting_time() > std::chrono::nanoseconds(0));
+        CHECK(config.max_waiting_time() > config.initial_waiting_time());
+        CHECK(config.max_jitter_waiting_time() > std::chrono::nanoseconds(0));
+    }
+
+    SECTION("set the initial waiting time") {
+        constexpr auto value = std::chrono::milliseconds(12345);
+
+        config.initial_waiting_time(value);
+
+        CHECK(config.initial_waiting_time() == value);
+    }
+
+    SECTION("set the maximum waiting time") {
+        constexpr auto value = std::chrono::milliseconds(12345);
+
+        config.max_waiting_time(value);
+
+        CHECK(config.max_waiting_time() == value);
+    }
+
+    SECTION("set the maximum jitter of waiting time") {
+        constexpr auto value = std::chrono::milliseconds(12345);
+
+        config.max_jitter_waiting_time(value);
+
+        CHECK(config.max_jitter_waiting_time() == value);
+    }
 }

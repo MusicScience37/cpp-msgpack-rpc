@@ -21,8 +21,11 @@
 
 #include <chrono>
 #include <memory>
+#include <random>
 #include <utility>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -43,13 +46,23 @@ public:
      * \param[in] logger Logger.
      * \param[in] config Configuration.
      */
-    explicit ReconnectionTimer(
-        const std::shared_ptr<executors::IExecutor>& executor,
+    ReconnectionTimer(const std::shared_ptr<executors::IExecutor>& executor,
         std::shared_ptr<logging::Logger> logger,
         const config::ReconnectionConfig& config)
         : timer_(executor, executors::OperationType::TRANSPORT),
           logger_(std::move(logger)),
-          config_(config) {}
+          initial_waiting_time_(config.initial_waiting_time()),
+          max_waiting_time_(config.max_waiting_time()),
+          random_(std::random_device()()),
+          jitter_time_dist_(0, config.max_jitter_waiting_time().count()),
+          next_wait_time_without_jitter_(config.initial_waiting_time()) {
+        // This cannot be checked in ReconnectionConfig.
+        if (max_waiting_time_ < initial_waiting_time_) {
+            throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+                "The maximum waiting time must be longer than of equal to the "
+                "initial waiting time.");
+        }
+    }
 
     /*!
      * \brief Asynchronously wait until the next reconnection.
@@ -59,10 +72,10 @@ public:
      */
     template <typename Function>
     void async_wait(Function&& function) {
-        const auto wait_time = config_.wait_time();
+        const auto wait_time = compute_waiting_time();
 
         MSGPACK_RPC_WARN(logger_,
-            "Failed to connect to all URIs, so retry after {} seconds.",
+            "Failed to connect to all URIs, so retry after {:.3f} seconds.",
             std::chrono::duration_cast<std::chrono::duration<double>>(wait_time)
                 .count());
 
@@ -70,19 +83,57 @@ public:
     }
 
     /*!
+     * \brief Reset the waiting time.
+     *
+     * \note Call this function if a connection is established successfully
+     * once.
+     */
+    void reset() { next_wait_time_without_jitter_ = initial_waiting_time_; }
+
+    /*!
      * \brief Cancel this timer.
      */
     void cancel() { timer_.cancel(); }
 
 private:
+    /*!
+     * \brief Compute the waiting time.
+     *
+     * \return Waiting time.
+     */
+    [[nodiscard]] std::chrono::nanoseconds compute_waiting_time() {
+        std::chrono::nanoseconds wait_time = next_wait_time_without_jitter_;
+        wait_time += std::chrono::nanoseconds(jitter_time_dist_(random_));
+
+        next_wait_time_without_jitter_ *= 2;
+        if (next_wait_time_without_jitter_ > max_waiting_time_) {
+            next_wait_time_without_jitter_ = max_waiting_time_;
+        }
+
+        return wait_time;
+    }
+
     //! Timer.
     executors::Timer timer_;
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
 
-    //! Configuration.
-    config::ReconnectionConfig config_;
+    //! Initial waiting time.
+    std::chrono::nanoseconds initial_waiting_time_;
+
+    //! Maximum waiting time.
+    std::chrono::nanoseconds max_waiting_time_;
+
+    //! Random number generator.
+    std::mt19937 random_;
+
+    //! Distribution of jitter time.
+    std::uniform_int_distribution<std::chrono::nanoseconds::rep>
+        jitter_time_dist_;
+
+    //! Next waiting time without jitter.
+    std::chrono::nanoseconds next_wait_time_without_jitter_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

@@ -36,23 +36,61 @@ public:
     ReconnectionConfig();
 
     /*!
-     * \brief Set the time before reconnecting.
+     * \brief Set the initial waiting time.
      *
      * \param[in] value Value.
      * \return This.
      */
-    ReconnectionConfig& wait_time(std::chrono::nanoseconds value);
+    ReconnectionConfig& initial_waiting_time(std::chrono::nanoseconds value);
 
     /*!
-     * \brief Get the time before reconnecting.
+     * \brief Get the initial waiting time.
      *
-     * \return Time before reconnecting.
+     * \return Value.
      */
-    [[nodiscard]] std::chrono::nanoseconds wait_time() const noexcept;
+    [[nodiscard]] std::chrono::nanoseconds initial_waiting_time()
+        const noexcept;
+
+    /*!
+     * \brief Set the maximum waiting time.
+     *
+     * \param[in] value Value.
+     * \return This.
+     */
+    ReconnectionConfig& max_waiting_time(std::chrono::nanoseconds value);
+
+    /*!
+     * \brief Get the maximum waiting time.
+     *
+     * \return Value.
+     */
+    [[nodiscard]] std::chrono::nanoseconds max_waiting_time() const noexcept;
+
+    /*!
+     * \brief Set the maximum jitter of waiting time.
+     *
+     * \param[in] value Value.
+     * \return This.
+     */
+    ReconnectionConfig& max_jitter_waiting_time(std::chrono::nanoseconds value);
+
+    /*!
+     * \brief Get the maximum jitter of waiting time.
+     *
+     * \return Value.
+     */
+    [[nodiscard]] std::chrono::nanoseconds max_jitter_waiting_time()
+        const noexcept;
 
 private:
-    //! Time before reconnecting.
-    std::chrono::nanoseconds wait_time_;
+    //! Initial waiting time.
+    std::chrono::nanoseconds initial_waiting_time_;
+
+    //! Maximum waiting time.
+    std::chrono::nanoseconds max_waiting_time_;
+
+    //! Maximum jitter of waiting time.
+    std::chrono::nanoseconds max_jitter_waiting_time_;
 };
 
 }  // namespace msgpack_rpc::config

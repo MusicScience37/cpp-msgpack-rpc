@@ -1,0 +1,2 @@
+add_executable(manual_test_reconnection_client client.cpp)
+target_link_libraries(manual_test_reconnection_client PRIVATE ${PROJECT_NAME})
