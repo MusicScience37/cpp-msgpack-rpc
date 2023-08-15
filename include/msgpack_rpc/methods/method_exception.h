@@ -25,6 +25,8 @@
 
 #include <msgpack.hpp>
 
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+
 namespace msgpack_rpc::methods {
 
 /*!
@@ -33,8 +35,11 @@ namespace msgpack_rpc::methods {
  * \note Methods can throw this exception to notify errors using any
  * serializable objects.
  */
-class MethodException : public std::exception {
+class MSGPACK_RPC_EXPORT MethodException : public std::exception {
 public:
+    // Exceptions must be exported in libraries. If not exported, exceptions
+    // cannot be caught correctly.
+
     /*!
      * \brief Constructor.
      *
@@ -56,45 +61,41 @@ public:
      *
      * \return Object in msgpack library.
      */
-    [[nodiscard]] const msgpack::object& object() const noexcept {
-        return object_;
-    }
+    [[nodiscard]] const msgpack::object& object() const noexcept;
 
     /*!
      * \brief Get the message of this exception.
      *
      * \return Message.
      */
-    [[nodiscard]] const char* what() const noexcept override {
-        return "Method threw an exception.";
-    }
+    [[nodiscard]] const char* what() const noexcept override;
 
     /*!
      * \brief Copy constructor.
      */
-    MethodException(const MethodException&) noexcept = default;
+    MethodException(const MethodException&) noexcept;
 
     /*!
      * \brief Move constructor.
      */
-    MethodException(MethodException&&) noexcept = default;
+    MethodException(MethodException&&) noexcept;
 
     /*!
      * \brief Copy assignment operator.
      *
      * \return This.
      */
-    MethodException& operator=(const MethodException&) noexcept = default;
+    MethodException& operator=(const MethodException&) noexcept;
 
     /*!
      * \brief Move assignment operator.
      *
      * \return This.
      */
-    MethodException& operator=(MethodException&&) noexcept = default;
+    MethodException& operator=(MethodException&&) noexcept;
 
     //! Destructor.
-    ~MethodException() noexcept override = default;
+    ~MethodException() noexcept override;
 
 private:
     //! Zone in msgpack library.

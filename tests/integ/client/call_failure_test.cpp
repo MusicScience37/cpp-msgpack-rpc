@@ -19,6 +19,7 @@
  */
 #include <chrono>
 #include <string>
+#include <string_view>
 #include <thread>
 
 #include <catch2/catch_test_macros.hpp>
@@ -29,6 +30,7 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/clients/server_exception.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/methods/method_exception.h"
@@ -36,6 +38,7 @@
 
 SCENARIO("Call methods to fail") {
     using msgpack_rpc::MsgpackRPCException;
+    using msgpack_rpc::StatusCode;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::clients::Client;
     using msgpack_rpc::clients::ClientBuilder;
@@ -118,8 +121,13 @@ SCENARIO("Call methods to fail") {
             }
 
             THEN("The client will receive an exception occurred in methods") {
-                CHECK_THROWS_AS(
-                    client.call<std::string>("exception"), ServerException);
+                try {
+                    (void)client.call<std::string>("exception");
+                    FAIL();
+                } catch (const ServerException& e) {
+                    CHECK(e.error_as<std::string_view>() ==
+                        "Test error in methods.");
+                }
             }
         }
 
@@ -137,8 +145,12 @@ SCENARIO("Call methods to fail") {
 
             THEN("The client will receive an exception for timeout") {
                 const double param = 0.01;
-                // TODO exception type is not preserved in exception_ptr...
-                CHECK_THROWS(client.call<std::string>("wait", param));
+                try {
+                    (void)client.call<std::string>("wait", param);
+                    FAIL();
+                } catch (const MsgpackRPCException& e) {
+                    CHECK(e.status().code() == StatusCode::TIMEOUT);
+                }
             }
         }
     }

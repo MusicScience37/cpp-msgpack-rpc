@@ -27,34 +27,33 @@
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::clients {
 
 /*!
  * \brief Class of exceptions specifying errors in servers.
  */
-class ServerException : public MsgpackRPCException {
+class MSGPACK_RPC_EXPORT ServerException : public MsgpackRPCException {
 public:
+    // Exceptions must be exported in libraries. If not exported, exceptions
+    // cannot be caught correctly.
+
     /*!
      * \brief Constructor.
      *
      * \param[in] object Object in msgpack library specifying the error.
      * \param[in] zone Zone in msgpack library.
      */
-    ServerException(msgpack::object object, std::shared_ptr<msgpack::zone> zone)
-        : MsgpackRPCException(
-              StatusCode::SERVER_ERROR, "An error in a server."),
-          zone_(std::move(zone)),
-          object_(object) {}
+    ServerException(
+        msgpack::object object, std::shared_ptr<msgpack::zone> zone);
 
     /*!
      * \brief Get the object in msgpack library.
      *
      * \return Object in msgpack library.
      */
-    [[nodiscard]] const msgpack::object& object() const noexcept {
-        return object_;
-    }
+    [[nodiscard]] const msgpack::object& object() const noexcept;
 
     /*!
      * \brief Get the error.
@@ -65,7 +64,7 @@ public:
     template <typename T>
     [[nodiscard]] T error_as() const {
         try {
-            return object_.as<T>();
+            return object().as<T>();
         } catch (const msgpack::type_error&) {
             throw MsgpackRPCException(
                 StatusCode::TYPE_ERROR, "Invalid type of the error.");
@@ -75,29 +74,29 @@ public:
     /*!
      * \brief Copy constructor.
      */
-    ServerException(const ServerException&) noexcept = default;
+    ServerException(const ServerException&) noexcept;
 
     /*!
      * \brief Move constructor.
      */
-    ServerException(ServerException&&) noexcept = default;
+    ServerException(ServerException&&) noexcept;
 
     /*!
      * \brief Copy assignment operator.
      *
      * \return This.
      */
-    ServerException& operator=(const ServerException&) noexcept = default;
+    ServerException& operator=(const ServerException&) noexcept;
 
     /*!
      * \brief Move assignment operator.
      *
      * \return This.
      */
-    ServerException& operator=(ServerException&&) noexcept = default;
+    ServerException& operator=(ServerException&&) noexcept;
 
     //! Destructor.
-    ~ServerException() noexcept override = default;
+    ~ServerException() noexcept override;
 
 private:
     //! Zone in msgpack library.

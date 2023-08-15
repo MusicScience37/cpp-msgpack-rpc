@@ -25,6 +25,7 @@
 
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc {
 inline namespace common {
@@ -32,16 +33,17 @@ inline namespace common {
 /*!
  * \brief Class of exceptions in cpp-msgpack-rpc library.
  */
-class MsgpackRPCException : public std::runtime_error {
+class MSGPACK_RPC_EXPORT MsgpackRPCException : public std::runtime_error {
 public:
+    // Exceptions must be exported in libraries. If not exported, exceptions
+    // cannot be caught correctly.
+
     /*!
      * \brief Constructor.
      *
      * \param[in] status Status.
      */
-    explicit MsgpackRPCException(Status status)
-        : std::runtime_error(status.message().data()),
-          status_(std::move(status)) {}
+    explicit MsgpackRPCException(Status status);
 
     /*!
      * \brief Constructor.
@@ -49,15 +51,43 @@ public:
      * \param[in] code Status code.
      * \param[in] message Error message.
      */
-    MsgpackRPCException(StatusCode code, std::string_view message)
-        : MsgpackRPCException(Status(code, message)) {}
+    MsgpackRPCException(StatusCode code, std::string_view message);
 
     /*!
      * \brief Get the status.
      *
      * \return Status.
      */
-    [[nodiscard]] const Status& status() const noexcept { return status_; }
+    [[nodiscard]] const Status& status() const noexcept;
+
+    /*!
+     * \brief Copy constructor.
+     */
+    MsgpackRPCException(const MsgpackRPCException&) noexcept;
+
+    /*!
+     * \brief Move constructor.
+     */
+    MsgpackRPCException(MsgpackRPCException&&) noexcept;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * \return This.
+     */
+    MsgpackRPCException& operator=(const MsgpackRPCException&) noexcept;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * \return This.
+     */
+    MsgpackRPCException& operator=(MsgpackRPCException&&) noexcept;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~MsgpackRPCException() override;
 
 private:
     //! Error.
