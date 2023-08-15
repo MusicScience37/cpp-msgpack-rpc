@@ -21,10 +21,15 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
+#include <type_traits>
+#include <utility>
 
 #include "msgpack_rpc/clients/impl/client_connector.h"
 #include "msgpack_rpc/clients/impl/sent_message_queue.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/messages/message_id.h"
+#include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
 namespace msgpack_rpc::clients::impl {
