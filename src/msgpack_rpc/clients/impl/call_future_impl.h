@@ -44,7 +44,6 @@ class CallFutureImpl final
     : public ICallFutureImpl,
       public std::enable_shared_from_this<CallFutureImpl> {
 public:
-    //! Constructor.
     /*!
      * \brief Constructor.
      *
