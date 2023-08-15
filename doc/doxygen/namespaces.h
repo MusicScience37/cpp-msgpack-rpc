@@ -59,6 +59,38 @@ namespace msgpack_rpc {
     namespace addresses {}
 
     /*!
+     * \dir include/msgpack_rpc/clients
+     * \brief Directory of public headers of clients.
+     */
+
+    /*!
+     * \dir src/msgpack_rpc/clients
+     * \brief Directory of source codes of clients.
+     */
+
+    /*!
+     * \brief Namespace of clients.
+     */
+    namespace clients {
+
+        /*!
+         * \dir include/msgpack_rpc/clients/impl
+         * \brief Directory of internal implementation.
+         */
+
+        /*!
+         * \dir src/msgpack_rpc/clients/impl
+         * \brief Directory of internal implementation.
+         */
+
+        /*!
+         * \brief Namespace of internal implementations.
+         */
+        namespace impl {}
+
+    }  // namespace clients
+
+    /*!
      * \dir include/msgpack_rpc/common
      * \brief Directory of public headers of common classes and functions.
      */
@@ -228,6 +260,11 @@ namespace msgpack_rpc {
      * \brief Namespace of transport of messages.
      */
     namespace transport {
+
+        /*!
+         * \brief Namespace of internal implementations.
+         */
+        namespace impl {}
 
         /*!
          * \dir src/msgpack_rpc/transport/tcp
