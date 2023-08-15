@@ -25,6 +25,7 @@
 #include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/logger.h"
+
 namespace msgpack_rpc::clients::impl {
 
 /*!
@@ -56,15 +57,12 @@ public:
     template <typename Function>
     void async_wait(Function&& function) {
         const auto wait_time = config_.wait_time();
-        if (logger_->output_log_level() <= logging::LogLevel::TRACE) {
-            const auto wait_time_sec =
-                std::chrono::duration_cast<std::chrono::duration<double>>(
-                    wait_time)
-                    .count();
-            MSGPACK_RPC_TRACE(logger_,
-                "Failed to connect to all URIs, so retry after {} seconds.",
-                wait_time_sec);
-        }
+
+        MSGPACK_RPC_WARN(logger_,
+            "Failed to connect to all URIs, so retry after {} seconds.",
+            std::chrono::duration_cast<std::chrono::duration<double>>(wait_time)
+                .count());
+
         timer_.async_sleep_for(wait_time, std::forward<Function>(function));
     }
 
