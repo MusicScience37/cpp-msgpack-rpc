@@ -60,6 +60,7 @@ public:
         std::function<void(messages::MessageID)> on_timeout)
         : future_(promise_.get_future()),
           request_id_(request_id),
+          executor_(executor),
           timer_(executor, executors::OperationType::CALLBACK),
           on_timeout_(std::move(on_timeout)) {}
 
@@ -123,6 +124,14 @@ private:
 
     //! Message ID of the request of the RPC.
     messages::MessageID request_id_;
+
+    /*!
+     * \brief Executor
+     *
+     * \note This is not used in functions, but must exists to prevent access of
+     * invalid addresses by timers.
+     */
+    std::shared_ptr<executors::IExecutor> executor_;
 
     //! Timer to check timeout.
     executors::Timer timer_;
