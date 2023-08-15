@@ -22,9 +22,10 @@
 #include <chrono>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trompeloeil.hpp>
+#include <msgpack.hpp>
 
 #include "../../create_test_logger.h"
 #include "../../transport/mock_backend.h"
@@ -41,15 +42,17 @@
 #include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
-#include "msgpack_rpc/messages/method_name.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
 #include "msgpack_rpc_test/parse_messages.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::Status;

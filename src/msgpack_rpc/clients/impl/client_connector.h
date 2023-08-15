@@ -20,24 +20,19 @@
 #pragma once
 
 #include <atomic>
-#include <cassert>
-#include <chrono>
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <thread>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/impl/reconnection_timer.h"
-#include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/executors/async_invoke.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
-#include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/async_connect.h"
 #include "msgpack_rpc/transport/backend_list.h"

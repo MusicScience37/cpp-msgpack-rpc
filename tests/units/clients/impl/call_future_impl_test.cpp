@@ -22,6 +22,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <ratio>
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>

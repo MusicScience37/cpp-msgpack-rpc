@@ -20,6 +20,7 @@
 #include "msgpack_rpc/config/reconnection_config.h"
 
 #include <chrono>
+#include <ratio>
 
 namespace msgpack_rpc::config {
 

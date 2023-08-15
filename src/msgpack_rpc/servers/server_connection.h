@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <atomic>
 #include <cassert>
 #include <functional>
 #include <memory>

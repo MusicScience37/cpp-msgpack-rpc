@@ -20,6 +20,7 @@
 #include "msgpack_rpc/transport/async_connect.h"
 
 #include <memory>
+#include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -33,9 +34,11 @@
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::transport::MultiBackendConnector") {
     using msgpack_rpc::MsgpackRPCException;

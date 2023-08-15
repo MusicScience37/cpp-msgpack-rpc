@@ -24,13 +24,17 @@
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <msgpack.hpp>
 
 #include "impl/mock_call_future_impl.h"
 #include "impl/mock_client_impl.h"
 #include "msgpack_rpc/clients/server_exception.h"
+#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/messages/call_result.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::clients::Client") {
     using msgpack_rpc::StatusCode;

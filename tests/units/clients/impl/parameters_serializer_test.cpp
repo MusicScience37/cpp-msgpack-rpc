@@ -24,9 +24,13 @@
 #include <tuple>
 
 #include <catch2/catch_test_macros.hpp>
+#include <msgpack.hpp>
 
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_notification.h"
+#include "msgpack_rpc/messages/parsed_parameters.h"
+#include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc_test/parse_messages.h"
 

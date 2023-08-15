@@ -17,13 +17,24 @@
  * \file
  * \brief Test to call methods from clients.
  */
+#include <exception>
+#include <memory>
+#include <string_view>
+#include <vector>
+
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
+#include <fmt/format.h>
+#include <msgpack.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/methods/method_exception.h"
+#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Call methods") {

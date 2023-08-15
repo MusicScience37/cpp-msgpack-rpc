@@ -20,6 +20,8 @@
 #include "msgpack_rpc/executors/timer.h"
 
 #include <chrono>
+#include <functional>
+#include <ratio>
 
 #include <catch2/catch_test_macros.hpp>
 

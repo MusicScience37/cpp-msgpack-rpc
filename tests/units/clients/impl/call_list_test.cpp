@@ -20,10 +20,12 @@
 #include "msgpack_rpc/clients/impl/call_list.h"
 
 #include <chrono>
+#include <ratio>
 #include <string>
 #include <tuple>
 
 #include <catch2/catch_test_macros.hpp>
+#include <msgpack.hpp>
 
 #include "../../create_test_logger.h"
 #include "msgpack_rpc/clients/impl/call.h"
@@ -33,6 +35,8 @@
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
+#include "msgpack_rpc/messages/parsed_parameters.h"
+#include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
 #include "msgpack_rpc_test/parse_messages.h"
 

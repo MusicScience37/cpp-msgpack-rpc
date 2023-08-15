@@ -19,6 +19,9 @@
  */
 #include "msgpack_rpc/clients/client_builder.h"
 
+#include <string>
+#include <type_traits>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "../create_test_logger.h"
@@ -29,6 +32,7 @@
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::clients::ClientBuilder") {
     using msgpack_rpc::addresses::URI;

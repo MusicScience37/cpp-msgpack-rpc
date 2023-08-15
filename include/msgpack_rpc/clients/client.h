@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "msgpack_rpc/clients/call_future.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"

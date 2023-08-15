@@ -20,6 +20,8 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
+#include <utility>
 
 #include <msgpack.hpp>
 

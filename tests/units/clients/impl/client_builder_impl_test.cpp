@@ -17,7 +17,11 @@
  * \file
  * \brief Test of ClientBuilderImpl class.
  */
+#include <cstdint>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -28,6 +32,7 @@
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::impl::ClientBuilderImpl") {
     using msgpack_rpc::addresses::URI;

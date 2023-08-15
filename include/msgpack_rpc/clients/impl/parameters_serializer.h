@@ -19,8 +19,8 @@
  */
 #pragma once
 
+#include <cstddef>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/messages/message_id.h"

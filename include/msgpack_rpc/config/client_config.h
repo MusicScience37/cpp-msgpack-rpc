@@ -20,6 +20,7 @@
 #pragma once
 
 #include <chrono>
+#include <string_view>
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"

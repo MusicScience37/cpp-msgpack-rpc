@@ -24,6 +24,7 @@
 #include <optional>
 #include <queue>
 #include <tuple>
+#include <utility>
 
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/serialized_message.h"

@@ -22,13 +22,12 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call_future_impl.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/i_executor.h"
-#include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/serialized_message.h"

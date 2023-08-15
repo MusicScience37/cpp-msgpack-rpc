@@ -20,7 +20,9 @@
 #include "msgpack_rpc/config/client_config.h"
 
 #include <chrono>
+#include <ratio>
 #include <string_view>
+#include <utility>
 
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
