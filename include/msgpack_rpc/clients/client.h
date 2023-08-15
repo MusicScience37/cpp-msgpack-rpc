@@ -92,6 +92,9 @@ public:
      * \tparam Parameters Types of parameters.
      * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
+     *
+     * \note Notifications are always processed asynchronously because a
+     * notification doesn't have a response.
      */
     template <typename... Parameters>
     void notify(
