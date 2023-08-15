@@ -21,6 +21,7 @@
 
 #include <exception>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -132,6 +133,44 @@ TEST_CASE("msgpack_rpc::methods::MethodProcessor") {
                 [](std::string_view str) { return std::string(str); }, logger);
 
             CHECK_THROWS(processor->append(std::move(method2)));
+        }
+    }
+
+    SECTION("append a method throwing an exception") {
+        std::string received_param1;
+        const auto method_name1 = MethodName("test_method1");
+        auto method1 = create_functional_method<std::string(std::string)>(
+            method_name1,
+            [&received_param1](std::string_view str) -> std::string {
+                received_param1 = str;
+                throw std::runtime_error("Test error in methods.");
+            },
+            logger);
+
+        REQUIRE_NOTHROW(processor->append(std::move(method1)));
+
+        SECTION("and call a method with a request") {
+            const auto message_id = static_cast<MessageID>(1234);
+            const auto param1 = std::string_view("parameter");
+            const auto request =
+                create_parsed_request(method_name1, message_id, param1);
+
+            const SerializedMessage result = processor->call(request);
+
+            CHECK(received_param1 == param1);
+            const auto parsed_response = parse_response(result);
+            CHECK(parsed_response.id() == message_id);
+            CHECK(parsed_response.result().is_error());
+        }
+
+        SECTION("and notify to a method") {
+            const auto param1 = std::string_view("parameter");
+            const auto notification =
+                create_parsed_notification(method_name1, param1);
+
+            CHECK_NOTHROW(processor->notify(notification));
+
+            CHECK(received_param1 == param1);
         }
     }
 }
