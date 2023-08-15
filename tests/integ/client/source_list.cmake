@@ -3,4 +3,5 @@ set(SOURCE_FILES
     catch_event_listener.cpp
     create_test_logger.cpp
     many_calls_test.cpp
+    notifications_test.cpp
 )

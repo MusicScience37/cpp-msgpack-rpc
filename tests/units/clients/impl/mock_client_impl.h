@@ -37,6 +37,10 @@ class MockClientImpl final : public msgpack_rpc::clients::impl::IClientImpl {
             msgpack_rpc::messages::MethodNameView,
             const msgpack_rpc::clients::impl::IParametersSerializer&),
         override);
+    MAKE_MOCK2(notify,
+        void(msgpack_rpc::messages::MethodNameView,
+            const msgpack_rpc::clients::impl::IParametersSerializer&),
+        override);
 };
 
 }  // namespace msgpack_rpc_test

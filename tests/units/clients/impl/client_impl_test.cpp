@@ -60,7 +60,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc::clients::impl::ClientImpl;
     using msgpack_rpc::clients::impl::ICallFutureImpl;
     using msgpack_rpc::clients::impl::IClientImpl;
-    using msgpack_rpc::clients::impl::ParametersSerializer;
+    using msgpack_rpc::clients::impl::make_parameters_serializer;
     using msgpack_rpc::config::ReconnectionConfig;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
@@ -73,8 +73,6 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     using msgpack_rpc_test::MockConnector;
     using msgpack_rpc_test::parse_request;
     using trompeloeil::_;
-
-    // TODO notification.
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
@@ -142,7 +140,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             std::shared_ptr<ICallFutureImpl> future;
             post([&client, &method_name, &param1, &future] {
                 future = client->async_call(
-                    method_name, ParametersSerializer<std::string>{param1});
+                    method_name, make_parameters_serializer(param1));
             });
 
             REQUIRE_CALL(*connection, async_send(_))
@@ -158,6 +156,21 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
             REQUIRE_NOTHROW(executor->run());
 
             CHECK(future->get_result().result_as<std::string>() == "result");
+        }
+
+        SECTION("and notify to a method") {
+            const auto method_name = MethodNameView("method2");
+            const auto param1 = static_cast<int>(123);
+
+            post([&client, &method_name, &param1] {
+                client->notify(method_name, make_parameters_serializer(param1));
+            });
+
+            REQUIRE_CALL(*connection, async_send(_))
+                .TIMES(1)
+                .LR_SIDE_EFFECT(post(on_sent));
+
+            REQUIRE_NOTHROW(executor->run());
         }
     }
 

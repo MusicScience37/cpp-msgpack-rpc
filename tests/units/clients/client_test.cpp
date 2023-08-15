@@ -39,7 +39,6 @@ TEST_CASE("msgpack_rpc::clients::Client") {
 
     Client client{client_impl};
 
-    // TODO notifications.
     // TODO exception in methods.
 
     SECTION("start processing") {
@@ -86,6 +85,12 @@ TEST_CASE("msgpack_rpc::clients::Client") {
 
             const std::string result =
                 client.call<std::string>("method1", 3, "abc");
+        }
+
+        SECTION("and notify to a method") {
+            REQUIRE_CALL(*client_impl, notify(_, _)).TIMES(1);
+
+            client.notify("method2", "notification");
         }
     }
 }

@@ -55,6 +55,18 @@ public:
         messages::MethodNameView method_name,
         const IParametersSerializer& parameters) = 0;
 
+    /*!
+     * \brief Notify to a method.
+     *
+     * \param[in] method_name Name of the method.
+     * \param[in] parameters Parameters.
+     *
+     * \note Notifications are always processed asynchronously because a
+     * notification doesn't have a response.
+     */
+    virtual void notify(messages::MethodNameView method_name,
+        const IParametersSerializer& parameters) = 0;
+
     IClientImpl(const IClientImpl&) = delete;
     IClientImpl(IClientImpl&&) = delete;
     IClientImpl& operator=(const IClientImpl&) = delete;

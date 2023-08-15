@@ -60,7 +60,7 @@ public:
      *
      * \tparam Result Type of the result.
      * \tparam Parameters Types of parameters.
-     * \param[in] method_name Method name.
+     * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
      * \return Future object to get the result of the RPC.
      */
@@ -76,7 +76,7 @@ public:
      *
      * \tparam Result Type of the result.
      * \tparam Parameters Types of parameters.
-     * \param[in] method_name Method name.
+     * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
      * \return Result of the RPC.
      */
@@ -84,6 +84,20 @@ public:
     [[nodiscard]] std::decay_t<Result> call(
         messages::MethodNameView method_name, const Parameters&... parameters) {
         return async_call<Result>(method_name, parameters...).get_result();
+    }
+
+    /*!
+     * \brief Notify to a method.
+     *
+     * \tparam Parameters Types of parameters.
+     * \param[in] method_name Name of the method.
+     * \param[in] parameters Parameters.
+     */
+    template <typename... Parameters>
+    void notify(
+        messages::MethodNameView method_name, const Parameters&... parameters) {
+        impl_->notify(
+            method_name, impl::make_parameters_serializer(parameters...));
     }
 
 private:

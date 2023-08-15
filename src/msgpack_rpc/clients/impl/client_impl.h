@@ -38,6 +38,7 @@
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_response.h"
+#include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
@@ -149,6 +150,19 @@ public:
             logger_, "Send request {} (id: {})", method_name, call.id());
 
         return call.future();
+    }
+
+    //! \copydoc msgpack_rpc::clients::impl::IClientImpl::notify
+    void notify(messages::MethodNameView method_name,
+        const IParametersSerializer& parameters) override {
+        const auto serialized_notification =
+            std::make_shared<messages::SerializedMessage>(
+                parameters.create_serialized_notification(method_name));
+
+        sent_messages_.push(serialized_notification);
+        send_next();
+
+        MSGPACK_RPC_DEBUG(logger_, "Send notification {}", method_name);
     }
 
 private:
