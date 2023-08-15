@@ -23,15 +23,17 @@
 
 #include "msgpack_rpc/clients/impl/i_client_builder_impl.h"
 #include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/backends.h"
+#include "msgpack_rpc/transport/create_default_backend_list.h"
 
 namespace msgpack_rpc::clients::impl {
 
 std::unique_ptr<IClientBuilderImpl> create_empty_client_builder_impl(
     std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger, config::ClientConfig config) {
-    return std::make_unique<ClientBuilderImpl>(
-        std::move(executor), std::move(logger), std::move(config));
+    return std::make_unique<ClientBuilderImpl>(std::move(executor),
+        std::move(logger), std::move(config), transport::BackendList());
 }
 
 std::unique_ptr<IClientBuilderImpl> create_default_client_builder_impl(
@@ -40,10 +42,9 @@ std::unique_ptr<IClientBuilderImpl> create_default_client_builder_impl(
     const auto executor = executors::create_executor(logger, config.executor());
 
     auto builder =
-        create_empty_client_builder_impl(executor, logger, std::move(config));
-
-    builder->register_protocol(transport::create_tcp_backend(
-        executor, config.message_parser(), logger));
+        std::make_unique<ClientBuilderImpl>(executor, logger, std::move(config),
+            transport::create_default_backend_list(
+                executor, config.message_parser(), logger));
 
     return builder;
 }

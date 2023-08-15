@@ -23,17 +23,21 @@
 #include <utility>
 #include <vector>
 
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/servers/impl/server_builder_impl.h"
+#include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/backends.h"
+#include "msgpack_rpc/transport/create_default_backend_list.h"
 
 namespace msgpack_rpc::servers::impl {
 
 std::unique_ptr<IServerBuilderImpl> create_empty_server_builder_impl(
     std::shared_ptr<executors::IAsyncExecutor> executor,
     std::shared_ptr<logging::Logger> logger) {
-    return std::make_unique<ServerBuilderImpl>(
-        std::move(executor), std::move(logger));
+    return std::make_unique<ServerBuilderImpl>(std::move(executor),
+        std::move(logger), transport::BackendList(),
+        std::vector<addresses::URI>{});
 }
 
 std::unique_ptr<IServerBuilderImpl> create_default_builder_impl(
@@ -42,14 +46,10 @@ std::unique_ptr<IServerBuilderImpl> create_default_builder_impl(
     const auto executor =
         executors::create_executor(logger, server_config.executor());
 
-    auto builder = create_empty_server_builder_impl(executor, logger);
-
-    builder->register_protocol(transport::create_tcp_backend(
-        executor, server_config.message_parser(), logger));
-
-    for (const auto& uri : server_config.uris()) {
-        builder->listen_to(uri);
-    }
+    auto builder = std::make_unique<ServerBuilderImpl>(executor, logger,
+        transport::create_default_backend_list(
+            executor, server_config.message_parser(), logger),
+        server_config.uris());
 
     return builder;
 }

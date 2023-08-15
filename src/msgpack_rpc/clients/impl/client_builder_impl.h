@@ -47,12 +47,15 @@ public:
      * \param[in] executor Executor.
      * \param[in] logger Logger.
      * \param[in] config Configuration.
+     * \param[in] backends Backends.
      */
     ClientBuilderImpl(std::shared_ptr<executors::IAsyncExecutor> executor,
-        std::shared_ptr<logging::Logger> logger, config::ClientConfig config)
+        std::shared_ptr<logging::Logger> logger, config::ClientConfig config,
+        transport::BackendList backends)
         : executor_(std::move(executor)),
           logger_(std::move(logger)),
-          config_(std::move(config)) {}
+          config_(std::move(config)),
+          backends_(std::move(backends)) {}
 
     //! \copydoc msgpack_rpc::clients::impl::IClientBuilderImpl::register_protocol
     void register_protocol(
@@ -88,7 +91,7 @@ private:
     config::ClientConfig config_;
 
     //! Backends.
-    transport::BackendList backends_{};
+    transport::BackendList backends_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

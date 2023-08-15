@@ -49,11 +49,16 @@ public:
      *
      * \param[in] executor Executor.
      * \param[in] logger Logger.
+     * \param[in] backends Backends.
+     * \param[in] uris URIs to listen to.
      */
     ServerBuilderImpl(std::shared_ptr<executors::IAsyncExecutor> executor,
-        std::shared_ptr<logging::Logger> logger)
+        std::shared_ptr<logging::Logger> logger,
+        transport::BackendList backends, std::vector<addresses::URI> uris)
         : executor_(std::move(executor)),
           logger_(std::move(logger)),
+          backends_(std::move(backends)),
+          uris_(std::move(uris)),
           processor_(methods::create_method_processor(logger_)) {}
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::register_protocol
