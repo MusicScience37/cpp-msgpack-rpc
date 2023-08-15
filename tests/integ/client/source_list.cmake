@@ -4,4 +4,5 @@ set(SOURCE_FILES
     create_test_logger.cpp
     many_calls_test.cpp
     notifications_test.cpp
+    reconnection_test.cpp
 )
