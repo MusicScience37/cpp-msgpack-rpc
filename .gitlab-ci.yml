@@ -186,6 +186,30 @@ static analysis:
     - cd ..
     - poetry run clang-tidy-checker -b ${BUILD_DIR}
 
+complexity:
+  stage: test
+  needs: []
+  image: musicscience37/clang-ci:clang15
+  script:
+    - poetry config virtualenvs.in-project true
+    - poetry env use 3.11
+    - poetry install
+    - mkdir -p complexity
+    - poetry run lizard -o complexity/complexity_per_function.html include src
+    - poetry run lizard -o complexity/result.txt -E duplicate include src
+  cache:
+    key:
+      prefix: cache-${CI_JOB_NAME}
+      files:
+        - poetry.lock
+    paths:
+      - .venv
+  artifacts:
+    paths:
+      - complexity
+    expire_in: "1 mos"
+  interruptible: true
+
 clang coverage:
   extends: test release
   parallel:

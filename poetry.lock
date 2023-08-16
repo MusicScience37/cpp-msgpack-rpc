@@ -587,6 +587,17 @@ six = "*"
 tornado = {version = "*", markers = "python_version > \"2.7\""}
 
 [[package]]
+name = "lizard"
+version = "1.17.10"
+description = "A code analyzer without caring the C/C++ header files. It works with Java, C/C++, JavaScript, Python, Ruby, Swift, Objective C. Metrics includes cyclomatic complexity number etc."
+optional = false
+python-versions = "*"
+files = [
+    {file = "lizard-1.17.10-py2.py3-none-any.whl", hash = "sha256:686748cc003de54d3e37f84b6cbbdd975be41a2094f0a779cb7fef65e70fc53e"},
+    {file = "lizard-1.17.10.tar.gz", hash = "sha256:62d78acd64724be28b5f4aa27a630dfa4b4afbd1596d1f25d5ad1c1a3a075adc"},
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
@@ -1533,4 +1544,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "6ed3ca9238e5d3cde05534b211936678452592938f8f680746e41f53f1930b26"
+content-hash = "02561951dc06b12806ca6f14938d4d4a5ad4ca1a12c5d96b81b19ebc653bc3ba"
