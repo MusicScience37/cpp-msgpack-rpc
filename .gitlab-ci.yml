@@ -17,8 +17,6 @@ dependency_scanning:
   needs: []
 sast:
   needs: []
-license_scanning:
-  needs: []
 
 line count:
   stage: test
