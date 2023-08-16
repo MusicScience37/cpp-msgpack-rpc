@@ -19,11 +19,15 @@
  */
 #pragma once
 
+#include <algorithm>
 #include <chrono>
+#include <condition_variable>
 #include <exception>
 #include <functional>
 #include <future>
 #include <memory>
+#include <mutex>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -50,8 +54,11 @@ class CallFutureImpl final
 public:
     /*!
      * \brief Constructor.
+     *
+     * \param[in] deadline Deadline of the result of the RPC.
      */
-    CallFutureImpl() : future_(promise_.get_future()) {}
+    explicit CallFutureImpl(std::chrono::steady_clock::time_point deadline)
+        : deadline_(deadline) {}
 
     /*!
      * \brief Set a result.
@@ -59,7 +66,16 @@ public:
      * \param[in] result Result.
      */
     void set(messages::CallResult result) {
-        promise_.set_value(std::move(result));
+        std::unique_lock<std::mutex> lock(is_set_mutex_);
+        if (is_set_) {
+            return;
+        }
+
+        result_.emplace(std::move(result));
+
+        is_set_ = true;
+        lock.unlock();
+        is_set_cond_var_.notify_all();
     }
 
     /*!
@@ -68,31 +84,102 @@ public:
      * \param[in] error Error.
      */
     void set(const Status& error) {
-        promise_.set_exception(
-            std::make_exception_ptr(MsgpackRPCException(error)));
+        std::unique_lock<std::mutex> lock(is_set_mutex_);
+        if (is_set_) {
+            return;
+        }
+
+        if (error.code() == StatusCode::SUCCESS) {
+            throw MsgpackRPCException(
+                StatusCode::INVALID_ARGUMENT, "Invalid error status.");
+        }
+        status_ = error;
+
+        is_set_ = true;
+        lock.unlock();
+        is_set_cond_var_.notify_all();
     }
 
     //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result
     [[nodiscard]] messages::CallResult get_result() override {
-        return future_.get();
+        wait();
+        return get_result_impl();
     }
 
     //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result_within
     [[nodiscard]] messages::CallResult get_result_within(
         std::chrono::nanoseconds timeout) override {
-        if (future_.wait_for(timeout) != std::future_status::ready) {
-            throw MsgpackRPCException(StatusCode::TIMEOUT,
-                "Result of an RPC couldn't be received within a timeout.");
-        }
-        return future_.get();
+        wait_for(timeout);
+        return get_result_impl();
     }
 
 private:
-    //! Promise.
-    std::promise<messages::CallResult> promise_;
+    /*!
+     * \brief Wait the result.
+     */
+    void wait() { wait_until_impl(deadline_); }
 
-    //! Future.
-    std::future<messages::CallResult> future_;
+    /*!
+     * \brief Wait the result for the given time.
+     *
+     * \param[in] timeout Duration of timeout of waiting.
+     */
+    void wait_for(std::chrono::nanoseconds timeout) {
+        const auto deadline = std::min<std::chrono::steady_clock::time_point>(
+            std::chrono::steady_clock::now() + timeout, deadline_);
+        wait_until_impl(deadline);
+    }
+
+    /*!
+     * \brief Wait the result until the given deadline without consideration of
+     * the deadline of the RPC.
+     *
+     * \param[in] deadline Deadline of waiting.
+     */
+    void wait_until_impl(std::chrono::steady_clock::time_point deadline) {
+        std::unique_lock<std::mutex> lock(is_set_mutex_);
+        if (!is_set_cond_var_.wait_until(
+                lock, deadline, [this] { return is_set_; })) {
+            throw MsgpackRPCException(StatusCode::TIMEOUT,
+                "Result of an RPC couldn't be received within a timeout.");
+        }
+    }
+
+    /*!
+     * \brief Get the result assuming the result is already set.
+     *
+     * \return Result.
+     */
+    [[nodiscard]] messages::CallResult get_result_impl() {
+        if (result_) {
+            return *result_;
+        }
+        throw MsgpackRPCException(status_);
+    }
+
+    //! Result of the RPC.
+    std::optional<messages::CallResult> result_{};
+
+    //! Status.
+    Status status_{};
+
+    //! Whether a result or an error is set.
+    bool is_set_{false};
+
+    //! Deadline of the result of the RPC.
+    std::chrono::steady_clock::time_point deadline_;
+
+    /*!
+     * \brief Mutex of is_set_.
+     *
+     * - This mutex should be locked for use of is_set_.
+     * - If is_set_ is set to true, result_ and status_
+     *   can be used without locks.
+     */
+    std::mutex is_set_mutex_{};
+
+    //! Condition variable for notifying change of is_set_.
+    std::condition_variable is_set_cond_var_{};
 };
 
 }  // namespace msgpack_rpc::clients::impl

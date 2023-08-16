@@ -43,7 +43,7 @@ public:
         const std::shared_ptr<executors::IExecutor>& executor,
         std::chrono::steady_clock::time_point deadline,
         std::function<void(messages::MessageID)> on_timeout)
-        : future_(std::make_shared<CallFutureImpl>()),
+        : future_(std::make_shared<CallFutureImpl>(deadline)),
           request_id_(request_id),
           timer_(executor, executors::OperationType::CALLBACK),
           deadline_(deadline),
@@ -57,8 +57,9 @@ public:
             deadline_, [weak_self = this->weak_from_this()] {
                 const auto self = weak_self.lock();
                 if (self) {
-                    self->set(
-                        Status(StatusCode::TIMEOUT, "Timeout of the RPC."));
+                    self->set(Status(StatusCode::TIMEOUT,
+                        "Result of an RPC couldn't be received within a "
+                        "timeout."));
                     self->on_timeout_(self->request_id_);
                 }
             });
