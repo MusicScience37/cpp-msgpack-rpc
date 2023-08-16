@@ -29,14 +29,20 @@
 #include <msgpack.hpp>
 
 #include "../../create_test_logger.h"
+#include "msgpack_rpc/clients/impl/call_promise.h.h"
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
 
 TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
+    using msgpack_rpc::MsgpackRPCException;
+    using msgpack_rpc::StatusCode;
     using msgpack_rpc::clients::impl::CallFutureImpl;
+    using msgpack_rpc::clients::impl::CallPromise;
     using msgpack_rpc::clients::impl::ICallFutureImpl;
     using msgpack_rpc::messages::CallResult;
     using msgpack_rpc::messages::MessageID;
@@ -56,12 +62,14 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
     };
 
     static constexpr auto request_id = 12345;
+    const auto deadline =
+        std::chrono::steady_clock::now() + std::chrono::seconds(1);
 
-    const auto internal_future =
-        std::make_shared<CallFutureImpl>(request_id, executor, on_timeout);
-    const std::shared_ptr<ICallFutureImpl> user_future = internal_future;
+    const auto promise = std::make_shared<CallPromise>(
+        request_id, executor, deadline, on_timeout);
+    const std::shared_ptr<ICallFutureImpl> future = promise->future();
 
-    internal_future->set_timeout_after(std::chrono::seconds(1));
+    promise->start();
 
     SECTION("set a result") {
         const auto result_zone = std::make_shared<msgpack::zone>();
@@ -69,10 +77,10 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
         const auto result =
             CallResult::create_result(result_object, result_zone);
 
-        REQUIRE_NOTHROW(internal_future->set(result));
+        REQUIRE_NOTHROW(promise->set(result));
 
         SECTION("get the result") {
-            const CallResult received_result = user_future->get_result();
+            const CallResult received_result = future->get_result();
 
             CHECK(received_result.result_as<std::string_view>() == "abc");
         }
@@ -80,7 +88,7 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
         SECTION("wait the result") {
             const auto timeout = std::chrono::seconds(1);
             const CallResult received_result =
-                user_future->get_result_within(timeout);
+                future->get_result_within(timeout);
 
             CHECK(received_result.result_as<std::string_view>() == "abc");
         }
@@ -88,13 +96,24 @@ TEST_CASE("msgpack_rpc::clients::impl::CallFutureImpl") {
 
     SECTION("wait the result without a result") {
         const auto timeout = std::chrono::milliseconds(1);
-        REQUIRE_THROWS((void)user_future->get_result_within(timeout));
+        REQUIRE_THROWS((void)future->get_result_within(timeout));
     }
 
     SECTION("handle timeout") {
-        internal_future->set_timeout_after(std::chrono::milliseconds(1));
+        const auto deadline =
+            std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
 
-        CHECK_THROWS_AS(user_future->get_result_within(std::chrono::seconds(1)),
-            msgpack_rpc::MsgpackRPCException);
+        const auto promise = std::make_shared<CallPromise>(
+            request_id, executor, deadline, on_timeout);
+        const std::shared_ptr<ICallFutureImpl> future = promise->future();
+
+        promise->start();
+
+        try {
+            (void)future->get_result_within(std::chrono::seconds(1));
+            FAIL();
+        } catch (const MsgpackRPCException& e) {
+            CHECK(e.status().code() == StatusCode::TIMEOUT);
+        }
     }
 }

@@ -50,18 +50,8 @@ class CallFutureImpl final
 public:
     /*!
      * \brief Constructor.
-     *
-     * \param[in] request_id Message ID of the request of the RPC.
-     * \param[in] executor Executor.
-     * \param[in] on_timeout Callback function called when timeout occurs.
      */
-    CallFutureImpl(messages::MessageID request_id,
-        const std::shared_ptr<executors::IExecutor>& executor,
-        std::function<void(messages::MessageID)> on_timeout)
-        : future_(promise_.get_future()),
-          request_id_(request_id),
-          timer_(executor, executors::OperationType::CALLBACK),
-          on_timeout_(std::move(on_timeout)) {}
+    CallFutureImpl() : future_(promise_.get_future()) {}
 
     /*!
      * \brief Set a result.
@@ -70,7 +60,6 @@ public:
      */
     void set(messages::CallResult result) {
         promise_.set_value(std::move(result));
-        timer_.cancel();
     }
 
     /*!
@@ -81,7 +70,6 @@ public:
     void set(const Status& error) {
         promise_.set_exception(
             std::make_exception_ptr(MsgpackRPCException(error)));
-        timer_.cancel();
     }
 
     //! \copydoc msgpack_rpc::clients::impl::ICallFutureImpl::get_result
@@ -99,36 +87,12 @@ public:
         return future_.get();
     }
 
-    /*!
-     * \brief Set timeout.
-     *
-     * \param[in] timeout Duration of timeout.
-     */
-    void set_timeout_after(std::chrono::nanoseconds timeout) {
-        timer_.async_sleep_for(timeout, [weak_self = this->weak_from_this()] {
-            const auto self = weak_self.lock();
-            if (self) {
-                self->set(Status(StatusCode::TIMEOUT, "Timeout of the RPC."));
-                self->on_timeout_(self->request_id_);
-            }
-        });
-    }
-
 private:
     //! Promise.
     std::promise<messages::CallResult> promise_;
 
     //! Future.
     std::future<messages::CallResult> future_;
-
-    //! Message ID of the request of the RPC.
-    messages::MessageID request_id_;
-
-    //! Timer to check timeout.
-    executors::Timer timer_;
-
-    //! Callback function called when timeout occurs.
-    std::function<void(messages::MessageID)> on_timeout_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

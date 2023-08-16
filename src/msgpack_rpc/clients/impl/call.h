@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call_future_impl.h"
+#include "msgpack_rpc/clients/impl/call_promise.h.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/messages/call_result.h"
@@ -45,16 +46,23 @@ public:
      * \param[in] id Message ID of the request.
      * \param[in] serialized_request Serialized request data.
      * \param[in] executor Executor.
+     * \param[in] deadline Deadline of the result of the RPC.
      * \param[in] on_timeout Callback function called when timeout occurs.
      */
     Call(messages::MessageID id,
         std::shared_ptr<messages::SerializedMessage> serialized_request,
         const std::shared_ptr<executors::IExecutor>& executor,
+        std::chrono::steady_clock::time_point deadline,
         std::function<void(messages::MessageID)> on_timeout)
         : id_(id),
           serialized_request_(std::move(serialized_request)),
-          future_(std::make_shared<CallFutureImpl>(
-              id, executor, std::move(on_timeout))) {}
+          promise_(std::make_shared<CallPromise>(
+              id, executor, deadline, std::move(on_timeout))) {}
+
+    /*!
+     * \brief Start processing.
+     */
+    void start() { promise_->start(); }
 
     /*!
      * \brief Get the Message ID of the request.
@@ -78,9 +86,8 @@ public:
      *
      * \return Future object to set and get the result of this RPC.
      */
-    [[nodiscard]] const std::shared_ptr<CallFutureImpl>& future()
-        const noexcept {
-        return future_;
+    [[nodiscard]] std::shared_ptr<CallFutureImpl> future() const noexcept {
+        return promise_->future();
     }
 
     /*!
@@ -88,23 +95,14 @@ public:
      *
      * \param[in] result Result.
      */
-    void handle(const messages::CallResult& result) { future_->set(result); }
+    void handle(const messages::CallResult& result) { promise_->set(result); }
 
     /*!
      * \brief Handle an error.
      *
      * \param[in] error Error.
      */
-    void handle(const Status& error) { future_->set(error); }
-
-    /*!
-     * \brief Set timeout.
-     *
-     * \param[in] timeout Duration of timeout.
-     */
-    void set_timeout_after(std::chrono::nanoseconds timeout) {
-        future_->set_timeout_after(timeout);
-    }
+    void handle(const Status& error) { promise_->set(error); }
 
 private:
     //! Message ID of the request.
@@ -113,8 +111,8 @@ private:
     //! Serialized request data.
     std::shared_ptr<messages::SerializedMessage> serialized_request_;
 
-    //! Future object to set and get the result of this RPC.
-    std::shared_ptr<CallFutureImpl> future_;
+    //! Object to set the result of this RPC.
+    std::shared_ptr<CallPromise> promise_;
 };
 
 }  // namespace msgpack_rpc::clients::impl
