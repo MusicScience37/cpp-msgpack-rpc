@@ -87,7 +87,17 @@ public:
 
     //! \copydoc msgpack_rpc::executors::IAsyncExecutor::stop
     void stop() override {
+        if (is_stopped_.exchange(true)) {
+            // Already stopped.
+            return;
+        }
+
         stop_threads();
+
+        // Remove objects
+        transport_context_thread_pairs_.clear();
+        callbacks_context_thread_pairs_.clear();
+
         MSGPACK_RPC_TRACE(logger_, "Executor run stopped.");
     }
 
@@ -297,6 +307,9 @@ private:
 
     //! Whether this executor has been started.
     std::atomic<bool> is_started_{false};
+
+    //! Whether this executor has been stopped.
+    std::atomic<bool> is_stopped_{false};
 
     //! Exception thrown in threads.
     std::exception_ptr exception_in_thread_{};
