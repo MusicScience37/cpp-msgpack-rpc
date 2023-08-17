@@ -9,6 +9,7 @@
     "catch2",
     "trompeloeil",
     "approval-tests-cpp",
-    "bfgroup-lyra"
+    "bfgroup-lyra",
+    "cpp-stat-bench"
   ]
 }
