@@ -52,6 +52,7 @@ if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
     find_package(trompeloeil REQUIRED)
     find_package(lyra REQUIRED)
+    find_package(cpp-stat-bench REQUIRED)
 
     # ApprovalTests.
     find_path(APPROVAL_TESTS_CPP_INCLUDE_DIRS "ApprovalTests.hpp")
