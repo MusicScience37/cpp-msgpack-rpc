@@ -103,6 +103,7 @@ test release:
     - poetry install
     - apt-get update
     - apt-get install -y --no-install-recommends curl zip unzip tar
+    - mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
     - ./vcpkg/bootstrap-vcpkg.sh
     - mkdir $BUILD_DIR
   script:
