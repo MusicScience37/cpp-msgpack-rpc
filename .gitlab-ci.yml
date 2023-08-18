@@ -96,6 +96,7 @@ test release:
     BUILD_DIR: build_${COMPILER_TYPE}_release
     CCACHE_DIR: ${CI_PROJECT_DIR}/.cache
     CCACHE_COMPILERCHECK: content
+    VCPKG_DEFAULT_BINARY_CACHE: ${CI_PROJECT_DIR}/.vcpkg-cache
   before_script:
     - poetry config virtualenvs.in-project true
     - poetry env use 3.11
@@ -126,6 +127,7 @@ test release:
     paths:
       - .cache
       - .venv
+      - .vcpkg-cache
   artifacts:
     paths:
       - $BUILD_DIR/bench
