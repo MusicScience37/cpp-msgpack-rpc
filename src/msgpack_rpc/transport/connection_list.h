@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <mutex>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -47,9 +48,9 @@ public:
      *
      * \param[in] connection Connection.
      */
-    void append(std::shared_ptr<Connection> connection) {
+    void append(const std::shared_ptr<Connection>& connection) {
         std::unique_lock<std::mutex> lock(mutex_);
-        list_.insert(std::move(connection));
+        list_.try_emplace(connection.get(), connection);
     }
 
     /*!
@@ -58,6 +59,15 @@ public:
      * \param[in] connection Connection.
      */
     void remove(const std::shared_ptr<Connection>& connection) {
+        remove(connection.get());
+    }
+
+    /*!
+     * \brief Remove a connection.
+     *
+     * \param[in] connection Connection.
+     */
+    void remove(Connection* connection) {
         std::unique_lock<std::mutex> lock(mutex_);
         list_.erase(connection);
     }
@@ -67,14 +77,17 @@ public:
      */
     void async_close_all() {
         std::unique_lock<std::mutex> lock(mutex_);
-        for (const auto& connection : list_) {
-            connection->async_close();
+        for (const auto& pair : list_) {
+            const auto connection = pair.second.lock();
+            if (connection) {
+                connection->async_close();
+            }
         }
     }
 
 private:
     //! List of connections.
-    std::unordered_set<std::shared_ptr<Connection>> list_{};
+    std::unordered_map<Connection*, std::weak_ptr<Connection>> list_{};
 
     //! Mutex.
     std::mutex mutex_{};

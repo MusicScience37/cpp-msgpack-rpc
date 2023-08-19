@@ -46,6 +46,7 @@
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/background_task_state_machine.h"
 #include "msgpack_rpc/transport/connection.h"
+#include "msgpack_rpc/transport/connection_list.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 
 namespace msgpack_rpc::transport {
@@ -88,7 +89,8 @@ public:
           local_address_(acceptor_.local_endpoint()),
           message_parser_config_(message_parser_config),
           log_name_(fmt::format("Acceptor(local={})", local_address_)),
-          logger_(std::move(logger)) {
+          logger_(std::move(logger)),
+          connection_list_(std::make_shared<ConnectionList<ConnectionType>>()) {
         MSGPACK_RPC_TRACE(logger_, "({}) Created an acceptor to listen {}.",
             log_name_, local_address_);
     }
@@ -149,8 +151,10 @@ private:
 
         MSGPACK_RPC_TRACE(logger_, "({}) Accepted a connection from {}.",
             log_name_, fmt::streamed(socket_->remote_endpoint()));
-        on_connection_(std::make_shared<ConnectionType>(
-            std::move(*socket_), message_parser_config_, logger_));
+        auto connection = std::make_shared<ConnectionType>(std::move(*socket_),
+            message_parser_config_, logger_, connection_list_);
+        connection_list_->append(connection);
+        on_connection_(std::move(connection));
 
         if (!state_machine_.is_processing()) {
             return;
@@ -167,6 +171,7 @@ private:
         }
         acceptor_.cancel();
         acceptor_.close();
+        connection_list_->async_close_all();
         MSGPACK_RPC_TRACE(logger_, "({}) Stopped this acceptor.", log_name_);
     }
 
@@ -212,6 +217,9 @@ private:
 
     //! State machine.
     BackgroundTaskStateMachine state_machine_{};
+
+    //! List of connections.
+    std::shared_ptr<ConnectionList<ConnectionType>> connection_list_;
 };
 
 }  // namespace msgpack_rpc::transport
