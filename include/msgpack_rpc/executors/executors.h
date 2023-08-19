@@ -24,6 +24,7 @@
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 
@@ -63,7 +64,7 @@ create_executor(std::shared_ptr<logging::Logger> logger,
  * \note This executor doesn't support start, stop, last_exception functions.
  * \note This executor exits when no task exists.
  */
-[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IExecutor>
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ISingleThreadExecutor>
 create_single_thread_executor(std::shared_ptr<logging::Logger> logger);
 
 }  // namespace msgpack_rpc::executors

@@ -73,21 +73,4 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
         CHECK(is_called1.load());
         CHECK_FALSE(is_called2.load());
     }
-
-    SECTION("run with a task stopping the executor") {
-        std::atomic<bool> is_called1{false};
-        CHECK_NOTHROW(async_invoke(
-            executor, OperationType::CALLBACK, [&is_called1, &executor] {
-                is_called1.store(true);
-                executor->interrupt();
-            }));
-        std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(async_invoke(executor, OperationType::CALLBACK,
-            [&is_called2] { is_called2.store(true); }));
-
-        CHECK_NOTHROW(executor->run());
-
-        CHECK(is_called1.load());
-        CHECK_FALSE(is_called2.load());
-    }
 }

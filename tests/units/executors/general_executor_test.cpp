@@ -52,43 +52,6 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     const auto executor_config = ExecutorConfig();
     const auto executor = create_executor(logger, executor_config);
 
-    SECTION("run with a task") {
-        std::atomic<bool> is_called{false};
-        const OperationType operation_type =
-            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
-        INFO("Operation type: " << static_cast<int>(operation_type));
-        MSGPACK_RPC_DEBUG(
-            logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(
-            async_invoke(executor, operation_type, [&is_called, &executor] {
-                is_called.store(true);
-                executor->interrupt();
-            }));
-
-        CHECK_NOTHROW(executor->run());
-
-        CHECK(is_called.load());
-    }
-
-    SECTION("run with a task throwing an exception") {
-        std::atomic<bool> is_called{false};
-        const std::string message = "Test exception message.";
-        const OperationType operation_type =
-            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
-        INFO("Operation type: " << static_cast<int>(operation_type));
-        MSGPACK_RPC_DEBUG(
-            logger, "Operation type: {}", static_cast<int>(operation_type));
-        CHECK_NOTHROW(
-            async_invoke(executor, operation_type, [&is_called, &message] {
-                is_called.store(true);
-                throw std::runtime_error(message);
-            }));
-
-        CHECK_THROWS_WITH(executor->run(), message);
-
-        CHECK(is_called.load());
-    }
-
     SECTION("start and stop") {
         CHECK_NOTHROW(executor->start());
 

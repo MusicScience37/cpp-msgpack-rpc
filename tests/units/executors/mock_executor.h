@@ -28,12 +28,6 @@ namespace msgpack_rpc_test {
 
 class MockExecutor final : public msgpack_rpc::executors::IExecutor {
 public:
-    MAKE_MOCK0(run, void(), override);
-
-    MAKE_MOCK0(run_until_interruption, void(), override);
-
-    MAKE_MOCK0(interrupt, void(), override);
-
     MAKE_MOCK1(context,
         msgpack_rpc::executors::AsioContextType&(
             msgpack_rpc::executors::OperationType),

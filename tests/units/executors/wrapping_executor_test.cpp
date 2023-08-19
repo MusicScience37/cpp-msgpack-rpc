@@ -50,14 +50,8 @@ TEST_CASE("msgpack_rpc::executors::WrappingExecutor") {
     }
 
     SECTION("do nothing in other functions") {
-        FORBID_CALL(*wrapped, run());
-        FORBID_CALL(*wrapped, run_until_interruption());
-        FORBID_CALL(*wrapped, run_until_interruption());
         FORBID_CALL(*wrapped, context(_));
 
-        CHECK_NOTHROW(wrapper->run());
-        CHECK_NOTHROW(wrapper->run_until_interruption());
-        CHECK_NOTHROW(wrapper->interrupt());
         CHECK_NOTHROW(wrapper->start());
         CHECK_NOTHROW(wrapper->stop());
         CHECK_NOTHROW(wrapper->last_exception());

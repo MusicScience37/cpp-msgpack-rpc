@@ -30,35 +30,6 @@ namespace msgpack_rpc::executors {
 class IExecutor {
 public:
     /*!
-     * \brief Run internal event loops to process asynchronous tasks.
-     *
-     * \note This function stops
-     * - when a task throws an exception, which will be thrown to caller of this
-     * function,
-     * - when interrupt function is called.
-     */
-    virtual void run() = 0;
-
-    /*!
-     * \brief Run internal event loops to process asynchronous tasks.
-     *
-     * \note This function stops
-     * - when SIGTERM or SIGINT is received,
-     * - when a task throws an exception, which will be thrown to caller of this
-     * function,
-     * - when interrupt function is called.
-     */
-    virtual void run_until_interruption() = 0;
-
-    /*!
-     * \brief Stops operation.
-     *
-     * \note This function returns without waiting stop of operations. So this
-     * function can be called from callback functions called in this executor.
-     */
-    virtual void interrupt() = 0;
-
-    /*!
      * \brief Get the context in asio library.
      *
      * \param[in] type Operation type.

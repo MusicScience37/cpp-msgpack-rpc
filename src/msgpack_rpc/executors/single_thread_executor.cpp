@@ -28,6 +28,7 @@
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
 
@@ -36,7 +37,7 @@ namespace msgpack_rpc::executors {
 /*!
  * \brief Class of executors runs in a single thread.
  */
-class SingleThreadExecutor final : public IExecutor {
+class SingleThreadExecutor final : public ISingleThreadExecutor {
 public:
     /*!
      * \brief Constructor.
@@ -46,7 +47,7 @@ public:
     explicit SingleThreadExecutor(std::shared_ptr<logging::Logger> logger)
         : logger_(std::move(logger)) {}
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::run
+    //! \copydoc msgpack_rpc::executors::ISingleThreadExecutor::run
     void run() override {
         try {
             MSGPACK_RPC_TRACE(logger_, "Start an executor.");
@@ -57,26 +58,6 @@ public:
                 logger_, "Executor stopped due to an exception: {}", e.what());
             throw;
         }
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::run_until_interruption
-    void run_until_interruption() override {
-        asio::signal_set signal_set(context_, SIGINT, SIGTERM);
-        signal_set.async_wait(
-            [this](const asio::error_code& error, int signal_number) {
-                if (!error) {
-                    MSGPACK_RPC_TRACE(logger_,
-                        "Stop executor because of a signal {}.", signal_number);
-                    context_.stop();
-                }
-            });
-        run();
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::interrupt
-    void interrupt() override {
-        context_.stop();
-        MSGPACK_RPC_TRACE(logger_, "Stopping an executor.");
     }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::context
@@ -93,7 +74,7 @@ private:
     std::shared_ptr<logging::Logger> logger_;
 };
 
-std::shared_ptr<IExecutor> create_single_thread_executor(
+std::shared_ptr<ISingleThreadExecutor> create_single_thread_executor(
     std::shared_ptr<logging::Logger> logger) {
     return std::make_shared<SingleThreadExecutor>(std::move(logger));
 }
