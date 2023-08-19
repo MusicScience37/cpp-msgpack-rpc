@@ -23,8 +23,6 @@
 #include <memory>
 #include <utility>
 
-#include "msgpack_rpc/common/msgpack_rpc_exception.h"
-#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/parsed_notification.h"

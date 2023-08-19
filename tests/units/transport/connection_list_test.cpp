@@ -20,10 +20,12 @@
 #include "msgpack_rpc/transport/connection_list.h"
 
 #include <memory>
+#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 
 #include "mock_connection.h"
+#include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::transport::ConnectionList") {
     using msgpack_rpc::transport::ConnectionList;

@@ -18,14 +18,24 @@
  * \brief Test to reconnect clients to servers.
  */
 #include <chrono>
+#include <exception>
+#include <memory>
+#include <ratio>
+#include <string_view>
 #include <thread>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
+#include <msgpack.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/config/client_config.h"
+#include "msgpack_rpc/config/reconnection_config.h"
+#include "msgpack_rpc/methods/method_exception.h"
+#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Clients reconnect to servers") {

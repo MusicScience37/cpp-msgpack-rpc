@@ -18,11 +18,20 @@
  * \brief Test of failures in method calls.
  */
 #include <chrono>
+#include <exception>
+#include <memory>
+#include <ratio>
 #include <string>
 #include <string_view>
 #include <thread>
+#include <type_traits>
+#include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <msgpack.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
@@ -30,10 +39,13 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/clients/server_exception.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/method_exception.h"
+#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Call methods to fail") {

@@ -19,17 +19,19 @@
  */
 #include "msgpack_rpc/clients/client.h"
 
-#include <cstddef>
-#include <optional>
+#include <cstdlib>
+#include <exception>
 #include <string>
 
+#include <fmt/core.h>
+#include <msgpack.hpp>
 #include <stat_bench/benchmark_macros.h>
 #include <stat_bench/do_not_optimize.h>
 #include <stat_bench/fixture_base.h>
 #include <stat_bench/invocation_context.h>
+#include <stat_bench/param/parameter_value_vector.h>
 
 #include "common.h"
-#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/clients/client_builder.h"
 
 class EchoFixture : public stat_bench::FixtureBase {

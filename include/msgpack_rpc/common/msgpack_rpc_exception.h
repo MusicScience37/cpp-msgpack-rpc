@@ -21,7 +21,6 @@
 
 #include <stdexcept>
 #include <string_view>
-#include <utility>
 
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"

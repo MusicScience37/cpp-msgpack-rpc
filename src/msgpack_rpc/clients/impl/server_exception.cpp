@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/clients/server_exception.h"
 
+#include <utility>
+
 namespace msgpack_rpc::clients {
 
 ServerException::ServerException(

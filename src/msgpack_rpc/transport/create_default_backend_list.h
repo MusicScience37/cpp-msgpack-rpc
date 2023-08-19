@@ -19,6 +19,11 @@
  */
 #pragma once
 
+#include <memory>
+
+#include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/backends.h"
 
