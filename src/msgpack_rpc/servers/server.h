@@ -38,6 +38,7 @@
 #include "msgpack_rpc/methods/i_method_processor.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_connection.h"
+#include "msgpack_rpc/servers/stop_signal_handler.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
@@ -106,6 +107,15 @@ public:
         processor_.reset();
         executor_->stop();
         executor_.reset();
+    }
+
+    //! \copydoc msgpack_rpc::servers::IServer::run_until_signal
+    void run_until_signal() override {
+        start();
+
+        StopSignalHandler(logger_).wait();
+
+        stop();
     }
 
     //! \copydoc msgpack_rpc::servers::IServer::local_endpoint_uris

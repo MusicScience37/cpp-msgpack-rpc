@@ -19,7 +19,6 @@
  */
 #include <atomic>
 #include <chrono>
-#include <csignal>
 #include <exception>
 #include <memory>
 #include <stdexcept>
@@ -35,14 +34,7 @@
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
-std::atomic<bool> is_stopped{false};
-
-extern "C" void on_signal(int /*signal*/) { is_stopped = true; }
-
 int main() {
-    (void)std::signal(SIGINT, on_signal);
-    (void)std::signal(SIGTERM, on_signal);
-
     std::unique_ptr<msgpack_rpc::servers::IServer> echo_server;
 
     const auto command_server =
@@ -75,12 +67,7 @@ int main() {
                         "{}", echo_server->local_endpoint_uris().front());
                 })
             .build();
-    command_server->start();
-
-    while (!is_stopped) {
-        // NOLINTNEXTLINE
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    command_server->run_until_signal();
 
     return 0;
 }
