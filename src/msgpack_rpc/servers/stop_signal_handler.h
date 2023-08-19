@@ -19,7 +19,9 @@
  */
 #pragma once
 
+#include <csignal>
 #include <memory>
+#include <utility>
 
 #include <asio/error_code.hpp>
 #include <asio/io_context.hpp>
