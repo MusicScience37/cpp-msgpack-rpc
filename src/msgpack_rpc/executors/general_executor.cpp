@@ -18,8 +18,7 @@
  * \brief Definition of GeneralExecutor class.
  */
 #include <atomic>
-#include <csignal>
-#include <cstddef>
+#include <cstdlib>
 #include <exception>
 #include <memory>
 #include <mutex>
@@ -30,15 +29,12 @@
 #include <utility>
 #include <vector>
 
-#include <asio/error_code.hpp>
 #include <asio/executor_work_guard.hpp>
-#include <asio/signal_set.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
-#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -60,8 +56,6 @@ public:
         const config::ExecutorConfig& config)
         : transport_context_thread_pairs_(config.num_transport_threads()),
           callbacks_context_thread_pairs_(config.num_callback_threads()),
-          main_context_(1),
-          main_context_work_guard_(asio::make_work_guard(main_context_)),
           logger_(std::move(logger)) {}
 
     GeneralExecutor(const GeneralExecutor&) = delete;
@@ -101,41 +95,6 @@ public:
         MSGPACK_RPC_TRACE(logger_, "Executor run stopped.");
     }
 
-    //! \copydoc msgpack_rpc::executors::IExecutor::run
-    void run() override {
-        start();
-        try {
-            run_in_thread(main_context_);
-            throw_last_exception_if_exists();
-        } catch (const std::exception& e) {
-            MSGPACK_RPC_CRITICAL(
-                logger_, "Executor stops due to an exception: {}", e.what());
-            stop();
-            throw;
-        }
-        stop();
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::run_until_interruption
-    void run_until_interruption() override {
-        asio::signal_set signal_set(main_context_, SIGINT, SIGTERM);
-        signal_set.async_wait(
-            [this](const asio::error_code& error, int signal_number) {
-                if (!error) {
-                    MSGPACK_RPC_TRACE(logger_,
-                        "Stop executor because of a signal {}.", signal_number);
-                    interrupt_threads();
-                }
-            });
-        run();
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::interrupt
-    void interrupt() override {
-        interrupt_threads();
-        MSGPACK_RPC_TRACE(logger_, "Stopping an executor.");
-    }
-
     //! \copydoc msgpack_rpc::executors::IExecutor::context
     AsioContextType& context(OperationType type) noexcept override {
         switch (type) {
@@ -150,7 +109,8 @@ public:
                      callbacks_context_thread_pairs_.size())]
                     .context;
         }
-        return main_context_;
+        // This line won't be executed without a bug.
+        std::abort();
     }
 
     //! \copydoc msgpack_rpc::executors::IAsyncExecutor::last_exception
@@ -204,7 +164,6 @@ private:
      * \brief Notify threads to stop operations.
      */
     void interrupt_threads() {
-        main_context_.stop();
         for (auto& context_thread_pair : transport_context_thread_pairs_) {
             context_thread_pair.context.stop();
         }
@@ -217,7 +176,6 @@ private:
      * \brief Notify threads to stop operations gently.
      */
     void async_stop_threads_gently() {
-        main_context_.stop();
         for (auto& context_thread_pair : transport_context_thread_pairs_) {
             context_thread_pair.work_guard.reset();
         }
@@ -272,16 +230,6 @@ private:
         return index.fetch_add(1, std::memory_order_relaxed) % size;
     }
 
-    /*!
-     * \brief Throw the last exception in threads if exists.
-     */
-    void throw_last_exception_if_exists() {
-        const auto exception = last_exception();
-        if (exception) {
-            std::rethrow_exception(exception);
-        }
-    }
-
     //! Pair of context and its thread.
     struct ContextThreadPair {
     public:
@@ -310,13 +258,6 @@ private:
 
     //! Index of context to use for callbacks.
     std::atomic<std::size_t> callback_context_index_{0};
-
-    //! Context for the main thread.
-    AsioContextType main_context_;
-
-    //! Work guard for main_context_.
-    asio::executor_work_guard<AsioContextType::executor_type>
-        main_context_work_guard_;
 
     //! Whether this executor has been started.
     std::atomic<bool> is_started_{false};

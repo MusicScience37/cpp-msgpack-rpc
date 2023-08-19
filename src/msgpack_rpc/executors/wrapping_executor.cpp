@@ -23,7 +23,6 @@
 #include <utility>
 
 #include "msgpack_rpc/executors/asio_context_type.h"
-#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
@@ -45,21 +44,6 @@ public:
      */
     explicit WrappingExecutor(std::shared_ptr<IExecutor> executor)
         : executor_(std::move(executor)) {}
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::run
-    void run() override {
-        // No operation.
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::run_until_interruption
-    void run_until_interruption() override {
-        // No operation.
-    }
-
-    //! \copydoc msgpack_rpc::executors::IExecutor::interrupt
-    void interrupt() override {
-        // No operation.
-    }
 
     //! \copydoc msgpack_rpc::executors::IExecutor::context
     AsioContextType& context(OperationType type) noexcept override {

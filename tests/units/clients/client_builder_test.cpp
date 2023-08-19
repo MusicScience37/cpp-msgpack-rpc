@@ -31,7 +31,8 @@
 #include "msgpack_rpc/clients/impl/i_client_builder_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/config/client_config.h"
-#include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_async_executor.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::clients::ClientBuilder") {

@@ -25,25 +25,21 @@
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "trompeloeil_catch2.h"
 
-class TestExecutor final : public msgpack_rpc::executors::IExecutor {
+class TestExecutor final
+    : public msgpack_rpc::executors::ISingleThreadExecutor {
 public:
     explicit TestExecutor(
-        std::shared_ptr<msgpack_rpc::executors::IExecutor> executor)
+        std::shared_ptr<msgpack_rpc::executors::ISingleThreadExecutor> executor)
         : executor_(std::move(executor)) {}
 
     void run() override { executor_->run(); }
-
-    void run_until_interruption() override {
-        executor_->run_until_interruption();
-    }
-
-    void interrupt() override { executor_->interrupt(); }
 
     msgpack_rpc::executors::AsioContextType& context(
         msgpack_rpc::executors::OperationType type) noexcept override {
@@ -54,7 +50,7 @@ public:
     MAKE_MOCK1(on_context, void(msgpack_rpc::executors::OperationType));
 
 private:
-    std::shared_ptr<msgpack_rpc::executors::IExecutor> executor_;
+    std::shared_ptr<msgpack_rpc::executors::ISingleThreadExecutor> executor_;
 };
 
 class AcceptorCallbacks

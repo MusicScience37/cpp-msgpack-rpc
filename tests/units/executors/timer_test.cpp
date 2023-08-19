@@ -27,7 +27,7 @@
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/executors/async_invoke.h"
-#include "msgpack_rpc/executors/executors.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
 TEST_CASE("msgpack_rpc::executors::Timer") {

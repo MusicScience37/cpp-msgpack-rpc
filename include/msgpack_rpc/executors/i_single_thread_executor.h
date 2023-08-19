@@ -15,14 +15,12 @@
  */
 /*!
  * \file
- * \brief Declaration of functions to create executors.
+ * \brief Definition of ISingleThreadExecutor class.
  */
 #pragma once
 
 #include <memory>
 
-#include "msgpack_rpc/config/executor_config.h"
-#include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -30,27 +28,32 @@
 namespace msgpack_rpc::executors {
 
 /*!
- * \brief Create an executor.
- *
- * \param[in] logger Logger.
- * \param[in] config Configuration.
- * \return Executor.
+ * \brief Interface of single-threaded executors.
  */
-[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IAsyncExecutor>
-create_executor(std::shared_ptr<logging::Logger> logger,
-    const config::ExecutorConfig& config);
+class ISingleThreadExecutor : public IExecutor {
+public:
+    /*!
+     * \brief Run internal event loops to process asynchronous tasks.
+     *
+     * \note This function stops
+     * - when a task throws an exception, which will be thrown to caller of this
+     * function,
+     * - when interrupt function is called.
+     */
+    virtual void run() = 0;
 
-/*!
- * \brief Create a wrapper of an existing executor.
- *
- * \param[in] executor An existing executor.
- * \return Wrapper of the given executor.
- *
- * \note Resulting wrapper won't call start, stop, run functions of the given
- * executor.
- */
-[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IAsyncExecutor> wrap_executor(
-    std::shared_ptr<IExecutor> executor);
+    ISingleThreadExecutor(const ISingleThreadExecutor&) = delete;
+    ISingleThreadExecutor(ISingleThreadExecutor&&) = delete;
+    ISingleThreadExecutor& operator=(const ISingleThreadExecutor&) = delete;
+    ISingleThreadExecutor& operator=(ISingleThreadExecutor&&) = delete;
+
+    //! Destructor.
+    ~ISingleThreadExecutor() noexcept override = default;
+
+protected:
+    //! Constructor.
+    ISingleThreadExecutor() noexcept = default;
+};
 
 /*!
  * \brief Create an executor runs in a single thread.
@@ -63,7 +66,7 @@ create_executor(std::shared_ptr<logging::Logger> logger,
  * \note This executor doesn't support start, stop, last_exception functions.
  * \note This executor exits when no task exists.
  */
-[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IExecutor>
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ISingleThreadExecutor>
 create_single_thread_executor(std::shared_ptr<logging::Logger> logger);
 
 }  // namespace msgpack_rpc::executors

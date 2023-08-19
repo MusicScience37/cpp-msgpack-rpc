@@ -40,6 +40,11 @@ public:
     virtual void stop() = 0;
 
     /*!
+     * \brief Run processing of this server until a signal is received.
+     */
+    virtual void run_until_signal() = 0;
+
+    /*!
      * \brief Get the URIs of the local endpoints in this server.
      *
      * \return URIs.

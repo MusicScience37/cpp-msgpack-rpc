@@ -28,8 +28,7 @@
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/executors/async_invoke.h"
-#include "msgpack_rpc/executors/executors.h"
-#include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 
 TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
@@ -69,23 +68,6 @@ TEST_CASE("msgpack_rpc::executors::SingleThreadExecutor") {
             [&is_called2] { is_called2.store(true); }));
 
         CHECK_THROWS_WITH(executor->run(), message);
-
-        CHECK(is_called1.load());
-        CHECK_FALSE(is_called2.load());
-    }
-
-    SECTION("run with a task stopping the executor") {
-        std::atomic<bool> is_called1{false};
-        CHECK_NOTHROW(async_invoke(
-            executor, OperationType::CALLBACK, [&is_called1, &executor] {
-                is_called1.store(true);
-                executor->interrupt();
-            }));
-        std::atomic<bool> is_called2{false};
-        CHECK_NOTHROW(async_invoke(executor, OperationType::CALLBACK,
-            [&is_called2] { is_called2.store(true); }));
-
-        CHECK_NOTHROW(executor->run());
 
         CHECK(is_called1.load());
         CHECK_FALSE(is_called2.load());
