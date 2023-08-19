@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 
+#include <utility>
+
 namespace msgpack_rpc {
 inline namespace common {
 

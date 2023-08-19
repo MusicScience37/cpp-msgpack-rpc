@@ -25,6 +25,8 @@
 #include <utility>
 
 #include <fmt/core.h>
+// This header is required for formatter<std::string_view>
+#include <fmt/format.h>  // IWYU pragma: keep
 
 namespace msgpack_rpc::messages {
 

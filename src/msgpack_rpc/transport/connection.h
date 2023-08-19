@@ -48,6 +48,7 @@
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/transport/background_task_state_machine.h"
+#include "msgpack_rpc/transport/connection_list.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
 namespace msgpack_rpc::transport {
@@ -72,17 +73,36 @@ public:
      * \param[in] socket Socket.
      * \param[in] message_parser_config Configuration of the parser of messages.
      * \param[in] logger Logger.
+     * \param[in] connection_list List of connections.
      */
     Connection(AsioSocket&& socket,
         const config::MessageParserConfig& message_parser_config,
-        std::shared_ptr<logging::Logger> logger)
+        std::shared_ptr<logging::Logger> logger,
+        const std::shared_ptr<ConnectionList<Connection>>& connection_list =
+            nullptr)
         : socket_(std::move(socket)),
           message_parser_(message_parser_config),
           local_address_(socket_.local_endpoint()),
           remote_address_(socket_.remote_endpoint()),
           log_name_(fmt::format("Connection(local={}, remote={})",
               local_address_, remote_address_)),
-          logger_(std::move(logger)) {}
+          logger_(std::move(logger)),
+          connection_list_(connection_list) {}
+
+    Connection(const Connection&) = delete;
+    Connection(Connection&&) = delete;
+    Connection& operator=(const Connection&) = delete;
+    Connection& operator=(Connection&&) = delete;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~Connection() override {
+        const auto connection_list = connection_list_.lock();
+        if (connection_list) {
+            connection_list->remove(this);
+        }
+    }
 
     //! \copydoc msgpack_rpc::transport::IConnection::start
     void start(MessageReceivedCallback on_received, MessageSentCallback on_sent,
@@ -290,6 +310,9 @@ private:
 
     //! State machine.
     BackgroundTaskStateMachine state_machine_{};
+
+    //! List of connections.
+    std::weak_ptr<ConnectionList<Connection>> connection_list_;
 };
 
 }  // namespace msgpack_rpc::transport

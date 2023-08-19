@@ -187,7 +187,7 @@ private:
      * \brief Stop threads.
      */
     void stop_threads() {
-        interrupt_threads();
+        async_stop_threads_gently();
         for (auto& context_thread_pair : transport_context_thread_pairs_) {
             if (context_thread_pair.thread.joinable()) {
                 context_thread_pair.thread.join();
@@ -210,6 +210,19 @@ private:
         }
         for (auto& context_thread_pair : callbacks_context_thread_pairs_) {
             context_thread_pair.context.stop();
+        }
+    }
+
+    /*!
+     * \brief Notify threads to stop operations gently.
+     */
+    void async_stop_threads_gently() {
+        main_context_.stop();
+        for (auto& context_thread_pair : transport_context_thread_pairs_) {
+            context_thread_pair.work_guard.reset();
+        }
+        for (auto& context_thread_pair : callbacks_context_thread_pairs_) {
+            context_thread_pair.work_guard.reset();
         }
     }
 

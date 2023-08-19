@@ -24,7 +24,6 @@
 #include "msgpack_rpc/clients/impl/i_client_builder_impl.h"
 #include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/transport/backend_list.h"
-#include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/create_default_backend_list.h"
 
 namespace msgpack_rpc::clients::impl {
