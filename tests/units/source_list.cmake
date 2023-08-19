@@ -41,5 +41,6 @@ set(SOURCE_FILES
     test_main.cpp
     transport/async_connect_test.cpp
     transport/backend_list_test.cpp
+    transport/connection_list_test.cpp
     transport/connection_wrapper_test.cpp
 )

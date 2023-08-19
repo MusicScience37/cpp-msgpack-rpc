@@ -40,4 +40,5 @@
 #include "test_main.cpp"            // NOLINT(bugprone-suspicious-include)
 #include "transport/async_connect_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/backend_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "transport/connection_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/connection_wrapper_test.cpp"  // NOLINT(bugprone-suspicious-include)
