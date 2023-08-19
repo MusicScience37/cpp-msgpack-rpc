@@ -18,8 +18,6 @@
  * \brief Definition of GeneralExecutor class.
  */
 #include <atomic>
-#include <csignal>
-#include <cstddef>
 #include <cstdlib>
 #include <exception>
 #include <memory>
@@ -31,15 +29,12 @@
 #include <utility>
 #include <vector>
 
-#include <asio/error_code.hpp>
 #include <asio/executor_work_guard.hpp>
-#include <asio/signal_set.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/asio_context_type.h"
-#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"

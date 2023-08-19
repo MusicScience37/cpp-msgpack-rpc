@@ -20,8 +20,12 @@
 #pragma once
 
 #include <exception>
+#include <memory>
 
+#include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/logging/logger.h"
 
 namespace msgpack_rpc::executors {
 
@@ -68,5 +72,28 @@ protected:
     //! Constructor.
     IAsyncExecutor() noexcept = default;
 };
+
+/*!
+ * \brief Create an executor.
+ *
+ * \param[in] logger Logger.
+ * \param[in] config Configuration.
+ * \return Executor.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IAsyncExecutor>
+create_executor(std::shared_ptr<logging::Logger> logger,
+    const config::ExecutorConfig& config);
+
+/*!
+ * \brief Create a wrapper of an existing executor.
+ *
+ * \param[in] executor An existing executor.
+ * \return Wrapper of the given executor.
+ *
+ * \note Resulting wrapper won't call start, stop, run functions of the given
+ * executor.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IAsyncExecutor> wrap_executor(
+    std::shared_ptr<IExecutor> executor);
 
 }  // namespace msgpack_rpc::executors

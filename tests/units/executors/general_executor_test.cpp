@@ -17,7 +17,6 @@
  * \file
  * \brief Test of GeneralExecutor class.
  */
-#include <atomic>
 #include <chrono>
 #include <exception>
 #include <future>
@@ -36,7 +35,6 @@
 #include "../create_test_logger.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
-#include "msgpack_rpc/executors/executors.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"

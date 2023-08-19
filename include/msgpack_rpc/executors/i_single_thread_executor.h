@@ -19,9 +19,11 @@
  */
 #pragma once
 
-#include <exception>
+#include <memory>
 
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/logging/logger.h"
 
 namespace msgpack_rpc::executors {
 
@@ -52,5 +54,19 @@ protected:
     //! Constructor.
     ISingleThreadExecutor() noexcept = default;
 };
+
+/*!
+ * \brief Create an executor runs in a single thread.
+ *
+ * \param[in] logger Logger.
+ * \return Executor.
+ *
+ * \warning This function is meant to be used in tests. So some limitation
+ * exists.
+ * \note This executor doesn't support start, stop, last_exception functions.
+ * \note This executor exits when no task exists.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ISingleThreadExecutor>
+create_single_thread_executor(std::shared_ptr<logging::Logger> logger);
 
 }  // namespace msgpack_rpc::executors
