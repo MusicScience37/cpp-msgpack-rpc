@@ -148,11 +148,18 @@ private:
      */
     void on_connection(
         const std::shared_ptr<transport::IConnection>& connection) {
+        if (is_stopped_.load(std::memory_order_relaxed)) {
+            return;
+        }
         std::unique_lock<std::mutex> lock(connection_mutex_);
         connection_ = connection;
         connection->start(on_received_, on_sent_,
-            [self = shared_from_this()](
-                const Status& /*status*/) { self->on_connection_closed(); });
+            [weak_self = weak_from_this()](const Status& /*status*/) {
+                const auto self = weak_self.lock();
+                if (self) {
+                    self->on_connection_closed();
+                }
+            });
         retry_timer_.reset();
         lock.unlock();
 

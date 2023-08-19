@@ -48,8 +48,7 @@ namespace msgpack_rpc::clients::impl {
 /*!
  * \brief Class of internal implementation of clients.
  */
-class ClientImpl final : public IClientImpl,
-                         public std::enable_shared_from_this<ClientImpl> {
+class ClientImpl final : public IClientImpl {
 public:
     /*!
      * \brief Constructor.
