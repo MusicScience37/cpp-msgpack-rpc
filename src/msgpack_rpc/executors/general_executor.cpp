@@ -230,16 +230,6 @@ private:
         return index.fetch_add(1, std::memory_order_relaxed) % size;
     }
 
-    /*!
-     * \brief Throw the last exception in threads if exists.
-     */
-    void throw_last_exception_if_exists() {
-        const auto exception = last_exception();
-        if (exception) {
-            std::rethrow_exception(exception);
-        }
-    }
-
     //! Pair of context and its thread.
     struct ContextThreadPair {
     public:
