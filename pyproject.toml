@@ -28,6 +28,8 @@ pytest = "^7.4.0"
 pytest-approvaltests = "^0.2.4"
 tqdm = "^4.66.1"
 lizard = "^1.17.10"
+msgpack = "^1.0.5"
+pytest-asyncio = "^0.21.1"
 
 [build-system]
 requires = ["poetry-core"]
