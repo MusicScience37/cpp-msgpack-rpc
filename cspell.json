@@ -12,6 +12,7 @@
     "approvaltests",
     "asan",
     "asio",
+    "asyncio",
     "ausan",
     "autobuild",
     "autouse",
