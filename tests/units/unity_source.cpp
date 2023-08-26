@@ -42,3 +42,4 @@
 #include "transport/backend_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/connection_list_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/connection_wrapper_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "util/format_msgpack_object_test.cpp"  // NOLINT(bugprone-suspicious-include)
