@@ -141,6 +141,18 @@ SCENARIO("Call methods to fail") {
                         "Test error in methods.");
                 }
             }
+
+            THEN(
+                "The client will receive an exception occurred in methods "
+                "without results") {
+                try {
+                    (void)client.call<void>("exception");
+                    FAIL();
+                } catch (const ServerException& e) {
+                    CHECK(e.error_as<std::string_view>() ==
+                        "Test error in methods.");
+                }
+            }
         }
 
         WHEN("A client is configured with small timeout") {
