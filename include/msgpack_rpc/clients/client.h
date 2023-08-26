@@ -82,7 +82,7 @@ public:
      * \return Result of the RPC.
      */
     template <typename Result, typename... Parameters>
-    [[nodiscard]] std::decay_t<Result> call(
+    std::decay_t<Result> call(
         messages::MethodNameView method_name, const Parameters&... parameters) {
         return async_call<Result>(method_name, parameters...).get_result();
     }
