@@ -30,6 +30,8 @@
 TEST_CASE("msgpack_rpc::util::format_msgpack_object") {
     using msgpack_rpc::util::format_msgpack_object;
 
+    // TODO Format time.
+
     SECTION("format a nil") {
         const auto object = msgpack::object();
 
