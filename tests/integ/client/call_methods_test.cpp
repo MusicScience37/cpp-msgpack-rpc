@@ -66,6 +66,12 @@ SCENARIO("Call methods") {
         server_builder.add_method<std::string()>(
             "get_message", []() { return "Sample text."; });
 
+        int number = 0;
+        server_builder.add_method<int()>(
+            "get_number", [&number]() { return number; });
+        server_builder.add_method<void(int)>(
+            "set_number", [&number](int val) { number = val; });
+
         auto server = server_builder.build();
         server->start();
 
@@ -116,6 +122,25 @@ SCENARIO("Call methods") {
                     client.call<std::string>("get_message");
 
                 CHECK(result == "Sample text.");
+            }
+
+            THEN("The client can call methods without results using future") {
+                CHECK(client.call<int>("get_number") == 0);
+
+                static constexpr int value = 37;
+                CHECK_NOTHROW(
+                    client.async_call<void>("set_number", value).get_result());
+
+                CHECK(client.call<int>("get_number") == value);
+            }
+
+            THEN("The client can call methods without results synchronously") {
+                CHECK(client.call<int>("get_number") == 0);
+
+                static constexpr int value = 37;
+                CHECK_NOTHROW(client.call<void>("set_number", value));
+
+                CHECK(client.call<int>("get_number") == value);
             }
         }
     }

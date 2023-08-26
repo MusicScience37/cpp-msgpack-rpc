@@ -79,10 +79,64 @@ private:
      * \param[in] call_result CallResult object.
      * \return Result.
      */
-    [[nodiscard]] Result get_from_call_result(
+    [[nodiscard]] static Result get_from_call_result(
         const messages::CallResult& call_result) {
         if (call_result.is_success()) {
             return call_result.result_as<Result>();
+        }
+        throw ServerException(call_result.object(), call_result.zone());
+    }
+
+    //! Object of the internal implementation.
+    std::shared_ptr<impl::ICallFutureImpl> impl_;
+};
+
+/*!
+ * \brief Specialization of msgpack_rpc::clients::CallFuture for void type.
+ */
+template <>
+class CallFuture<void> {
+public:
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] impl Object of the internal implementation.
+     */
+    explicit CallFuture(std::shared_ptr<impl::ICallFutureImpl> impl)
+        : impl_(std::move(impl)) {}
+
+    /*!
+     * \brief Get the result of RPC.
+     *
+     * \note This function will wait for the result if not received.
+     */
+    void get_result() {
+        const auto call_result = impl_->get_result();
+        get_from_call_result(call_result);
+    }
+
+    /*!
+     * \brief Get the result of RPC within a timeout.
+     *
+     * \param[in] timeout Timeout.
+     *
+     * \note This function will wait for the result if not received, and throw
+     * an exception when no result can be received within the given timeout.
+     */
+    void get_result_within(std::chrono::nanoseconds timeout) {
+        const auto call_result = impl_->get_result_within(timeout);
+        get_from_call_result(call_result);
+    }
+
+private:
+    /*!
+     * \brief Get the result from CallResult object.
+     *
+     * \param[in] call_result CallResult object.
+     */
+    static void get_from_call_result(const messages::CallResult& call_result) {
+        if (call_result.is_success()) {
+            return;
         }
         throw ServerException(call_result.object(), call_result.zone());
     }
