@@ -36,6 +36,7 @@
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/method_exception.h"
+#include "msgpack_rpc/util/format_msgpack_object.h"
 
 namespace msgpack_rpc::methods {
 
@@ -112,9 +113,10 @@ public:
         try {
             std::apply(function_,
                 notification.parameters().as<std::decay_t<Parameters>...>());
-        } catch (const MethodException& /*exception*/) {
+        } catch (const MethodException& e) {
             MSGPACK_RPC_DEBUG(logger_,
-                "Method {} threw an exception with a custom object.", name_);
+                "Method {} threw an exception with a custom object: {}", name_,
+                util::format_msgpack_object(e.object()));
         } catch (const std::exception& e) {
             MSGPACK_RPC_DEBUG(
                 logger_, "Method {} threw an exception: {}", name_, e.what());
@@ -136,9 +138,10 @@ private:
         try {
             return std::apply(
                 function_, std::forward<ParameterTuple>(parameter_tuple));
-        } catch (const MethodException& /*exception*/) {
+        } catch (const MethodException& e) {
             MSGPACK_RPC_DEBUG(logger_,
-                "Method {} threw an exception with a custom object.", name_);
+                "Method {} threw an exception with a custom object: {}", name_,
+                util::format_msgpack_object(e.object()));
             throw;
         } catch (const std::exception& e) {
             MSGPACK_RPC_DEBUG(
@@ -203,7 +206,8 @@ public:
                 request.parameters().as<std::decay_t<Parameters>...>());
         } catch (const MethodException& e) {
             MSGPACK_RPC_DEBUG(logger_,
-                "Method {} threw an exception with a custom object.", name_);
+                "Method {} threw an exception with a custom object: {}", name_,
+                util::format_msgpack_object(e.object()));
             return messages::MessageSerializer::serialize_error_response(
                 request.id(), e.object());
         } catch (const std::exception& e) {
@@ -225,9 +229,10 @@ public:
         try {
             std::apply(function_,
                 notification.parameters().as<std::decay_t<Parameters>...>());
-        } catch (const MethodException& /*exception*/) {
+        } catch (const MethodException& e) {
             MSGPACK_RPC_DEBUG(logger_,
-                "Method {} threw an exception with a custom object.", name_);
+                "Method {} threw an exception with a custom object: {}", name_,
+                util::format_msgpack_object(e.object()));
         } catch (const std::exception& e) {
             MSGPACK_RPC_DEBUG(
                 logger_, "Method {} threw an exception: {}", name_, e.what());

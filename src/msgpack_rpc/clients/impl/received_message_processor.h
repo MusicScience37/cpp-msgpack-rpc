@@ -28,6 +28,7 @@
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_response.h"
+#include "msgpack_rpc/util/format_msgpack_object.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -57,8 +58,14 @@ public:
             MSGPACK_RPC_WARN(logger_, "Received an invalid message.");
             return;
         }
-        MSGPACK_RPC_DEBUG(
-            logger_, "Received response (id: {})", response->id());
+        if (response->result().is_success()) {
+            MSGPACK_RPC_DEBUG(logger_, "Received successful response (id: {})",
+                response->id());
+        } else {
+            MSGPACK_RPC_DEBUG(logger_, "Received error response (id: {}): {}",
+                response->id(),
+                util::format_msgpack_object(response->result().object()));
+        }
         call_list_->handle(*response);
     }
 

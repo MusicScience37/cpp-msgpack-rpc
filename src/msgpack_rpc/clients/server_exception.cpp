@@ -19,13 +19,20 @@
  */
 #include "msgpack_rpc/clients/server_exception.h"
 
+#include <string>
 #include <utility>
+
+#include <fmt/core.h>
+
+#include "msgpack_rpc/util/format_msgpack_object.h"
 
 namespace msgpack_rpc::clients {
 
 ServerException::ServerException(
     msgpack::object object, std::shared_ptr<msgpack::zone> zone)
-    : MsgpackRPCException(StatusCode::SERVER_ERROR, "An error in a server."),
+    : MsgpackRPCException(StatusCode::SERVER_ERROR,
+          fmt::format(
+              "An error in a server: {}", util::format_msgpack_object(object))),
       zone_(std::move(zone)),
       object_(object) {}
 

@@ -90,10 +90,11 @@ TEST_CASE("msgpack_rpc::clients::Client") {
                     FAIL();
                 } catch (const ServerException& e) {
                     CHECK(e.status().code() == StatusCode::SERVER_ERROR);
-                    // TODO include some information for error objects.
                     CHECK_THAT(std::string(e.status().message()),
                         Catch::Matchers::ContainsSubstring(
-                            "An error in a server."));
+                            "An error in a server: "));
+                    CHECK_THAT(std::string(e.status().message()),
+                        Catch::Matchers::ContainsSubstring("\"test message\""));
                     CHECK(e.error_as<std::string_view>() == "test message");
                 }
             }
@@ -154,10 +155,11 @@ TEST_CASE("msgpack_rpc::clients::Client") {
                     FAIL();
                 } catch (const ServerException& e) {
                     CHECK(e.status().code() == StatusCode::SERVER_ERROR);
-                    // TODO include some information for error objects.
                     CHECK_THAT(std::string(e.status().message()),
                         Catch::Matchers::ContainsSubstring(
-                            "An error in a server."));
+                            "An error in a server: "));
+                    CHECK_THAT(std::string(e.status().message()),
+                        Catch::Matchers::ContainsSubstring("\"test message\""));
                     CHECK(e.error_as<std::string_view>() == "test message");
                 }
             }

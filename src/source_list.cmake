@@ -2,7 +2,7 @@ set(SOURCE_FILES
     msgpack_rpc/addresses/tcp_address.cpp
     msgpack_rpc/addresses/uri.cpp
     msgpack_rpc/clients/impl/client_builder_impl.cpp
-    msgpack_rpc/clients/impl/server_exception.cpp
+    msgpack_rpc/clients/server_exception.cpp
     msgpack_rpc/common/msgpack_rpc_exception.cpp
     msgpack_rpc/common/status.cpp
     msgpack_rpc/common/status_code.cpp
@@ -23,4 +23,6 @@ set(SOURCE_FILES
     msgpack_rpc/servers/impl/i_server_builder_impl.cpp
     msgpack_rpc/transport/tcp/backends.cpp
     msgpack_rpc/transport/tcp/tcp_backend.cpp
+    msgpack_rpc/util/format_msgpack_object.cpp
+    msgpack_rpc/util/format_msgpack_object_to_string.cpp
 )
