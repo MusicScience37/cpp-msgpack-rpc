@@ -20,12 +20,10 @@
 #pragma once
 
 #include <cstdint>
-#include <iterator>
-#include <string>
 #include <string_view>
 #include <type_traits>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 #include <msgpack.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

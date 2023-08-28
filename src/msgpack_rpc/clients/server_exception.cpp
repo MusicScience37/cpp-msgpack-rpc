@@ -19,6 +19,7 @@
  */
 #include "msgpack_rpc/clients/server_exception.h"
 
+#include <string>
 #include <utility>
 
 #include <fmt/core.h>

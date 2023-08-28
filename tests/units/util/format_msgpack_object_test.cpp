@@ -19,6 +19,11 @@
  */
 #include "msgpack_rpc/util/format_msgpack_object.h"
 
+#include <cstdint>
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include <catch2/catch_test_macros.hpp>
 #include <msgpack.hpp>
 
