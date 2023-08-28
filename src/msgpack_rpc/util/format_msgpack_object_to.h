@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of format_msgpack_object function.
+ * \brief Definition of format_msgpack_object_to function.
  */
 #pragma once
 

@@ -22,4 +22,4 @@
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/backends.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_backend.cpp"  // NOLINT(bugprone-suspicious-include)
-#include "msgpack_rpc/util/format_msgpack_object.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/util/format_msgpack_object_to_string.cpp"  // NOLINT(bugprone-suspicious-include)

@@ -15,24 +15,25 @@
  */
 /*!
  * \file
- * \brief Implementation of format_msgpack_object function.
+ * \brief Definition of format_msgpack_object_to_string function.
  */
-#include "msgpack_rpc/util/format_msgpack_object.h"
+#pragma once
 
-#include <iterator>
 #include <string>
 
-#include <fmt/format.h>
 #include <msgpack.hpp>
 
-#include "msgpack_rpc/util/format_msgpack_object_to.h"
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::util {
 
-[[nodiscard]] std::string format_msgpack_object(const msgpack::object& object) {
-    fmt::memory_buffer buffer;
-    format_msgpack_object_to(std::back_inserter(buffer), object);
-    return std::string(buffer.data(), buffer.size());
-}
+/*!
+ * \brief Format an object in msgpack library.
+ *
+ * \param[in] object Object in msgpack library.
+ * \return Formatted string.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::string format_msgpack_object_to_string(
+    const msgpack::object& object);
 
 }  // namespace msgpack_rpc::util
