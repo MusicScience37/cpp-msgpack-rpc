@@ -15,27 +15,23 @@
  */
 /*!
  * \file
- * \brief Test of format_msgpack_object_to_string function.
+ * \brief Test of format_msgpack_object function.
  */
-#include "msgpack_rpc/util/format_msgpack_object_to_string.h"
-
-#include <cstdint>
-#include <string>
-#include <tuple>
-#include <unordered_map>
+#include "msgpack_rpc/util/format_msgpack_object.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <msgpack.hpp>
 
-TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
-    using msgpack_rpc::util::format_msgpack_object_to_string;
+TEST_CASE("msgpack_rpc::util::format_msgpack_object") {
+    using msgpack_rpc::util::format_msgpack_object;
 
     // TODO Format time.
 
     SECTION("format a nil") {
         const auto object = msgpack::object();
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "null");
     }
@@ -43,7 +39,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format true") {
         const auto object = msgpack::object(true);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "true");
     }
@@ -51,7 +48,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format false") {
         const auto object = msgpack::object(false);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "false");
     }
@@ -59,7 +57,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format a positive integer") {
         const auto object = msgpack::object(12345);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "12345");
     }
@@ -67,7 +66,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format zero") {
         const auto object = msgpack::object(0);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "0");
     }
@@ -75,7 +75,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format a negative integer") {
         const auto object = msgpack::object(-12345);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "-12345");
     }
@@ -83,7 +84,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
     SECTION("format a floating-point number") {
         const auto object = msgpack::object(1.25);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == "1.25");
     }
@@ -92,7 +94,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         msgpack::zone zone;
         const auto object = msgpack::object("abc", zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"("abc")");
     }
@@ -106,7 +109,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
                 static_cast<unsigned char>(0xFF)},
             zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"(bin(0006A0FF))");
     }
@@ -115,7 +119,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         msgpack::zone zone;
         const auto object = msgpack::object(std::make_tuple(), zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"([])");
     }
@@ -124,7 +129,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         msgpack::zone zone;
         const auto object = msgpack::object(std::make_tuple("abc"), zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"(["abc"])");
     }
@@ -134,7 +140,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object =
             msgpack::object(std::make_tuple(12345, "abc"), zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"([12345, "abc"])");
     }
@@ -144,7 +151,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object = msgpack::object(
             std::make_tuple(std::make_tuple("abc"), 12345), zone);
 
-        const std::string result = format_msgpack_object_to_string(object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(object));
 
         CHECK(result == R"([["abc"], 12345])");
     }
@@ -156,7 +164,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object =
             msgpack::unpack(packer_buffer.data(), packer_buffer.size());
 
-        const std::string result = format_msgpack_object_to_string(*object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(*object));
 
         CHECK(result == R"({})");
     }
@@ -170,7 +179,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object =
             msgpack::unpack(packer_buffer.data(), packer_buffer.size());
 
-        const std::string result = format_msgpack_object_to_string(*object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(*object));
 
         CHECK(result == R"({1: "a"})");
     }
@@ -186,7 +196,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object =
             msgpack::unpack(packer_buffer.data(), packer_buffer.size());
 
-        const std::string result = format_msgpack_object_to_string(*object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(*object));
 
         CHECK(result == R"({1: "a", "b": 2})");
     }
@@ -205,7 +216,8 @@ TEST_CASE("msgpack_rpc::util::format_msgpack_object_to_string") {
         const auto object =
             msgpack::unpack(packer_buffer.data(), packer_buffer.size());
 
-        const std::string result = format_msgpack_object_to_string(*object);
+        const std::string result =
+            fmt::format("{}", format_msgpack_object(*object));
 
         CHECK(result == R"(ext(37, 0006A0FF))");
     }
