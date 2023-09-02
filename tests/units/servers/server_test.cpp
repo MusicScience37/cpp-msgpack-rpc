@@ -32,6 +32,7 @@
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/executors/wrap_executor.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
