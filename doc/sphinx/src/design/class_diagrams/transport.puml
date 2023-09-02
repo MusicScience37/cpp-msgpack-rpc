@@ -1,0 +1,31 @@
+@startuml session
+
+!includesub message.puml!MessageParser
+!includesub message.puml!ParsedMessage
+MessageParser ..> ParsedMessage
+
+!startsub IConnection
+interface IConnection {
+    {abstract} + start(on_message: function<void(ParsedMessage)>, on_closed: function<void(Status)>)
+    {abstract} + async_send(message: Bytes)
+    {abstract} + async_close()
+}
+!endsub
+IConnection ..> MessageParser
+
+!startsub IConnector
+interface IConnector {
+    + async_connect(on_result : function<void(Error, shared_ptr<IConnection>)>)
+}
+!endsub
+IConnector ..> IConnection
+
+!startsub IAcceptor
+interface IAcceptor {
+    + start(on_connection: function<void(shared_ptr<IConnection>)>)
+    + stop()
+}
+!endsub
+IAcceptor ..> IConnection
+
+@enduml

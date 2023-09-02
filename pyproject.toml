@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "cpp-msgpack-rpc"
+version = "0.0.0"
+description = ""
+authors = ["Kenta Kabashima <kenta_program37@hotmail.co.jp>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+breathe = "^4.35.0"
+click = "^8.1.6"
+cmakelang = "^0.6.13"
+doc8 = "^0.11.2"
+myst-parser = "^2.0.0"
+pre-commit = "^3.3.3"
+pylint = "^2.17.5"
+sphinx = "^6.2.1"
+sphinx-autobuild = "^2021.3.14"
+sphinx-rtd-theme = "^1.2.2"
+sphinxcontrib-plantuml = "^0.25"
+clang-tidy-checker = "^0.3.0"
+lcov_cobertura = "^2.0.2"
+pytest = "^7.4.0"
+pytest-approvaltests = "^0.2.4"
+tqdm = "^4.66.1"
+lizard = "^1.17.10"
+msgpack = "^1.0.5"
+pytest-asyncio = "^0.21.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.main]
+disable = "too-many-instance-attributes,line-too-long"

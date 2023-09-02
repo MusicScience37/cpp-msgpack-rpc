@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    "asio",
+    "spdlog",
+    "msgpack",
+    "fmt",
+    "re2",
+    "catch2",
+    "trompeloeil",
+    "approval-tests-cpp",
+    "bfgroup-lyra",
+    "cpp-stat-bench"
+  ]
+}
