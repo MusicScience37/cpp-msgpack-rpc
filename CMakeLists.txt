@@ -28,6 +28,8 @@ include(CTest)
 option(${UPPER_PROJECT_NAME}_BUILD_DOC
        "build documentation of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
+option(${UPPER_PROJECT_NAME}_ENABLE_INSTALL
+       "enable CMake target to install ${FULL_PROJECT_NAME}" ON)
 
 set(BUILD_SHARED_LIBS
     ON
@@ -82,4 +84,36 @@ endif()
 
 if(${UPPER_PROJECT_NAME}_TESTING)
     add_subdirectory(tests)
+endif()
+
+if(${UPPER_PROJECT_NAME}_ENABLE_INSTALL)
+    install(
+        TARGETS ${SHORT_PROJECT_NAME}
+        EXPORT ${FULL_PROJECT_NAME}-targets
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        FRAMEWORK DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+    install(
+        DIRECTORY ${${UPPER_PROJECT_NAME}_SOURCE_DIR}/include/msgpack_rpc
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING
+        PATTERN "*.h*")
+
+    install(
+        EXPORT ${FULL_PROJECT_NAME}-targets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${FULL_PROJECT_NAME}
+        NAMESPACE cpp_msgpack_rpc::)
+
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+        cmake/${FULL_PROJECT_NAME}-config.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/${FULL_PROJECT_NAME}-config.cmake"
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${FULL_PROJECT_NAME}"
+    )
+
+    install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/${FULL_PROJECT_NAME}-config.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${FULL_PROJECT_NAME}")
 endif()
