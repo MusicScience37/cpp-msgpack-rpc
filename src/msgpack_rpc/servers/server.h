@@ -113,9 +113,24 @@ public:
     void run_until_signal() override {
         start();
 
-        StopSignalHandler(logger_).wait();
+        const auto signal_handler =
+            std::make_shared<StopSignalHandler>(logger_);
+        executor_->on_exception(
+            [weak_signal_handler = std::weak_ptr<StopSignalHandler>(
+                 signal_handler)](const std::exception_ptr& /*exception*/) {
+                const auto signal_handler = weak_signal_handler.lock();
+                if (signal_handler) {
+                    signal_handler->stop();
+                }
+            });
+        signal_handler->wait();
+        const auto last_exception = executor_->last_exception();
 
         stop();
+
+        if (last_exception) {
+            std::rethrow_exception(last_exception);
+        }
     }
 
     //! \copydoc msgpack_rpc::servers::IServer::local_endpoint_uris
@@ -126,6 +141,11 @@ public:
             uris.push_back(acceptor->local_address().to_uri());
         }
         return uris;
+    }
+
+    //! \copydoc msgpack_rpc::servers::IServer::executor
+    [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() override {
+        return executor_;
     }
 
 private:

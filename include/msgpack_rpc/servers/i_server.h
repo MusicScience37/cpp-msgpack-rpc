@@ -19,9 +19,12 @@
  */
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/executors/i_executor.h"
+
 namespace msgpack_rpc::servers {
 
 /*!
@@ -50,6 +53,16 @@ public:
      * \return URIs.
      */
     [[nodiscard]] virtual std::vector<addresses::URI> local_endpoint_uris() = 0;
+
+    /*!
+     * \brief Get the executor.
+     *
+     * \return Executor.
+     *
+     * \note This function is mainly for testing. So this function may be
+     * removed in the future.
+     */
+    [[nodiscard]] virtual std::shared_ptr<executors::IExecutor> executor() = 0;
 
     IServer(const IServer&) = delete;
     IServer(IServer&&) = delete;
