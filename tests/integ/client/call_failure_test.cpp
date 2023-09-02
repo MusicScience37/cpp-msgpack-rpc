@@ -153,6 +153,15 @@ SCENARIO("Call methods to fail") {
                         "Test error in methods.");
                 }
             }
+
+            AND_WHEN("The client is stopped") {
+                client.stop();
+
+                THEN("The client fails to call a method") {
+                    CHECK_THROWS_AS(client.call<std::string>("echo", "Hello."),
+                        MsgpackRPCException);
+                }
+            }
         }
 
         WHEN("A client is configured with small timeout") {
@@ -175,6 +184,21 @@ SCENARIO("Call methods to fail") {
                 } catch (const MsgpackRPCException& e) {
                     CHECK(e.status().code() == StatusCode::TIMEOUT);
                 }
+            }
+        }
+
+        WHEN("A client is correctly created but not started") {
+            ClientBuilder client_builder{logger};
+
+            for (const auto& uri : uris) {
+                client_builder.connect_to(uri);
+            }
+
+            Client client = client_builder.build();
+
+            THEN("The client fails to call a method") {
+                CHECK_THROWS_AS(client.call<std::string>("echo", "Hello."),
+                    MsgpackRPCException);
             }
         }
     }

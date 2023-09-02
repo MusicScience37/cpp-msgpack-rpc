@@ -51,7 +51,9 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     const auto executor = create_executor(logger, executor_config);
 
     SECTION("start and stop") {
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->start());
+        CHECK(executor->is_running());
 
         std::promise<void> called_promise;
         auto future = called_promise.get_future();
@@ -66,11 +68,15 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         CHECK(future.wait_for(std::chrono::seconds(1)) ==
             std::future_status::ready);
 
+        CHECK(executor->is_running());
         CHECK_NOTHROW(executor->stop());
+        CHECK_FALSE(executor->is_running());
     }
 
     SECTION("get the last exception in threads") {
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->start());
+        CHECK(executor->is_running());
 
         const std::string message = "Test exception message.";
         const OperationType operation_type =
@@ -92,6 +98,8 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         REQUIRE(last_exception);
         CHECK_THROWS_WITH(std::rethrow_exception(last_exception), message);
 
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->stop());
+        CHECK_FALSE(executor->is_running());
     }
 }

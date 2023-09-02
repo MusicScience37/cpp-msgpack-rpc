@@ -128,6 +128,8 @@ public:
     [[nodiscard]] std::shared_ptr<ICallFutureImpl> async_call(
         messages::MethodNameView method_name,
         const IParametersSerializer& parameters) override {
+        check_executor_state();
+
         const auto call = call_list_->create(method_name, parameters);
 
         sender_->send(call.serialized_request(), call.id());
@@ -141,6 +143,8 @@ public:
     //! \copydoc msgpack_rpc::clients::impl::IClientImpl::notify
     void notify(messages::MethodNameView method_name,
         const IParametersSerializer& parameters) override {
+        check_executor_state();
+
         const auto serialized_notification =
             std::make_shared<messages::SerializedMessage>(
                 parameters.create_serialized_notification(method_name));
@@ -151,6 +155,16 @@ public:
     }
 
 private:
+    /*!
+     * \brief Check whether the executor is running.
+     */
+    void check_executor_state() {
+        if (!executor_ || !executor_->is_running()) {
+            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+                "This client has been stopped.");
+        }
+    }
+
     //! Executor.
     std::shared_ptr<executors::IAsyncExecutor> executor_;
 

@@ -119,6 +119,16 @@ public:
         return exception_in_thread_;
     }
 
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::is_running
+    [[nodiscard]] bool is_running() override {
+        std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
+        if (exception_in_thread_) {
+            return false;
+        }
+        return is_started_.load(std::memory_order_relaxed) &&
+            !is_stopped_.load(std::memory_order_relaxed);
+    }
+
 private:
     /*!
      * \brief Start threads.

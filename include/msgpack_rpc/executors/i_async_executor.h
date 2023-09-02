@@ -60,6 +60,14 @@ public:
      */
     [[nodiscard]] virtual std::exception_ptr last_exception() = 0;
 
+    /*!
+     * \brief Check whether this executor is running.
+     *
+     * \retval true This executor is running.
+     * \retval false This executor is not running.
+     */
+    [[nodiscard]] virtual bool is_running() = 0;
+
     IAsyncExecutor(const IAsyncExecutor&) = delete;
     IAsyncExecutor(IAsyncExecutor&&) = delete;
     IAsyncExecutor& operator=(const IAsyncExecutor&) = delete;

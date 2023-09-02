@@ -65,6 +65,9 @@ public:
         return nullptr;
     }
 
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::is_running
+    [[nodiscard]] bool is_running() override { return true; }
+
 private:
     //! Executor.
     std::shared_ptr<IExecutor> executor_;
