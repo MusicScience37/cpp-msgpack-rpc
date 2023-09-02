@@ -26,6 +26,7 @@
 
 #include "msgpack_rpc/clients/impl/call_list.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/util/format_msgpack_object.h"

@@ -18,13 +18,13 @@
  * \brief Test of GeneralExecutor class.
  */
 #include <chrono>
+#include <cstddef>
 #include <exception>
+#include <functional>
 #include <future>
 #include <memory>
-#include <ratio>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <type_traits>
 #include <vector>
 
@@ -103,9 +103,10 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         CHECK(executor->is_running());
 
         std::vector<std::exception_ptr> exceptions;
-        executor->on_exception([&exceptions](std::exception_ptr exception) {
-            exceptions.push_back(exception);
-        });
+        executor->on_exception(
+            [&exceptions](const std::exception_ptr& exception) {
+                exceptions.push_back(exception);
+            });
 
         const std::string message = "Test exception message.";
         const OperationType operation_type =

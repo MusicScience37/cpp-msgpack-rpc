@@ -18,14 +18,17 @@
  * \brief Test of an exception in a server.
  */
 #include <future>
+#include <memory>
 #include <stdexcept>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
 
 #include "check_connectivity.h"
 #include "create_test_logger.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Exception in a server") {

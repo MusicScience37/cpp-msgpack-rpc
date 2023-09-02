@@ -18,6 +18,7 @@
  * \brief Definition of WrappingExecutor class.
  */
 #include <exception>
+#include <functional>
 #include <memory>
 #include <type_traits>
 #include <utility>
