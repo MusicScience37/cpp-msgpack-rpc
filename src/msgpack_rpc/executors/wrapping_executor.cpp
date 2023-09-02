@@ -65,6 +65,13 @@ public:
         return nullptr;
     }
 
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::on_exception
+    void on_exception(
+        std::function<void(std::exception_ptr)> exception_callback) override {
+        // No operation.
+        (void)exception_callback;
+    }
+
     //! \copydoc msgpack_rpc::executors::IAsyncExecutor::is_running
     [[nodiscard]] bool is_running() override { return true; }
 
