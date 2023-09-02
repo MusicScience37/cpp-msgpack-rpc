@@ -20,6 +20,7 @@
 #include <atomic>
 #include <cstdlib>
 #include <exception>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <sstream>
@@ -119,6 +120,23 @@ public:
         return exception_in_thread_;
     }
 
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::on_exception
+    void on_exception(
+        std::function<void(std::exception_ptr)> exception_callback) override {
+        std::unique_lock<std::mutex> lock(exception_callbacks_mutex_);
+        exception_callbacks_.push_back(std::move(exception_callback));
+    }
+
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::is_running
+    [[nodiscard]] bool is_running() override {
+        std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
+        if (exception_in_thread_) {
+            return false;
+        }
+        return is_started_.load(std::memory_order_relaxed) &&
+            !is_stopped_.load(std::memory_order_relaxed);
+    }
+
 private:
     /*!
      * \brief Start threads.
@@ -195,13 +213,21 @@ private:
         try {
             context.run();
         } catch (const std::exception& e) {
-            MSGPACK_RPC_ERROR(logger_, "Exception thrown in a thread {}: {}",
+            MSGPACK_RPC_CRITICAL(logger_,
+                "Executor stops due to an exception thrown in thread {}: {}",
                 thread_id, e.what());
+            const std::exception_ptr exception = std::current_exception();
             {
                 std::unique_lock<std::mutex> lock(exception_in_thread_mutex_);
-                exception_in_thread_ = std::current_exception();
+                exception_in_thread_ = exception;
             }
             interrupt_threads();
+            {
+                std::unique_lock<std::mutex> lock(exception_callbacks_mutex_);
+                for (const auto& exception_callback : exception_callbacks_) {
+                    exception_callback(exception);
+                }
+            }
         }
         MSGPACK_RPC_TRACE(logger_, "Finish an executor thread {}.", thread_id);
     }
@@ -270,6 +296,12 @@ private:
 
     //! Mutex of exception_in_thread_.
     std::mutex exception_in_thread_mutex_{};
+
+    //! Functions called when an exception is thrown.
+    std::vector<std::function<void(std::exception_ptr)>> exception_callbacks_{};
+
+    //! Mutex of exception_callbacks_.
+    std::mutex exception_callbacks_mutex_{};
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;

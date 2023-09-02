@@ -24,6 +24,7 @@
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "trompeloeil_catch2.h"
 
@@ -40,6 +41,8 @@ class MockClientImpl final : public msgpack_rpc::clients::impl::IClientImpl {
     MAKE_MOCK2(notify,
         void(msgpack_rpc::messages::MethodNameView,
             const msgpack_rpc::clients::impl::IParametersSerializer&),
+        override);
+    MAKE_MOCK0(executor, std::shared_ptr<msgpack_rpc::executors::IExecutor>(),
         override);
 };
 

@@ -18,6 +18,7 @@
  * \brief Definition of WrappingExecutor class.
  */
 #include <exception>
+#include <functional>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -64,6 +65,16 @@ public:
     [[nodiscard]] std::exception_ptr last_exception() override {
         return nullptr;
     }
+
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::on_exception
+    void on_exception(
+        std::function<void(std::exception_ptr)> exception_callback) override {
+        // No operation.
+        (void)exception_callback;
+    }
+
+    //! \copydoc msgpack_rpc::executors::IAsyncExecutor::is_running
+    [[nodiscard]] bool is_running() override { return true; }
 
 private:
     //! Executor.

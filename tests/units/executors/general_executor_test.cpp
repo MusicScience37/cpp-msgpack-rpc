@@ -18,14 +18,15 @@
  * \brief Test of GeneralExecutor class.
  */
 #include <chrono>
+#include <cstddef>
 #include <exception>
+#include <functional>
 #include <future>
 #include <memory>
-#include <ratio>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <type_traits>
+#include <vector>
 
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -38,6 +39,7 @@
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "wait_last_exception_in.h"
 
 TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     using msgpack_rpc::config::ExecutorConfig;
@@ -51,7 +53,9 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
     const auto executor = create_executor(logger, executor_config);
 
     SECTION("start and stop") {
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->start());
+        CHECK(executor->is_running());
 
         std::promise<void> called_promise;
         auto future = called_promise.get_future();
@@ -66,11 +70,15 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         CHECK(future.wait_for(std::chrono::seconds(1)) ==
             std::future_status::ready);
 
+        CHECK(executor->is_running());
         CHECK_NOTHROW(executor->stop());
+        CHECK_FALSE(executor->is_running());
     }
 
     SECTION("get the last exception in threads") {
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->start());
+        CHECK(executor->is_running());
 
         const std::string message = "Test exception message.";
         const OperationType operation_type =
@@ -81,17 +89,41 @@ TEST_CASE("msgpack_rpc::executors::GeneralExecutor") {
         CHECK_NOTHROW(async_invoke(executor, operation_type,
             [&message] { throw std::runtime_error(message); }));
 
-        std::exception_ptr last_exception;
-        const auto deadline =
-            std::chrono::steady_clock::now() + std::chrono::seconds(1);
-        while (!last_exception && std::chrono::steady_clock::now() < deadline) {
-            CHECK_NOTHROW(last_exception = executor->last_exception());
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(10));  // NOLINT
-        }
-        REQUIRE(last_exception);
+        std::exception_ptr last_exception = wait_last_exception_in(executor);
         CHECK_THROWS_WITH(std::rethrow_exception(last_exception), message);
 
+        CHECK_FALSE(executor->is_running());
         CHECK_NOTHROW(executor->stop());
+        CHECK_FALSE(executor->is_running());
+    }
+
+    SECTION("set a callback for exceptions in threads") {
+        CHECK_FALSE(executor->is_running());
+        CHECK_NOTHROW(executor->start());
+        CHECK(executor->is_running());
+
+        std::vector<std::exception_ptr> exceptions;
+        executor->on_exception(
+            [&exceptions](const std::exception_ptr& exception) {
+                exceptions.push_back(exception);
+            });
+
+        const std::string message = "Test exception message.";
+        const OperationType operation_type =
+            GENERATE(OperationType::TRANSPORT, OperationType::CALLBACK);
+        INFO("Operation type: " << static_cast<int>(operation_type));
+        MSGPACK_RPC_DEBUG(
+            logger, "Operation type: {}", static_cast<int>(operation_type));
+        CHECK_NOTHROW(async_invoke(executor, operation_type,
+            [&message] { throw std::runtime_error(message); }));
+
+        wait_last_exception_in(executor);
+
+        CHECK_FALSE(executor->is_running());
+        CHECK_NOTHROW(executor->stop());
+        CHECK_FALSE(executor->is_running());
+
+        CHECK(exceptions.size() == static_cast<std::size_t>(1));
+        CHECK_THROWS_WITH(std::rethrow_exception(exceptions.at(0)), message);
     }
 }

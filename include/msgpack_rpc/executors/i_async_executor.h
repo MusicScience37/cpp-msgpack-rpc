@@ -20,6 +20,7 @@
 #pragma once
 
 #include <exception>
+#include <functional>
 #include <memory>
 
 #include "msgpack_rpc/config/executor_config.h"
@@ -59,6 +60,25 @@ public:
      * \return Pointer of the exception.
      */
     [[nodiscard]] virtual std::exception_ptr last_exception() = 0;
+
+    /*!
+     * \brief Register a function called when an exception is thrown in
+     * asynchronous tasks.
+     *
+     * \param[in] exception_callback Function called when an exception is thrown
+     * in asynchronous tasks. The pointer of the exception is passed as an
+     * argument.
+     */
+    virtual void on_exception(
+        std::function<void(std::exception_ptr)> exception_callback) = 0;
+
+    /*!
+     * \brief Check whether this executor is running.
+     *
+     * \retval true This executor is running.
+     * \retval false This executor is not running.
+     */
+    [[nodiscard]] virtual bool is_running() = 0;
 
     IAsyncExecutor(const IAsyncExecutor&) = delete;
     IAsyncExecutor(IAsyncExecutor&&) = delete;
