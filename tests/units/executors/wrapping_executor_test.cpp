@@ -27,6 +27,7 @@
 #include "msgpack_rpc/executors/asio_context_type.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/executors/wrap_executor.h"
 #include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::executors::WrappingExecutor") {
