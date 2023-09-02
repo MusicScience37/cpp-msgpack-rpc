@@ -19,8 +19,10 @@
  */
 #include <chrono>
 #include <exception>
+#include <future>
 #include <memory>
 #include <ratio>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -43,6 +45,8 @@
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/executors/async_invoke.h"
+#include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc/servers/i_server.h"
@@ -156,6 +160,25 @@ SCENARIO("Call methods to fail") {
 
             AND_WHEN("The client is stopped") {
                 client.stop();
+
+                THEN("The client fails to call a method") {
+                    CHECK_THROWS_AS(client.call<std::string>("echo", "Hello."),
+                        MsgpackRPCException);
+                }
+            }
+
+            AND_WHEN("The client stops with an internal exception") {
+                std::promise<void> promise;
+                std::future<void> future = promise.get_future();
+                msgpack_rpc::executors::async_invoke(client.executor(),
+                    msgpack_rpc::executors::OperationType::CALLBACK,
+                    [&promise] {
+                        promise.set_value_at_thread_exit();
+                        throw std::runtime_error(
+                            "Test exception in an executor.");
+                    });
+                CHECK(future.wait_for(std::chrono::seconds(1)) ==
+                    std::future_status::ready);
 
                 THEN("The client fails to call a method") {
                     CHECK_THROWS_AS(client.call<std::string>("echo", "Hello."),

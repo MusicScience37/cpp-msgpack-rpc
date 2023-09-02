@@ -154,6 +154,11 @@ public:
         MSGPACK_RPC_DEBUG(logger_, "Send notification {}", method_name);
     }
 
+    //! \copydoc msgpack_rpc::clients::impl::IClientImpl::executor
+    [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() override {
+        return executor_;
+    }
+
 private:
     /*!
      * \brief Check whether the executor is running.

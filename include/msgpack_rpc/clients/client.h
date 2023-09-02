@@ -26,6 +26,7 @@
 #include "msgpack_rpc/clients/call_future.h"
 #include "msgpack_rpc/clients/impl/i_client_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
+#include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 
 namespace msgpack_rpc::clients {
@@ -102,6 +103,18 @@ public:
         messages::MethodNameView method_name, const Parameters&... parameters) {
         impl_->notify(
             method_name, impl::make_parameters_serializer(parameters...));
+    }
+
+    /*!
+     * \brief Get the executor.
+     *
+     * \return Executor.
+     *
+     * \note This function is mainly for testing. So this function may be
+     * removed in the future.
+     */
+    [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() {
+        return impl_->executor();
     }
 
 private:
