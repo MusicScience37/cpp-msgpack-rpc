@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string_view>
+#include <unordered_map>
 
 #include <fmt/format.h>
 #include <toml++/impl/source_region.h>
@@ -27,11 +28,15 @@
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 
 namespace msgpack_rpc::config::toml {
+
+namespace impl {
 
 /*!
  * \brief Throw an exception for an error of TOML.
@@ -135,6 +140,26 @@ void parse_toml(const ::toml::table& table, LoggingConfig& config) {
 }
 
 /*!
+ * \brief Parse configurations of logging from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] configs Configurations.
+ */
+void parse_toml(const ::toml::table& table,
+    std::unordered_map<std::string, LoggingConfig>& configs) {
+    for (const auto& [key, value] : table) {
+        const auto* table_ptr = value.as_table();
+        if (table_ptr == nullptr) {
+            throw_error(value.source(), "logging",
+                "\"logging\" must be a table of tables.");
+        }
+        LoggingConfig config;
+        parse_toml(*table_ptr, config);
+        configs.try_emplace(std::string(key.str()), std::move(config));
+    }
+}
+
+/*!
  * \brief Parse a configuration of parsers of messages from TOML.
  *
  * \param[in] table Table in TOML.
@@ -147,6 +172,61 @@ void parse_toml(const ::toml::table& table, MessageParserConfig& config) {
             MSGPACK_RPC_PARSE_TOML_VALUE(
                 "read_buffer_size", read_buffer_size, std::size_t);
         }
+    }
+}
+
+/*!
+ * \brief Parse configurations from TOML.
+ *
+ * \param[in] root_table Root table of TOML file.
+ * \param[in] logging_configs Configurations of logging.
+ * \param[in] client_configs Configurations of clients.
+ * \param[in] server_configs Configurations of servers.
+ */
+void parse_toml(const ::toml::table& root_table,
+    std::unordered_map<std::string, LoggingConfig>& logging_configs,
+    std::unordered_map<std::string, ClientConfig>& client_configs,
+    std::unordered_map<std::string, ServerConfig>& server_configs) {
+    if (const auto logging_node = root_table.at_path("logging")) {
+        const auto* logging_table = logging_node.as_table();
+        if (logging_table == nullptr) {
+            impl::throw_error(logging_node.node()->source(), "logging",
+                "\"logging\" must be a table of tables.");
+        }
+        impl::parse_toml(*logging_table, logging_configs);
+    }
+
+    // TODO
+    (void)client_configs;
+    (void)server_configs;
+}
+
+}  // namespace impl
+
+/*!
+ * \brief Parse configurations from a TOML file.
+ *
+ * \param[in] filepath Path of the TOML file.
+ * \param[in] logging_configs Configurations of logging.
+ * \param[in] client_configs Configurations of clients.
+ * \param[in] server_configs Configurations of servers.
+ */
+void parse_toml(std::string_view filepath,
+    std::unordered_map<std::string, LoggingConfig>& logging_configs,
+    std::unordered_map<std::string, ClientConfig>& client_configs,
+    std::unordered_map<std::string, ServerConfig>& server_configs) {
+    try {
+        const auto root_table = ::toml::parse_file(filepath);
+        impl::parse_toml(
+            root_table, logging_configs, client_configs, server_configs);
+    } catch (const MsgpackRPCException& e) {
+        throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+            fmt::format(
+                "Failed to parse {}: {}", filepath, e.status().message()));
+    } catch (const ::toml::parse_error& e) {
+        throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+            fmt::format("Failed to parse {}: {} (at {}:{})", filepath,
+                e.description(), filepath, e.source().begin.line));
     }
 }
 

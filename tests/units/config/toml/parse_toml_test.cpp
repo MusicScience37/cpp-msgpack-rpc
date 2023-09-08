@@ -24,14 +24,16 @@
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 
-TEST_CASE("msgpack_rpc::config::toml::throw_error") {
+TEST_CASE("msgpack_rpc::config::toml::impl::throw_error") {
     using msgpack_rpc::MsgpackRPCException;
     using msgpack_rpc::StatusCode;
-    using msgpack_rpc::config::toml::throw_error;
+    using msgpack_rpc::config::toml::impl::throw_error;
 
     SECTION("throw with a path") {
         constexpr std::string_view source_path = "test.toml";
@@ -92,8 +94,8 @@ example = 12345
     }
 }
 
-TEST_CASE("msgpack_rpc::config::toml::parse_toml(LoggingConfig)") {
-    using msgpack_rpc::config::toml::parse_toml;
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(LoggingConfig)") {
+    using msgpack_rpc::config::toml::impl::parse_toml;
     using msgpack_rpc::logging::LogLevel;
 
     SECTION("parse an empty table") {
@@ -159,8 +161,8 @@ output_log_level = "debug"
     }
 }
 
-TEST_CASE("msgpack_rpc::config::toml::parse_toml(MessageParserConfig)") {
-    using msgpack_rpc::config::toml::parse_toml;
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(MessageParserConfig)") {
+    using msgpack_rpc::config::toml::impl::parse_toml;
 
     SECTION("parse an empty table") {
         const auto root_table = toml::parse(R"(
@@ -183,5 +185,29 @@ read_buffer_size = 12345
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
         CHECK(config.read_buffer_size() == 12345);
+    }
+}
+
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(root node)") {
+    using msgpack_rpc::config::ClientConfig;
+    using msgpack_rpc::config::LoggingConfig;
+    using msgpack_rpc::config::ServerConfig;
+    using msgpack_rpc::config::toml::impl::parse_toml;
+
+    std::unordered_map<std::string, LoggingConfig> logging_configs;
+    std::unordered_map<std::string, ClientConfig> client_configs;
+    std::unordered_map<std::string, ServerConfig> server_configs;
+
+    SECTION("parse an empty table") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        parse_toml(test_table, logging_configs, client_configs, server_configs);
+
+        CHECK(logging_configs.size() == 0);  // NOLINT
+        CHECK(client_configs.size() == 0);   // NOLINT
+        CHECK(server_configs.size() == 0);   // NOLINT
     }
 }
