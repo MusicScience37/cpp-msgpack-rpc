@@ -18,6 +18,7 @@ set(SOURCE_FILES
     config/message_parser_config_test.cpp
     config/reconnection_config_test.cpp
     config/server_config_test.cpp
+    config/toml/parse_toml_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp
