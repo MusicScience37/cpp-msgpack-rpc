@@ -1,0 +1,5 @@
+[logging.example2]
+filepath = "test2.log"
+
+[logging.example3]
+filepath = "test3.log"
