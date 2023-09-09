@@ -1,0 +1,7 @@
+[logging.trace]
+filepath = "msgpack_rpc_test_integ_logging.log"
+output_log_level = "trace"
+
+[logging.info]
+filepath = "msgpack_rpc_test_integ_logging.log"
+output_log_level = "info"
