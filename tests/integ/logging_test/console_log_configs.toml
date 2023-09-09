@@ -1,0 +1,5 @@
+[logging.trace]
+output_log_level = "trace"
+
+[logging.info]
+output_log_level = "info"

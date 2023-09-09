@@ -8,6 +8,9 @@ import typing
 import approvaltests
 from .create_scrubber import create_scrubber
 
+THIS_DIR = pathlib.Path(__file__).absolute().parent
+CONFIG_PATH = THIS_DIR / "rotating_file_log_configs.toml"
+
 
 def _verify_command_result(
     writer_path: pathlib.Path,
@@ -48,10 +51,15 @@ def test_info_log(
 ):
     """Test with info log level."""
 
-    log_filename = "msgpack_rpc_test_integ_logging_info.log"
+    log_filename = "msgpack_rpc_test_integ_logging.log"
     _verify_command_result(
         writer_path=writer_path,
-        args=["-o", log_filename],
+        args=[
+            "--config-file",
+            str(CONFIG_PATH),
+            "--config-name",
+            "info",
+        ],
         test_temp_dir_path=test_temp_dir_path,
         log_filename=log_filename,
     )
@@ -63,10 +71,15 @@ def test_trace_log(
 ):
     """Test with trace log level."""
 
-    log_filename = "msgpack_rpc_test_integ_logging_info.log"
+    log_filename = "msgpack_rpc_test_integ_logging.log"
     _verify_command_result(
         writer_path=writer_path,
-        args=["-o", log_filename, "-v"],
+        args=[
+            "--config-file",
+            str(CONFIG_PATH),
+            "--config-name",
+            "trace",
+        ],
         test_temp_dir_path=test_temp_dir_path,
         log_filename=log_filename,
     )

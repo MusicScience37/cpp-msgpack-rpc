@@ -5,9 +5,9 @@
 
 #include <lyra/lyra.hpp>
 
+#include "msgpack_rpc/config/config_parser.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/i_log_sink.h"
-#include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/log_sinks.h"
 #include "msgpack_rpc/logging/logger.h"
 
@@ -15,23 +15,18 @@ int main(int argc, char** argv) {
     msgpack_rpc::config::LoggingConfig config;
     std::shared_ptr<msgpack_rpc::logging::ILogSink> log_sink;
     bool quiet = false;
+    std::string config_filepath;
+    std::string config_name;
     const auto cli =
         lyra::cli()
-            .add_argument(lyra::opt(
-                [&config](
-                    const std::string& filepath) { config.filepath(filepath); },
-                "filepath")
-                              .name("--out")
-                              .name("-o")
+            .add_argument(lyra::opt(config_filepath, "filepath")
+                              .name("--config-file")
                               .optional()
-                              .help("Output to file."))
-            .add_argument(lyra::opt([&config](bool /*true*/) {
-                config.output_log_level(msgpack_rpc::logging::LogLevel::TRACE);
-            })
-                              .name("--verbose")
-                              .name("-v")
+                              .help("Configuration file."))
+            .add_argument(lyra::opt(config_name, "name")
+                              .name("--config-name")
                               .optional()
-                              .help("Show more log."))
+                              .help("Configuration name."))
             .add_argument(
                 lyra::opt(quiet).name("--quiet").name("-q").optional().help(
                     "Do not show logs."));
@@ -45,9 +40,14 @@ int main(int argc, char** argv) {
     if (quiet) {
         // NOP
     } else {
-        const auto max_file_size = static_cast<std::size_t>(1024U * 1024U);
-        const auto max_files = static_cast<std::size_t>(1);
-        config.max_file_size(max_file_size).max_files(max_files);
+        if (config_filepath.empty() || config_name.empty()) {
+            const auto max_files = static_cast<std::size_t>(1);
+            config.max_files(max_files);
+        } else {
+            msgpack_rpc::config::ConfigParser parser;
+            parser.parse(config_filepath);
+            config = parser.logging_config(config_name);
+        }
         log_sink = msgpack_rpc::logging::create_log_sink_from_config(config);
     }
     const auto logger = msgpack_rpc::logging::Logger::create(

@@ -3,7 +3,7 @@ stdout:
 
 stderr:
 
-msgpack_rpc_test_integ_logging_info.log:
+msgpack_rpc_test_integ_logging.log:
 [<time-stamp>] [info] Information. (write_log.cpp:58, <function-name>)
 [<time-stamp>] [warning] Warning. (write_log.cpp:59, <function-name>)
 [<time-stamp>] [error] Error. (write_log.cpp:60, <function-name>)

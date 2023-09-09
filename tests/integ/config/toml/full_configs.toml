@@ -1,0 +1,31 @@
+[logging.example]
+filepath = "test.log"
+max_file_size = 12345
+max_files = 123
+output_log_level = "error"
+
+[client.example]
+uris = ["tcp://localhost:12345"]
+call_timeout_sec = 7.0
+
+[client.example.message_parser]
+read_buffer_size = 1234
+
+[client.example.executor]
+num_transport_threads = 7
+num_callback_threads = 9
+
+[client.example.reconnection]
+initial_waiting_time_sec = 1.5
+max_waiting_time_sec = 2.5
+max_jitter_waiting_time_sec = 0.25
+
+[server.example]
+uris = ["tcp://localhost:23456"]
+
+[server.example.message_parser]
+read_buffer_size = 2345
+
+[server.example.executor]
+num_transport_threads = 11
+num_callback_threads = 13
