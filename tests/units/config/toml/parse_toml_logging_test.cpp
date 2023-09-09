@@ -29,6 +29,39 @@
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_log_level") {
+    using msgpack_rpc::config::toml::impl::parse_log_level;
+    using msgpack_rpc::logging::LogLevel;
+
+    SECTION("parse valid values") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+
+        CHECK(parse_log_level("trace", root_table.source(), "log_level") ==
+            LogLevel::TRACE);
+        CHECK(parse_log_level("debug", root_table.source(), "log_level") ==
+            LogLevel::DEBUG);
+        CHECK(parse_log_level("info", root_table.source(), "log_level") ==
+            LogLevel::INFO);
+        CHECK(parse_log_level("warn", root_table.source(), "log_level") ==
+            LogLevel::WARN);
+        CHECK(parse_log_level("error", root_table.source(), "log_level") ==
+            LogLevel::ERROR);
+        CHECK(parse_log_level("critical", root_table.source(), "log_level") ==
+            LogLevel::CRITICAL);
+    }
+
+    SECTION("parse invalid values") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+
+        CHECK_THROWS(
+            parse_log_level("invalid", root_table.source(), "log_level"));
+    }
+}
+
 TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(LoggingConfig)") {
     using msgpack_rpc::config::toml::impl::parse_toml;
     using msgpack_rpc::logging::LogLevel;
