@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <exception>
+#include <filesystem>
 #include <string_view>
 
 #include <fmt/core.h>
@@ -39,7 +40,8 @@ int main(int argc, const char** argv) {
         return 2;
     }
     const std::string_view filepath = argv[1];
-    fmt::print(stdout, "File: {}\n\n", filepath);
+    fmt::print(stdout, "File: {}\n\n",
+        std::filesystem::path(filepath).filename().string());
 
     try {
         std::unordered_map<std::string, LoggingConfig> logging_configs;

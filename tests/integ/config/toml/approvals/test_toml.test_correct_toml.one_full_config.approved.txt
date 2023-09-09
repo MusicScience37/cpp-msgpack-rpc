@@ -1,4 +1,4 @@
-File: /workspaces/cpp-msgpack-rpc/tests/integ/config/toml/one_full_config.toml
+File: one_full_config.toml
 
 logging:
   example:
