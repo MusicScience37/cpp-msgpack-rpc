@@ -17,22 +17,19 @@
  * \file
  * \brief Test of parse_toml functions.
  */
+#include "msgpack_rpc/config/toml/parse_toml_client_server.h"
+
 #include <chrono>
 #include <ratio>
 
-#include <approval_test_fmt.h>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <toml++/toml.h>
 
-#include "msgpack_rpc/common/msgpack_rpc_exception.h"
-#include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/config/client_config.h"
-#include "msgpack_rpc/config/logging_config.h"
+#include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
-#include "msgpack_rpc/config/server_config.h"
-#include "msgpack_rpc/config/toml/parse_toml.h"
-#include "msgpack_rpc/logging/log_level.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 
 TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(MessageParserConfig)") {
     using msgpack_rpc::config::toml::impl::parse_toml;

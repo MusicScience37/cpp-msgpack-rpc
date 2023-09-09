@@ -19,21 +19,13 @@
  */
 #include "msgpack_rpc/config/toml/parse_toml.h"
 
-#include <chrono>
-#include <ratio>
+#include <functional>
 
-#include <approval_test_fmt.h>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_exception.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
 
-#include "msgpack_rpc/common/msgpack_rpc_exception.h"
-#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
-#include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/server_config.h"
-#include "msgpack_rpc/logging/log_level.h"
 
 TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(root node)") {
     using msgpack_rpc::config::ClientConfig;

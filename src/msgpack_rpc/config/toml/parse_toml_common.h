@@ -19,23 +19,18 @@
  */
 #pragma once
 
-#include <chrono>
-#include <string_view>
-#include <unordered_map>
+// IWYU pragma: no_include <type_traits>
 
-#include <fmt/format.h>
-#include <toml++/impl/source_region.h>
+#include <chrono>     // IWYU pragma: keep
+#include <exception>  // IWYU pragma: keep
+#include <string>
+#include <string_view>
+
+#include <fmt/core.h>
 #include <toml++/toml.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/config/client_config.h"
-#include "msgpack_rpc/config/executor_config.h"
-#include "msgpack_rpc/config/logging_config.h"
-#include "msgpack_rpc/config/message_parser_config.h"
-#include "msgpack_rpc/config/reconnection_config.h"
-#include "msgpack_rpc/config/server_config.h"
-#include "msgpack_rpc/logging/log_level.h"
 
 namespace msgpack_rpc::config::toml::impl {
 
