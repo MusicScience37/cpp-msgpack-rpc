@@ -22,6 +22,8 @@
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <toml++/toml.h>
 
 #include "msgpack_rpc/config/logging_config.h"
@@ -54,6 +56,17 @@ filepath = "test.log"
         CHECK(config.filepath() == "test.log");
     }
 
+    SECTION("parse filepath with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+filepath = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("filepath"));
+    }
+
     SECTION("parse max_file_size") {
         const auto root_table = toml::parse(R"(
 [test]
@@ -64,6 +77,28 @@ max_file_size = 12345
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
         CHECK(config.max_file_size() == 12345);
+    }
+
+    SECTION("parse max_file_size with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_file_size = 0
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_file_size"));
+    }
+
+    SECTION("parse max_file_size with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_file_size = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_file_size"));
     }
 
     SECTION("parse max_files") {
@@ -78,6 +113,28 @@ max_files = 123
         CHECK(config.max_files() == 123);
     }
 
+    SECTION("parse max_files with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_files = 0
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_files"));
+    }
+
+    SECTION("parse max_files with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_files = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_files"));
+    }
+
     SECTION("parse output_log_level") {
         const auto root_table = toml::parse(R"(
 [test]
@@ -88,5 +145,27 @@ output_log_level = "debug"
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
         CHECK(config.output_log_level() == LogLevel::DEBUG);
+    }
+
+    SECTION("parse output_log_level with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+output_log_level = "any"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("output_log_level"));
+    }
+
+    SECTION("parse output_log_level with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+output_log_level = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("output_log_level"));
     }
 }

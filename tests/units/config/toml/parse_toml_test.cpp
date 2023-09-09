@@ -22,6 +22,8 @@
 #include <functional>
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
@@ -48,5 +50,41 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(root node)") {
         CHECK(logging_configs.size() == 0);  // NOLINT
         CHECK(client_configs.size() == 0);   // NOLINT
         CHECK(server_configs.size() == 0);   // NOLINT
+    }
+
+    SECTION("parse a configuration of logging") {
+        const auto root_table = toml::parse(R"(
+[logging.example]
+filepath = "test.log"
+)");
+
+        parse_toml(root_table, logging_configs, client_configs, server_configs);
+
+        CHECK(logging_configs.size() == 1);  // NOLINT
+        CHECK(logging_configs.at("example").filepath() == "test.log");
+
+        CHECK(client_configs.size() == 0);  // NOLINT
+        CHECK(server_configs.size() == 0);  // NOLINT
+    }
+
+    SECTION("parse a configuration of logging with invalid element type") {
+        const auto root_table = toml::parse(R"(
+[logging]
+filepath = "test.log"
+)");
+
+        CHECK_THROWS_WITH(parse_toml(root_table, logging_configs,
+                              client_configs, server_configs),
+            Catch::Matchers::ContainsSubstring("logging"));
+    }
+
+    SECTION("parse a configuration of logging with invalid type") {
+        const auto root_table = toml::parse(R"(
+logging = "abc"
+)");
+
+        CHECK_THROWS_WITH(parse_toml(root_table, logging_configs,
+                              client_configs, server_configs),
+            Catch::Matchers::ContainsSubstring("logging"));
     }
 }

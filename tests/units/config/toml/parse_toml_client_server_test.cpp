@@ -56,6 +56,28 @@ read_buffer_size = 12345
 
         CHECK(config.read_buffer_size() == 12345);
     }
+
+    SECTION("parse read_buffer_size with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+read_buffer_size = 0
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("read_buffer_size"));
+    }
+
+    SECTION("parse read_buffer_size with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+read_buffer_size = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("read_buffer_size"));
+    }
 }
 
 TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(ExecutorConfig)") {
@@ -84,6 +106,28 @@ num_transport_threads = 13
         CHECK(config.num_transport_threads() == 13);
     }
 
+    SECTION("parse num_transport_threads with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_transport_threads = 0
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("num_transport_threads"));
+    }
+
+    SECTION("parse num_transport_threads with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_transport_threads = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("num_transport_threads"));
+    }
+
     SECTION("parse num_callback_threads") {
         const auto root_table = toml::parse(R"(
 [test]
@@ -94,6 +138,28 @@ num_callback_threads = 17
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
         CHECK(config.num_callback_threads() == 17);
+    }
+
+    SECTION("parse num_callback_threads with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_callback_threads = 0
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("num_callback_threads"));
+    }
+
+    SECTION("parse num_callback_threads with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_callback_threads = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("num_callback_threads"));
     }
 }
 
