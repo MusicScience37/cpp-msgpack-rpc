@@ -22,6 +22,7 @@
 #include <string_view>
 #include <unordered_map>
 
+#include <__chrono/duration.h>
 #include <fmt/format.h>
 #include <toml++/impl/source_region.h>
 #include <toml++/toml.h>
@@ -29,8 +30,10 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/client_config.h"
+#include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 
@@ -79,6 +82,20 @@ namespace impl {
         config.CONFIG_FUNCTION(*config_value);                       \
     } catch (const std::exception& e) {                              \
         throw_error(value.source(), KEY_STR, e.what());              \
+    }
+
+//! Internal macro to parse a value from TOML.
+#define MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(KEY_STR, CONFIG_FUNCTION) \
+    const auto config_value = value.value<double>();                    \
+    if (!config_value) {                                                \
+        throw_error(value.source(), KEY_STR);                           \
+    }                                                                   \
+    try {                                                               \
+        config.CONFIG_FUNCTION(                                         \
+            std::chrono::duration_cast<std::chrono::nanoseconds>(       \
+                std::chrono::duration<double>(*config_value)));         \
+    } catch (const std::exception& e) {                                 \
+        throw_error(value.source(), KEY_STR, e.what());                 \
     }
 
 /*!
@@ -171,6 +188,47 @@ void parse_toml(const ::toml::table& table, MessageParserConfig& config) {
         if (key_str == "read_buffer_size") {
             MSGPACK_RPC_PARSE_TOML_VALUE(
                 "read_buffer_size", read_buffer_size, std::size_t);
+        }
+    }
+}
+
+/*!
+ * \brief Parse a configuration of executors from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] config Configuration.
+ */
+void parse_toml(const ::toml::table& table, ExecutorConfig& config) {
+    for (const auto& [key, value] : table) {
+        const auto key_str = key.str();
+        if (key_str == "num_transport_threads") {
+            MSGPACK_RPC_PARSE_TOML_VALUE(
+                "num_transport_threads", num_transport_threads, std::size_t);
+        } else if (key_str == "num_callback_threads") {
+            MSGPACK_RPC_PARSE_TOML_VALUE(
+                "num_callback_threads", num_callback_threads, std::size_t);
+        }
+    }
+}
+
+/*!
+ * \brief Parse a configuration of reconnection in clients from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] config Configuration.
+ */
+void parse_toml(const ::toml::table& table, ReconnectionConfig& config) {
+    for (const auto& [key, value] : table) {
+        const auto key_str = key.str();
+        if (key_str == "initial_waiting_time_sec") {
+            MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(
+                "initial_waiting_time_sec", initial_waiting_time);
+        } else if (key_str == "max_waiting_time_sec") {
+            MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(
+                "max_waiting_time_sec", max_waiting_time);
+        } else if (key_str == "max_jitter_waiting_time_sec") {
+            MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(
+                "max_jitter_waiting_time_sec", max_jitter_waiting_time);
         }
     }
 }

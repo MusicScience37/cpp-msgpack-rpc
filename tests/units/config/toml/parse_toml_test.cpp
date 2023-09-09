@@ -19,8 +19,13 @@
  */
 #include "msgpack_rpc/config/toml/parse_toml.h"
 
+#include <chrono>
+#include <ratio>
+
 #include <approval_test_fmt.h>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_exception.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -98,12 +103,13 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(LoggingConfig)") {
     using msgpack_rpc::config::toml::impl::parse_toml;
     using msgpack_rpc::logging::LogLevel;
 
+    msgpack_rpc::config::LoggingConfig config;
+
     SECTION("parse an empty table") {
         const auto root_table = toml::parse(R"(
 [test]
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::LoggingConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
     }
@@ -114,7 +120,6 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(LoggingConfig)") {
 filepath = "test.log"
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::LoggingConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
@@ -127,7 +132,6 @@ filepath = "test.log"
 max_file_size = 12345
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::LoggingConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
@@ -140,7 +144,6 @@ max_file_size = 12345
 max_files = 123
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::LoggingConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
@@ -153,7 +156,6 @@ max_files = 123
 output_log_level = "debug"
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::LoggingConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
@@ -164,12 +166,13 @@ output_log_level = "debug"
 TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(MessageParserConfig)") {
     using msgpack_rpc::config::toml::impl::parse_toml;
 
+    msgpack_rpc::config::MessageParserConfig config;
+
     SECTION("parse an empty table") {
         const auto root_table = toml::parse(R"(
 [test]
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::MessageParserConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
     }
@@ -180,11 +183,167 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(MessageParserConfig)") {
 read_buffer_size = 12345
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
-        msgpack_rpc::config::MessageParserConfig config;
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
         CHECK(config.read_buffer_size() == 12345);
+    }
+}
+
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(ExecutorConfig)") {
+    using msgpack_rpc::config::toml::impl::parse_toml;
+
+    msgpack_rpc::config::ExecutorConfig config;
+
+    SECTION("parse an empty table") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+    }
+
+    SECTION("parse num_transport_threads") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_transport_threads = 13
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.num_transport_threads() == 13);
+    }
+
+    SECTION("parse num_callback_threads") {
+        const auto root_table = toml::parse(R"(
+[test]
+num_callback_threads = 17
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.num_callback_threads() == 17);
+    }
+}
+
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(ReconnectionConfig)") {
+    using msgpack_rpc::config::toml::impl::parse_toml;
+
+    msgpack_rpc::config::ReconnectionConfig config;
+
+    SECTION("parse an empty table") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+    }
+
+    SECTION("parse initial_waiting_time_sec") {
+        const auto root_table = toml::parse(R"(
+[test]
+initial_waiting_time_sec = 1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.initial_waiting_time() == std::chrono::milliseconds(1500));
+    }
+
+    SECTION("parse initial_waiting_time_sec with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+initial_waiting_time_sec = -1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("initial_waiting_time_sec"));
+    }
+
+    SECTION("parse initial_waiting_time_sec with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+initial_waiting_time_sec = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("initial_waiting_time_sec"));
+    }
+
+    SECTION("parse max_waiting_time_sec") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_waiting_time_sec = 1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.max_waiting_time() == std::chrono::milliseconds(1500));
+    }
+
+    SECTION("parse max_waiting_time_sec with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_waiting_time_sec = -1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_waiting_time_sec"));
+    }
+
+    SECTION("parse max_waiting_time_sec with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_waiting_time_sec = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_waiting_time_sec"));
+    }
+
+    SECTION("parse max_jitter_waiting_time_sec") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_jitter_waiting_time_sec = 1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.max_jitter_waiting_time() ==
+            std::chrono::milliseconds(1500));
+    }
+
+    SECTION("parse max_jitter_waiting_time_sec with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_jitter_waiting_time_sec = -1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_jitter_waiting_time_sec"));
+    }
+
+    SECTION("parse max_jitter_waiting_time_sec with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+max_jitter_waiting_time_sec = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("max_jitter_waiting_time_sec"));
     }
 }
 
