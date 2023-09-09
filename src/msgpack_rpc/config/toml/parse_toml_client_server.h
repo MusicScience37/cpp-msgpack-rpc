@@ -29,6 +29,7 @@
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/reconnection_config.h"
+#include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/config/toml/parse_toml_common.h"
 
 namespace msgpack_rpc::config::toml::impl {
@@ -137,6 +138,47 @@ inline void parse_toml(const ::toml::table& table, ClientConfig& config) {
                 throw_error(value.source(), "reconnection");
             }
             parse_toml(*child_table, config.reconnection());
+        }
+    }
+}
+
+/*!
+ * \brief Parse a configuration of servers from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] config Configuration.
+ */
+inline void parse_toml(const ::toml::table& table, ServerConfig& config) {
+    for (const auto& [key, value] : table) {
+        const auto key_str = key.str();
+        if (key_str == "uris") {
+            const auto* uris_node = value.as_array();
+            if (uris_node == nullptr) {
+                throw_error(value.source(), "uris");
+            }
+            for (const auto& elem : *uris_node) {
+                const auto* uri_node = elem.as_string();
+                if (uri_node == nullptr) {
+                    throw_error(elem.source(), "uris");
+                }
+                try {
+                    config.add_uri(uri_node->get());
+                } catch (const std::exception& e) {
+                    throw_error(elem.source(), "uris", e.what());
+                }
+            }
+        } else if (key_str == "message_parser") {
+            const auto* child_table = value.as_table();
+            if (child_table == nullptr) {
+                throw_error(value.source(), "message_parser");
+            }
+            parse_toml(*child_table, config.message_parser());
+        } else if (key_str == "executor") {
+            const auto* child_table = value.as_table();
+            if (child_table == nullptr) {
+                throw_error(value.source(), "executor");
+            }
+            parse_toml(*child_table, config.executor());
         }
     }
 }
