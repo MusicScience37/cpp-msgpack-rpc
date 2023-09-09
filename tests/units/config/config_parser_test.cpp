@@ -62,6 +62,20 @@ TEST_CASE("msgpack_rpc::config::ConfigParser") {
             std::vector{URI::parse("tcp://localhost:4567")});
     }
 
+    SECTION("parse a file with an invalid configuration") {
+        CHECK_THROWS(
+            parser.parse("config_parser_test_samples/invalid_type.toml"));
+    }
+
+    SECTION("parse a file with a parse error") {
+        CHECK_THROWS(parser.parse("config_parser_test_samples/not_toml.toml"));
+    }
+
+    SECTION("parse a non-existing file") {
+        CHECK_THROWS(
+            parser.parse("config_parser_test_samples/non-existing.toml"));
+    }
+
     SECTION("try to get non-existing configuration") {
         CHECK_THROWS((void)parser.logging_config("example1"));
         CHECK_THROWS((void)parser.client_config("example1"));
