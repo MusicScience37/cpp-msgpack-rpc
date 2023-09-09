@@ -1005,6 +1005,6 @@
   { include: ["<lyra/parser.hpp>", private, "<lyra/lyra.hpp>", public ] },
   # Custom (trompeloeil library)
   { include: ["<trompeloeil.hpp>", private, "\"trompeloeil_catch2.h\"", public ] },
-  # Custom (msgpack library)
+  # Custom (toml++ library)
   { include: ["@<toml../impl/.*>", private, "<toml++/toml.h>", public ] },
 ]
