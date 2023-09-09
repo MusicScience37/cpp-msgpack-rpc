@@ -1,5 +1,6 @@
 #include "msgpack_rpc/config/toml/parse_toml.h"
 
+#include <chrono>
 #include <cstdio>
 #include <exception>
 #include <filesystem>
@@ -7,9 +8,12 @@
 #include <string_view>
 
 #include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "msgpack_rpc/config/client_config.h"
+#include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/logging_config.h"
+#include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 
@@ -30,6 +34,38 @@ static std::string_view format(msgpack_rpc::logging::LogLevel level) {
         return "critical";
     }
     return "invalid";
+}
+
+static std::string format(std::chrono::nanoseconds value) {
+    return fmt::format("{:.3f}",
+        std::chrono::duration_cast<std::chrono::duration<double>>(value)
+            .count());
+}
+
+static void format(const msgpack_rpc::config::MessageParserConfig& config) {
+    fmt::print(stdout,
+        "    message_parser:\n"
+        "      read_buffer_size: {}\n",
+        config.read_buffer_size());
+}
+
+static void format(const msgpack_rpc::config::ExecutorConfig& config) {
+    fmt::print(stdout,
+        "    executor:\n"
+        "      num_transport_threads: {}\n"
+        "      num_callback_threads: {}\n",
+        config.num_transport_threads(), config.num_callback_threads());
+}
+
+static void format(const msgpack_rpc::config::ReconnectionConfig& config) {
+    fmt::print(stdout,
+        "    reconnection:\n"
+        "      initial_waiting_time: {}\n"
+        "      max_waiting_time: {}\n"
+        "      max_jitter_waiting_time: {}\n",
+        format(config.initial_waiting_time()),
+        format(config.max_waiting_time()),
+        format(config.max_jitter_waiting_time()));
 }
 
 int main(int argc, const char** argv) {
@@ -62,6 +98,29 @@ int main(int argc, const char** argv) {
                 "    output_log_level: {}\n",
                 key, config.filepath(), config.max_file_size(),
                 config.max_files(), format(config.output_log_level()));
+        }
+
+        fmt::print(stdout, "client:\n");
+        for (const auto& [key, config] : client_configs) {
+            fmt::print(stdout,
+                "  {}:\n"
+                "    uris: [{}]\n"
+                "    call_timeout: {}\n",
+                key, fmt::join(config.uris(), ", "),
+                format(config.call_timeout()));
+            format(config.message_parser());
+            format(config.executor());
+            format(config.reconnection());
+        }
+
+        fmt::print(stdout, "server:\n");
+        for (const auto& [key, config] : server_configs) {
+            fmt::print(stdout,
+                "  {}:\n"
+                "    uris: [{}]\n",
+                key, fmt::join(config.uris(), ", "));
+            format(config.message_parser());
+            format(config.executor());
         }
 
         return 0;

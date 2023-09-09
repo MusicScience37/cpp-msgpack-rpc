@@ -1,5 +1,0 @@
-[logging.example]
-filepath = "test.log"
-max_file_size = 12345
-max_files = 123
-output_log_level = "error"

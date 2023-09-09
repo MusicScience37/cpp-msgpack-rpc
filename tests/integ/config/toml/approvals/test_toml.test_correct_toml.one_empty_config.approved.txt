@@ -1,8 +1,0 @@
-File: one_empty_config.toml
-
-logging:
-  example:
-    filepath: 
-    max_file_size: 1048576
-    max_files: 5
-    output_log_level: info

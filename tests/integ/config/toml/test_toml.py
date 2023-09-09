@@ -14,9 +14,9 @@ THIS_DIR = pathlib.Path(__file__).absolute().parent
 @pytest.mark.parametrize(
     "name",
     [
-        "empty",
-        "one_empty_config",
-        "one_full_config",
+        "no_config",
+        "empty_configs",
+        "full_configs",
     ],
 )
 def test_correct_toml(name: str, toml_parser_path: pathlib.Path):
