@@ -17,9 +17,10 @@
  * \file
  * \brief Test of parse_toml functions.
  */
-#include "msgpack_rpc/config/toml/parse_toml.h"
+#include "msgpack_rpc/config/toml/parse_toml_root.h"
 
 #include <functional>
+#include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>

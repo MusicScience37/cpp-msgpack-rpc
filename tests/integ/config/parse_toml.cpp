@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <exception>
 #include <filesystem>
+#include <functional>
 #include <string_view>
 
 #include <fmt/core.h>

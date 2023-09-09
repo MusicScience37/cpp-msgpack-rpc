@@ -22,7 +22,7 @@ set(SOURCE_FILES
     config/toml/parse_toml_client_server_test.cpp
     config/toml/parse_toml_common_test.cpp
     config/toml/parse_toml_logging_test.cpp
-    config/toml/parse_toml_test.cpp
+    config/toml/parse_toml_root_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp

@@ -13,6 +13,7 @@ set(SOURCE_FILES
     msgpack_rpc/config/message_parser_config.cpp
     msgpack_rpc/config/reconnection_config.cpp
     msgpack_rpc/config/server_config.cpp
+    msgpack_rpc/config/toml/parse_toml.cpp
     msgpack_rpc/executors/general_executor.cpp
     msgpack_rpc/executors/single_thread_executor.cpp
     msgpack_rpc/executors/wrapping_executor.cpp

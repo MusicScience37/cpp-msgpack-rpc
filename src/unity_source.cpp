@@ -12,6 +12,7 @@
 #include "msgpack_rpc/config/message_parser_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/reconnection_config.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/config/server_config.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/config/toml/parse_toml.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/executors/general_executor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/executors/single_thread_executor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/executors/wrapping_executor.cpp"  // NOLINT(bugprone-suspicious-include)

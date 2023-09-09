@@ -15,32 +15,47 @@
  */
 /*!
  * \file
- * \brief Definition of parse_toml functions.
+ * \brief Implementation of parse_toml functions.
  */
 #pragma once
 
 #include <string>
-#include <string_view>
 #include <unordered_map>
+
+#include <toml++/toml.h>
 
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/server_config.h"
-#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/config/toml/parse_toml_common.h"
+#include "msgpack_rpc/config/toml/parse_toml_logging.h"
 
-namespace msgpack_rpc::config::toml {
+namespace msgpack_rpc::config::toml::impl {
 
 /*!
- * \brief Parse configurations from a TOML file.
+ * \brief Parse configurations from TOML.
  *
- * \param[in] filepath Path of the TOML file.
+ * \param[in] root_table Root table of TOML file.
  * \param[in] logging_configs Configurations of logging.
  * \param[in] client_configs Configurations of clients.
  * \param[in] server_configs Configurations of servers.
  */
-MSGPACK_RPC_EXPORT void parse_toml(std::string_view filepath,
+inline void parse_toml(const ::toml::table& root_table,
     std::unordered_map<std::string, LoggingConfig>& logging_configs,
     std::unordered_map<std::string, ClientConfig>& client_configs,
-    std::unordered_map<std::string, ServerConfig>& server_configs);
+    std::unordered_map<std::string, ServerConfig>& server_configs) {
+    if (const auto logging_node = root_table.at_path("logging")) {
+        const auto* logging_table = logging_node.as_table();
+        if (logging_table == nullptr) {
+            impl::throw_error(logging_node.node()->source(), "logging",
+                "\"logging\" must be a table of tables.");
+        }
+        impl::parse_toml(*logging_table, logging_configs);
+    }
 
-}  // namespace msgpack_rpc::config::toml
+    // TODO
+    (void)client_configs;
+    (void)server_configs;
+}
+
+}  // namespace msgpack_rpc::config::toml::impl
