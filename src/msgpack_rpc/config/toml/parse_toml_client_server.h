@@ -20,8 +20,13 @@
 #pragma once
 
 #include <cstddef>
+#include <exception>
+#include <functional>
 #include <string>
 #include <string_view>
+#include <type_traits>
+#include <unordered_map>
+#include <utility>
 
 #include <toml++/toml.h>
 
@@ -143,6 +148,26 @@ inline void parse_toml(const ::toml::table& table, ClientConfig& config) {
 }
 
 /*!
+ * \brief Parse configurations of clients from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] configs Configurations.
+ */
+inline void parse_toml(const ::toml::table& table,
+    std::unordered_map<std::string, ClientConfig>& configs) {
+    for (const auto& [key, value] : table) {
+        const auto* table_ptr = value.as_table();
+        if (table_ptr == nullptr) {
+            throw_error(value.source(), "client",
+                "\"client\" must be a table of tables.");
+        }
+        ClientConfig config;
+        parse_toml(*table_ptr, config);
+        configs.try_emplace(std::string(key.str()), std::move(config));
+    }
+}
+
+/*!
  * \brief Parse a configuration of servers from TOML.
  *
  * \param[in] table Table in TOML.
@@ -180,6 +205,26 @@ inline void parse_toml(const ::toml::table& table, ServerConfig& config) {
             }
             parse_toml(*child_table, config.executor());
         }
+    }
+}
+
+/*!
+ * \brief Parse configurations of servers from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] configs Configurations.
+ */
+inline void parse_toml(const ::toml::table& table,
+    std::unordered_map<std::string, ServerConfig>& configs) {
+    for (const auto& [key, value] : table) {
+        const auto* table_ptr = value.as_table();
+        if (table_ptr == nullptr) {
+            throw_error(value.source(), "server",
+                "\"server\" must be a table of tables.");
+        }
+        ServerConfig config;
+        parse_toml(*table_ptr, config);
+        configs.try_emplace(std::string(key.str()), std::move(config));
     }
 }
 

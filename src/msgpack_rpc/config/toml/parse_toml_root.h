@@ -27,6 +27,7 @@
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/config/toml/parse_toml_client_server.h"
 #include "msgpack_rpc/config/toml/parse_toml_common.h"
 #include "msgpack_rpc/config/toml/parse_toml_logging.h"
 
@@ -53,9 +54,23 @@ inline void parse_toml(const ::toml::table& root_table,
         impl::parse_toml(*logging_table, logging_configs);
     }
 
-    // TODO
-    (void)client_configs;
-    (void)server_configs;
+    if (const auto client_node = root_table.at_path("client")) {
+        const auto* client_table = client_node.as_table();
+        if (client_table == nullptr) {
+            impl::throw_error(client_node.node()->source(), "client",
+                "\"client\" must be a table of tables.");
+        }
+        impl::parse_toml(*client_table, client_configs);
+    }
+
+    if (const auto server_node = root_table.at_path("server")) {
+        const auto* server_table = server_node.as_table();
+        if (server_table == nullptr) {
+            impl::throw_error(server_node.node()->source(), "server",
+                "\"server\" must be a table of tables.");
+        }
+        impl::parse_toml(*server_table, server_configs);
+    }
 }
 
 }  // namespace msgpack_rpc::config::toml::impl
