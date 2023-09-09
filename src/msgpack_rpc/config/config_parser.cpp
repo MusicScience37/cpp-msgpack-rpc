@@ -43,4 +43,22 @@ const LoggingConfig& ConfigParser::logging_config(std::string_view name) const {
     }
 }
 
+const ClientConfig& ConfigParser::client_config(std::string_view name) const {
+    try {
+        return client_configs_.at(std::string(name));
+    } catch (...) {
+        throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+            fmt::format("Configuration of client not found: {}.", name));
+    }
+}
+
+const ServerConfig& ConfigParser::server_config(std::string_view name) const {
+    try {
+        return server_configs_.at(std::string(name));
+    } catch (...) {
+        throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
+            fmt::format("Configuration of server not found: {}.", name));
+    }
+}
+
 }  // namespace msgpack_rpc::config

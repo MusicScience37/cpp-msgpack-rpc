@@ -19,9 +19,14 @@
  */
 #include "msgpack_rpc/config/config_parser.h"
 
+#include <vector>
+
 #include <catch2/catch_test_macros.hpp>
 
+#include "msgpack_rpc/addresses/uri.h"
+
 TEST_CASE("msgpack_rpc::config::ConfigParser") {
+    using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::ConfigParser;
 
     ConfigParser parser;
@@ -30,6 +35,12 @@ TEST_CASE("msgpack_rpc::config::ConfigParser") {
         CHECK_NOTHROW(parser.parse("config_parser_test_samples/config1.toml"));
 
         CHECK(parser.logging_config("example1").filepath() == "test1.log");
+
+        CHECK(parser.client_config("example1").uris() ==
+            std::vector{URI::parse("tcp://localhost:1234")});
+
+        CHECK(parser.server_config("example1").uris() ==
+            std::vector{URI::parse("tcp://localhost:2345")});
     }
 
     SECTION("parse two files") {
@@ -39,9 +50,21 @@ TEST_CASE("msgpack_rpc::config::ConfigParser") {
         CHECK(parser.logging_config("example1").filepath() == "test1.log");
         CHECK(parser.logging_config("example2").filepath() == "test2.log");
         CHECK(parser.logging_config("example3").filepath() == "test3.log");
+
+        CHECK(parser.client_config("example1").uris() ==
+            std::vector{URI::parse("tcp://localhost:1234")});
+        CHECK(parser.client_config("example2").uris() ==
+            std::vector{URI::parse("tcp://localhost:3456")});
+
+        CHECK(parser.server_config("example1").uris() ==
+            std::vector{URI::parse("tcp://localhost:2345")});
+        CHECK(parser.server_config("example2").uris() ==
+            std::vector{URI::parse("tcp://localhost:4567")});
     }
 
     SECTION("try to get non-existing configuration") {
         CHECK_THROWS((void)parser.logging_config("example1"));
+        CHECK_THROWS((void)parser.client_config("example1"));
+        CHECK_THROWS((void)parser.server_config("example1"));
     }
 }

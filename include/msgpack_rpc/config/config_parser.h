@@ -57,6 +57,24 @@ public:
     [[nodiscard]] const LoggingConfig& logging_config(
         std::string_view name) const;
 
+    /*!
+     * \brief Get a configuration of client.
+     *
+     * \param[in] name Name of the configuration.
+     * \return Configuration.
+     */
+    [[nodiscard]] const ClientConfig& client_config(
+        std::string_view name) const;
+
+    /*!
+     * \brief Get a configuration of server.
+     *
+     * \param[in] name Name of the configuration.
+     * \return Configuration.
+     */
+    [[nodiscard]] const ServerConfig& server_config(
+        std::string_view name) const;
+
 private:
     //! Configurations of logging.
     std::unordered_map<std::string, LoggingConfig> logging_configs_;
