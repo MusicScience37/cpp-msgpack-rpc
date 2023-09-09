@@ -25,6 +25,7 @@
 
 #include <toml++/toml.h>
 
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/reconnection_config.h"
@@ -86,6 +87,56 @@ inline void parse_toml(const ::toml::table& table, ReconnectionConfig& config) {
         } else if (key_str == "max_jitter_waiting_time_sec") {
             MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(
                 "max_jitter_waiting_time_sec", max_jitter_waiting_time);
+        }
+    }
+}
+
+/*!
+ * \brief Parse a configuration of clients from TOML.
+ *
+ * \param[in] table Table in TOML.
+ * \param[out] config Configuration.
+ */
+inline void parse_toml(const ::toml::table& table, ClientConfig& config) {
+    for (const auto& [key, value] : table) {
+        const auto key_str = key.str();
+        if (key_str == "uris") {
+            const auto* uris_node = value.as_array();
+            if (uris_node == nullptr) {
+                throw_error(value.source(), "uris");
+            }
+            for (const auto& elem : *uris_node) {
+                const auto* uri_node = elem.as_string();
+                if (uri_node == nullptr) {
+                    throw_error(elem.source(), "uris");
+                }
+                try {
+                    config.add_uri(uri_node->get());
+                } catch (const std::exception& e) {
+                    throw_error(elem.source(), "uris", e.what());
+                }
+            }
+        } else if (key_str == "call_timeout_sec") {
+            MSGPACK_RPC_PARSE_TOML_VALUE_DURATION(
+                "call_timeout_sec", call_timeout);
+        } else if (key_str == "message_parser") {
+            const auto* child_table = value.as_table();
+            if (child_table == nullptr) {
+                throw_error(value.source(), "message_parser");
+            }
+            parse_toml(*child_table, config.message_parser());
+        } else if (key_str == "executor") {
+            const auto* child_table = value.as_table();
+            if (child_table == nullptr) {
+                throw_error(value.source(), "executor");
+            }
+            parse_toml(*child_table, config.executor());
+        } else if (key_str == "reconnection") {
+            const auto* child_table = value.as_table();
+            if (child_table == nullptr) {
+                throw_error(value.source(), "reconnection");
+            }
+            parse_toml(*child_table, config.reconnection());
         }
     }
 }

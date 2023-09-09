@@ -24,9 +24,12 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_container_properties.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include <toml++/toml.h>
 
+#include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/config/reconnection_config.h"
@@ -278,5 +281,198 @@ max_jitter_waiting_time_sec = "abc"
 
         CHECK_THROWS_WITH(parse_toml(test_table, config),
             Catch::Matchers::ContainsSubstring("max_jitter_waiting_time_sec"));
+    }
+}
+
+TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(ClientConfig)") {
+    using msgpack_rpc::addresses::URI;
+    using msgpack_rpc::config::toml::impl::parse_toml;
+
+    msgpack_rpc::config::ClientConfig config;
+
+    SECTION("parse an empty table") {
+        const auto root_table = toml::parse(R"(
+[test]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+    }
+
+    SECTION("parse uris without elements") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        // NOLINTNEXTLINE: for readability of test logs
+        CHECK(config.uris() == std::vector<URI>{});
+    }
+
+    SECTION("parse uris with one element") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = ["tcp://localhost:12345"]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(
+            config.uris() == std::vector{URI::parse("tcp://localhost:12345")});
+    }
+
+    SECTION("parse uris with two elements") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = ["tcp://localhost:12345", "tcp://localhost:23456"]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.uris() ==
+            std::vector{URI::parse("tcp://localhost:12345"),
+                URI::parse("tcp://localhost:23456")});
+    }
+
+    SECTION("parse uris with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("uris"));
+    }
+
+    SECTION("parse uris with invalid element type") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = [12345]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("uris"));
+    }
+
+    SECTION("parse uris with invalid element value") {
+        const auto root_table = toml::parse(R"(
+[test]
+uris = ["abc"]
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("uris"));
+    }
+
+    SECTION("parse call_timeout_sec") {
+        const auto root_table = toml::parse(R"(
+[test]
+call_timeout_sec = 1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.call_timeout() == std::chrono::milliseconds(1500));
+    }
+
+    SECTION("parse call_timeout_sec with invalid value") {
+        const auto root_table = toml::parse(R"(
+[test]
+call_timeout_sec = -1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("call_timeout_sec"));
+    }
+
+    SECTION("parse call_timeout_sec with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+call_timeout_sec = "abc"
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("call_timeout_sec"));
+    }
+
+    SECTION("parse message_parser") {
+        const auto root_table = toml::parse(R"(
+[test.message_parser]
+read_buffer_size = 12345
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.message_parser().read_buffer_size() == 12345);
+    }
+
+    SECTION("parse message_parser with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+message_parser = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("message_parser"));
+    }
+
+    SECTION("parse executor") {
+        const auto root_table = toml::parse(R"(
+[test.executor]
+num_callback_threads = 11
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.executor().num_callback_threads() == 11);
+    }
+
+    SECTION("parse executor with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+executor = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("executor"));
+    }
+
+    SECTION("parse reconnection") {
+        const auto root_table = toml::parse(R"(
+[test.reconnection]
+initial_waiting_time_sec = 1.5
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        REQUIRE_NOTHROW(parse_toml(test_table, config));
+
+        CHECK(config.reconnection().initial_waiting_time() ==
+            std::chrono::milliseconds(1500));
+    }
+
+    SECTION("parse reconnection with invalid type") {
+        const auto root_table = toml::parse(R"(
+[test]
+reconnection = []
+)");
+        const auto test_table = root_table["test"].ref<toml::table>();
+
+        CHECK_THROWS_WITH(parse_toml(test_table, config),
+            Catch::Matchers::ContainsSubstring("reconnection"));
     }
 }
