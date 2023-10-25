@@ -49,7 +49,11 @@ find_package(msgpack-cxx REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 find_package(re2 REQUIRED)
-find_package(tomlplusplus REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
+add_library(tomlplusplus::tomlplusplus ALIAS PkgConfig::tomlplusplus)
+
 find_package(Threads REQUIRED)
 if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
