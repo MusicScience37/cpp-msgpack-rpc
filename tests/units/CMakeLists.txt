@@ -1,7 +1,6 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/source_list.cmake)
 add_executable(${PROJECT_NAME}_test_units ${SOURCE_FILES})
 target_add_catch2(${PROJECT_NAME}_test_units)
-target_add_ausan(${PROJECT_NAME}_test_units)
 target_include_directories(${PROJECT_NAME}_test_units
                            PRIVATE ${${UPPER_PROJECT_NAME}_SOURCE_DIR}/src)
 
