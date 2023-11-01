@@ -274,8 +274,8 @@ test asan ubsan:
     - cd $BUILD_DIR
     - cmake ..
       -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
-      -DVCPKG_TARGET_TRIPLET=x64-linux-llvm
-      -DVCPKG_HOST_TRIPLET=x64-linux-llvm
+      -DVCPKG_TARGET_TRIPLET=x64-linux-llvm-ausan
+      -DVCPKG_HOST_TRIPLET=x64-linux-llvm-ausan
       -DCMAKE_CXX_FLAGS=-stdlib=libc++
       -DCMAKE_BUILD_TYPE=Debug
       -D${UPPER_PROJECT_NAME}_TESTING:BOOL=ON

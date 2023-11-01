@@ -17,7 +17,6 @@ target_link_libraries(
            Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-target_add_ausan(${PROJECT_NAME})
 
 set_target_properties(
     ${PROJECT_NAME}
