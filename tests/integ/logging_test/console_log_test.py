@@ -8,6 +8,9 @@ import typing
 import approvaltests
 from .create_scrubber import create_scrubber
 
+THIS_DIR = pathlib.Path(__file__).absolute().parent
+CONFIG_PATH = THIS_DIR / "console_log_configs.toml"
+
 
 def _verify_command_result(
     writer_path: pathlib.Path,
@@ -42,7 +45,12 @@ def test_info_log(
 
     _verify_command_result(
         writer_path=writer_path,
-        args=[],
+        args=[
+            "--config-file",
+            str(CONFIG_PATH),
+            "--config-name",
+            "info",
+        ],
         test_temp_dir_path=test_temp_dir_path,
     )
 
@@ -55,7 +63,12 @@ def test_trace_log(
 
     _verify_command_result(
         writer_path=writer_path,
-        args=["-v"],
+        args=[
+            "--config-file",
+            str(CONFIG_PATH),
+            "--config-name",
+            "trace",
+        ],
         test_temp_dir_path=test_temp_dir_path,
     )
 

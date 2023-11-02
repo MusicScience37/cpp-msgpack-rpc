@@ -13,11 +13,16 @@ set(SOURCE_FILES
     common/status_code_test.cpp
     common/status_test.cpp
     config/client_config_test.cpp
+    config/config_parser_test.cpp
     config/executor_config_test.cpp
     config/logging_config_test.cpp
     config/message_parser_config_test.cpp
     config/reconnection_config_test.cpp
     config/server_config_test.cpp
+    config/toml/parse_toml_client_server_test.cpp
+    config/toml/parse_toml_common_test.cpp
+    config/toml/parse_toml_logging_test.cpp
+    config/toml/parse_toml_root_test.cpp
     create_test_logger.cpp
     executors/general_executor_test.cpp
     executors/single_thread_executor_test.cpp

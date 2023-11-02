@@ -1,0 +1,11 @@
+[logging.example2]
+filepath = "test2.log"
+
+[logging.example3]
+filepath = "test3.log"
+
+[client.example2]
+uris = ["tcp://localhost:3456"]
+
+[server.example2]
+uris = ["tcp://localhost:4567"]

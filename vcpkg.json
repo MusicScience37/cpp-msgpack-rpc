@@ -6,6 +6,7 @@
     "msgpack",
     "fmt",
     "re2",
+    "tomlplusplus",
     "catch2",
     "trompeloeil",
     "approval-tests-cpp",

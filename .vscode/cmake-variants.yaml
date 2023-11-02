@@ -35,6 +35,8 @@ buildType:
         MSGPACK_RPC_ENABLE_PROFILING: OFF
         MSGPACK_RPC_ENABLE_CCACHE: ON
         MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+        VCPKG_TARGET_TRIPLET: "x64-linux-llvm-ausan"
+        VCPKG_HOST_TRIPLET: "x64-linux-llvm-ausan"
     clang-asan-ubsan-unit-dox:
       short: ClangAUSan-Unit-Dox
       long: ASan and USan in Clang + Unit Tests + Doxygen
@@ -51,6 +53,8 @@ buildType:
         MSGPACK_RPC_ENABLE_PROFILING: OFF
         MSGPACK_RPC_ENABLE_CCACHE: ON
         MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+        VCPKG_TARGET_TRIPLET: "x64-linux-llvm-ausan"
+        VCPKG_HOST_TRIPLET: "x64-linux-llvm-ausan"
     clang-asan-ubsan-unit-docs:
       short: ClangAUSan-Unit-Documents
       long: ASan and USan in Clang + Unit Tests + All documents
@@ -67,6 +71,8 @@ buildType:
         MSGPACK_RPC_ENABLE_PROFILING: OFF
         MSGPACK_RPC_ENABLE_CCACHE: ON
         MSGPACK_RPC_ENABLE_CPP_WARNINGS: ON
+        VCPKG_TARGET_TRIPLET: "x64-linux-llvm-ausan"
+        VCPKG_HOST_TRIPLET: "x64-linux-llvm-ausan"
     debug-unit:
       short: Debug-Unit
       long: Debug build + Unit Tests

@@ -25,16 +25,9 @@ string(TOUPPER ${PROJECT_NAME} UPPER_PROJECT_NAME)
 option(${UPPER_PROJECT_NAME}_ENABLE_AUSAN
        "enable address sanitizer and undefined behavior sanitizer" OFF)
 
-# Function target_add_ausan
-#
-# Add configuration of address sanitizer and undefined behavior sanitizer.
-#
-function(target_add_ausan _TARGET)
-    if(${UPPER_PROJECT_NAME}_ENABLE_AUSAN)
-        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            target_compile_options(${_TARGET}
-                                   PUBLIC -fsanitize=address,undefined)
-            target_link_options(${_TARGET} PUBLIC -fsanitize=address,undefined)
-        endif()
+if(${UPPER_PROJECT_NAME}_ENABLE_AUSAN)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        add_compile_options(-fsanitize=address,undefined)
+        add_link_options(-fsanitize=address,undefined)
     endif()
-endfunction()
+endif()

@@ -13,10 +13,10 @@ target_link_libraries(
            spdlog::spdlog
            fmt::fmt
            re2::re2
+           tomlplusplus::tomlplusplus
            Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
-target_add_ausan(${PROJECT_NAME})
 
 set_target_properties(
     ${PROJECT_NAME}
@@ -42,6 +42,11 @@ target_include_directories(
     PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(
     ${PROJECT_NAME}_unity
-    PUBLIC asio::asio msgpack-cxx spdlog::spdlog fmt::fmt
+    PUBLIC asio::asio
+           msgpack-cxx
+           spdlog::spdlog
+           fmt::fmt
+           re2::re2
+           tomlplusplus::tomlplusplus
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME}_unity PUBLIC cxx_std_17)
