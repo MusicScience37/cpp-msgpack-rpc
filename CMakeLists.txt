@@ -107,6 +107,12 @@ if(${UPPER_PROJECT_NAME}_ENABLE_INSTALL)
         PATTERN "*.h*")
 
     install(
+        DIRECTORY ${${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR}/${PROJECT_NAME}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING
+        PATTERN "*.h*")
+
+    install(
         EXPORT ${FULL_PROJECT_NAME}-targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${FULL_PROJECT_NAME}
         NAMESPACE cpp_msgpack_rpc::)
