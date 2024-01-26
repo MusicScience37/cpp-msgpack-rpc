@@ -3,13 +3,13 @@
   "default-registry": {
     "kind": "git",
     "repository": "https://github.com/Microsoft/vcpkg",
-    "baseline": "a429a35bb5d9467aa8d22ca00e747445eb893414"
+    "baseline": "0bc50c0394035e6818f59c628087567e588fcbf8"
   },
   "registries": [
     {
       "kind": "git",
       "repository": "https://gitlab.com/MusicScience37Projects/vcpkg-registry",
-      "baseline": "3ac73f117f66eb0842a4982316ebec463cbbbd64",
+      "baseline": "65af9db9a6bd094b4b1f475aab3e692630bb288a",
       "packages": ["cpp-stat-bench"]
     }
   ],

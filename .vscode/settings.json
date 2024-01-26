@@ -45,6 +45,14 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "isort.args": ["--profile", "black"],
   "cSpell.enableFiletypes": ["cmake", "plantuml", "shellscript", "toml"],
   "todo-tree.filtering.excludeGlobs": ["**/node_modules/*/**", "**/vcpkg/*/**"]
 }
