@@ -5,32 +5,33 @@ description = ""
 authors = ["Kenta Kabashima <kenta_program37@hotmail.co.jp>"]
 readme = "README.md"
 packages = []
+package-mode = false
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 
 [tool.poetry.group.doc.dependencies]
 myst-parser = "^2.0.0"
-sphinx = "^7.2.6"
-sphinx-autobuild = "^2021.3.14"
-sphinxcontrib-plantuml = "^0.27"
-sphinx-orange-book-theme = "^0.2.0"
+sphinx = "^7.3.7"
+sphinx-autobuild = "^2024.4.16"
+sphinxcontrib-plantuml = "^0.29"
+sphinx-orange-book-theme = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.1.0"
+black = "^24.4.0"
 breathe = "^4.35.0"
 click = "^8.1.7"
 cmakelang = "^0.6.13"
 doc8 = "^1.1.1"
-pre-commit = "^3.6.0"
-clang-tidy-checker = "^0.4.0"
+pre-commit = "^3.7.0"
+clang-tidy-checker = "^0.5.0"
 lcov_cobertura = "^2.0.2"
-pytest = "^7.4.4"
+pytest = "^8.1.1"
 pytest-approvaltests = "^0.2.4"
-tqdm = "^4.66.1"
+tqdm = "^4.66.2"
 lizard = "^1.17.10"
-msgpack = "^1.0.7"
-pytest-asyncio = "^0.23.3"
+msgpack = "^1.0.8"
+pytest-asyncio = "^0.23.6"
 isort = "^5.13.2"
 
 [build-system]

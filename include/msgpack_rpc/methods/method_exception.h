@@ -22,6 +22,7 @@
 #include <exception>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include <msgpack.hpp>
 
@@ -54,7 +55,8 @@ public:
         std::enable_if_t<!std::is_same_v<std::decay_t<T>, MethodException>,
             void*> /*for SFINAE*/
         = nullptr)
-        : zone_(std::make_shared<msgpack::zone>()), object_(object, *zone_) {}
+        : zone_(std::make_shared<msgpack::zone>()),
+          object_(std::forward<T>(object), *zone_) {}
 
     /*!
      * \brief Get the object in msgpack library.
