@@ -11,6 +11,7 @@ Checks: >
     -cppcoreguidelines-pro-bounds-pointer-arithmetic,
     -cppcoreguidelines-macro-usage,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -cppcoreguidelines-avoid-do-while,
   google-*,
     -google-runtime-references,
     -google-readability-todo,
@@ -21,6 +22,7 @@ Checks: >
     -readability-identifier-length,
     -readability-function-cognitive-complexity,
     -readability-suspicious-call-argument,
+    -readability-avoid-unconditional-preprocessor-if,
   modernize-*,
     -modernize-return-braced-init-list,
     -modernize-use-trailing-return-type,
@@ -53,6 +55,8 @@ Checks: >
 # - cppcoreguidelines-macro-usage generates false positives.
 # - cppcoreguidelines-pro-bounds-array-to-pointer-decay and hicpp-no-array-decay force use of an external library.
 # - bugprone-exception-escape is not generating meaningful warnings.
+# - readability-avoid-unconditional-preprocessor-if generates warnings to automatically generated files.
+# - cppcoreguidelines-avoid-do-while prevents implementation of macros.
 
 CheckOptions:
   # Naming Conventions
