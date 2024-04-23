@@ -47,7 +47,9 @@ public:
 
 private:
     //! Object in msgpack library.
-    const msgpack::object& object_;
+    const msgpack::object&
+        object_;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+                  // This class is used only as temporary objects.
 };
 
 }  // namespace msgpack_rpc::util::impl
