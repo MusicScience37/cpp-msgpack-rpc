@@ -54,5 +54,6 @@
   },
   "isort.args": ["--profile", "black"],
   "cSpell.enableFiletypes": ["cmake", "plantuml", "shellscript", "toml"],
-  "todo-tree.filtering.excludeGlobs": ["**/node_modules/*/**", "**/vcpkg/*/**"]
+  "todo-tree.filtering.excludeGlobs": ["**/node_modules/*/**", "**/vcpkg/*/**"],
+  "restructuredtext.pythonRecommendation.disabled": true
 }

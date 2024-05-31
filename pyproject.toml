@@ -8,7 +8,7 @@ packages = []
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.10,<3.13"
 
 [tool.poetry.group.doc.dependencies]
 myst-parser = "^3.0.1"
