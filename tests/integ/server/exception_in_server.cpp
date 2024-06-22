@@ -18,7 +18,6 @@
  * \brief Test of an exception in a server.
  */
 #include <future>
-#include <memory>
 #include <stdexcept>
 
 #include <catch2/catch_test_macros.hpp>
@@ -28,7 +27,7 @@
 #include "create_test_logger.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Exception in a server") {
@@ -40,13 +39,13 @@ SCENARIO("Exception in a server") {
         auto server =
             ServerBuilder{logger}.listen_to("tcp://localhost:0").build();
         auto server_future =
-            std::async([&server] { server->run_until_signal(); });
+            std::async([&server] { server.run_until_signal(); });
 
-        const auto uris = server->local_endpoint_uris();
+        const auto uris = server.local_endpoint_uris();
         CHECK_NOTHROW(check_connectivity(uris));
 
         WHEN("An exception is thrown in a thread of the server") {
-            msgpack_rpc::executors::async_invoke(server->executor(),
+            msgpack_rpc::executors::async_invoke(server.executor(),
                 msgpack_rpc::executors::OperationType::CALLBACK, [] {
                     throw std::runtime_error(
                         "Test exception in a thread of the server.");

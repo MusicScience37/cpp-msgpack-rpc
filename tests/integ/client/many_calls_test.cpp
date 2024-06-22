@@ -35,7 +35,7 @@
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Call methods many times") {
@@ -64,9 +64,9 @@ SCENARIO("Call methods many times") {
             });
 
         auto server = server_builder.build();
-        server->start();
+        server.start();
 
-        const auto uris = server->local_endpoint_uris();
+        const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
         REQUIRE(uris != std::vector<URI>{});  // NOLINT
 

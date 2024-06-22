@@ -17,7 +17,6 @@
  * \file
  * \brief Test to call methods from clients.
  */
-#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -33,7 +32,7 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Call methods") {
@@ -69,9 +68,9 @@ SCENARIO("Call methods") {
             "set_number", [&number](int val) { number = val; });
 
         auto server = server_builder.build();
-        server->start();
+        server.start();
 
-        const auto uris = server->local_endpoint_uris();
+        const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
         REQUIRE(uris != std::vector<URI>{});  // NOLINT
 

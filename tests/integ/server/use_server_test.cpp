@@ -51,7 +51,7 @@
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_backend.h"
@@ -86,9 +86,9 @@ SCENARIO("Use a server") {
             });
 
         auto server = builder.build();
-        server->start();
+        server.start();
 
-        const auto uris = server->local_endpoint_uris();
+        const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
         REQUIRE(uris != std::vector<URI>{});  // NOLINT
 

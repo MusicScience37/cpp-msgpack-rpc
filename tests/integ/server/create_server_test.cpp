@@ -31,7 +31,7 @@
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Create a server") {
@@ -66,9 +66,9 @@ SCENARIO("Create a server") {
                         auto server = builder.build();
 
                         AND_THEN("The server can be connectable") {
-                            server->start();
+                            server.start();
 
-                            const auto uris = server->local_endpoint_uris();
+                            const auto uris = server.local_endpoint_uris();
                             MSGPACK_RPC_DEBUG(logger, "Server URIs: {}",
                                 fmt::join(uris, ", "));
                             CHECK(uris != std::vector<URI>{});  // NOLINT
@@ -100,9 +100,9 @@ SCENARIO("Create a server") {
                     auto server = builder.build();
 
                     AND_THEN("The server can be connectable") {
-                        server->start();
+                        server.start();
 
-                        const auto uris = server->local_endpoint_uris();
+                        const auto uris = server.local_endpoint_uris();
                         MSGPACK_RPC_DEBUG(
                             logger, "Server URIs: {}", fmt::join(uris, ", "));
                         CHECK(uris != std::vector<URI>{});  // NOLINT

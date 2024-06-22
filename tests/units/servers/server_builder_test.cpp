@@ -33,14 +33,14 @@
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/wrap_executor.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "trompeloeil_catch2.h"
 
 TEST_CASE("msgpack_rpc::servers::ServerBuilder") {
     using msgpack_rpc::addresses::TCPAddress;
-    using msgpack_rpc::servers::IServer;
+    using msgpack_rpc::servers::Server;
     using msgpack_rpc::servers::ServerBuilder;
     using msgpack_rpc::servers::impl::create_empty_server_builder_impl;
     using msgpack_rpc::transport::IAcceptor;
@@ -78,6 +78,6 @@ TEST_CASE("msgpack_rpc::servers::ServerBuilder") {
             .TIMES(1)
             .RETURN(acceptor_factory);
 
-        std::unique_ptr<IServer> server = builder.build();
+        Server server = builder.build();
     }
 }

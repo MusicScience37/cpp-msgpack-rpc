@@ -17,11 +17,11 @@
  * \file
  * \brief Definition of a server for tests.
  */
-#include <memory>
+#include "msgpack_rpc/servers/server.h"
+
 #include <string>
 
 #include "common.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 int main() {
@@ -32,6 +32,6 @@ int main() {
                       .add_method<int(int, int)>(
                           "add", [](int x, int y) { return x + y; })
                       .build();
-    server->run_until_signal();
+    server.run_until_signal();
     return 0;
 }
