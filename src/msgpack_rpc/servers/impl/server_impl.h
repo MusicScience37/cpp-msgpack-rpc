@@ -43,7 +43,7 @@
 namespace msgpack_rpc::servers::impl {
 
 /*!
- * \brief Class of servers.
+ * \brief Class of internal implementation of servers.
  */
 class ServerImpl final : public IServerImpl {
 public:
