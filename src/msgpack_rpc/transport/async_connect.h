@@ -21,7 +21,6 @@
 
 #include <functional>
 #include <memory>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -30,6 +29,7 @@
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/transport/backend_list.h"
+#include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc/transport/i_connector.h"
 

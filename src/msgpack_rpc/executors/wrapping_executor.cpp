@@ -20,7 +20,6 @@
 #include <exception>
 #include <functional>
 #include <memory>
-#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/executors/asio_context_type.h"

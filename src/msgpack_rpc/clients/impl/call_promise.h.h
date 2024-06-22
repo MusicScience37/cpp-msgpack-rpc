@@ -22,7 +22,6 @@
 #include <chrono>
 #include <functional>
 #include <memory>
-#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call_future_impl.h"

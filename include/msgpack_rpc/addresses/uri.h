@@ -20,8 +20,8 @@
 #pragma once
 
 #include <cstdint>
-#include <iosfwd>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
 

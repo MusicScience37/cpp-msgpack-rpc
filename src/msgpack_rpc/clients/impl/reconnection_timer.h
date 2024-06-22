@@ -22,7 +22,7 @@
 #include <chrono>
 #include <memory>
 #include <random>
-#include <string_view>
+#include <ratio>
 #include <utility>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

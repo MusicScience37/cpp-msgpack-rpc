@@ -20,7 +20,6 @@
 #pragma once
 
 #include <memory>
-#include <type_traits>
 #include <utility>
 
 #include <asio/io_context.hpp>  // IWYU pragma: export

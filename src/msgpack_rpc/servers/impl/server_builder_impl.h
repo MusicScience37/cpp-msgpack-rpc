@@ -20,7 +20,6 @@
 #pragma once
 
 #include <memory>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -35,6 +34,7 @@
 #include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_backend.h"
 
 namespace msgpack_rpc::servers::impl {
