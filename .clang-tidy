@@ -65,39 +65,25 @@ CheckOptions:
   # Naming Conventions
   # for these parameters of the naming convention,
   # see https://clang.llvm.org/extra/clang-tidy/checks/readability/identifier-naming.html
-  - key: readability-identifier-naming.NamespaceCase
-    value: lower_case
+  readability-identifier-naming.NamespaceCase: lower_case
 
-  - key: readability-identifier-naming.ClassCase
-    value: CamelCase
-  - key: readability-identifier-naming.StructCase
-    value: CamelCase
-  - key: readability-identifier-naming.EnumCase
-    value: CamelCase
+  readability-identifier-naming.ClassCase: CamelCase
+  readability-identifier-naming.StructCase: CamelCase
+  readability-identifier-naming.EnumCase: CamelCase
+  readability-identifier-naming.TypeAliasCase: CamelCase
 
-  - key: readability-identifier-naming.FunctionCase
-    value: lower_case
+  readability-identifier-naming.FunctionCase: lower_case
 
-  - key: readability-identifier-naming.VariableCase
-    value: lower_case
-  - key: readability-identifier-naming.GlobalConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.ParameterCase
-    value: lower_case
-  - key: readability-identifier-naming.EnumConstantCase
-    value: UPPER_CASE
-  - key: readability-identifier-naming.MemberCase
-    value: lower_case
-  - key: readability-identifier-naming.PrivateMemberSuffix
-    value: _
-  - key: readability-identifier-naming.ProtectedMemberSuffix
-    value: _
+  readability-identifier-naming.VariableCase: lower_case
+  readability-identifier-naming.GlobalConstantCase: UPPER_CASE
+  readability-identifier-naming.ParameterCase: lower_case
+  readability-identifier-naming.EnumConstantCase: UPPER_CASE
+  readability-identifier-naming.MemberCase: lower_case
+  readability-identifier-naming.PrivateMemberSuffix: _
+  readability-identifier-naming.ProtectedMemberSuffix: _
 
-  - key: readability-identifier-naming.TypeTemplateParameterCase
-    value: CamelCase
-  - key: readability-identifier-naming.ValueTemplateParameterCase
-    value: CamelCase
+  readability-identifier-naming.TypeTemplateParameterCase: CamelCase
+  readability-identifier-naming.ValueTemplateParameterCase: CamelCase
 
   # Workaround of https://github.com/llvm/llvm-project/issues/46097.
-  - key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
-    value: expr-type
+  readability-identifier-naming.TypeTemplateParameterIgnoredRegexp: expr-type
