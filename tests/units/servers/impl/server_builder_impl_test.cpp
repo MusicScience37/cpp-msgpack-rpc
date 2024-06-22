@@ -90,4 +90,36 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
 
         std::unique_ptr<IServerImpl> server = builder_impl->build();
     }
+
+    SECTION("try to create a server without a URI to listen to") {
+        auto method = std::make_unique<MockMethod>();
+        auto& method_ref = *method;
+        const auto method_name = MethodNameView("test_method");
+        ALLOW_CALL(method_ref, name()).RETURN(method_name);
+        builder_impl->add_method(std::move(method));
+
+        CHECK_THROWS((void)builder_impl->build());
+    }
+
+    SECTION("try to create a server with a URI which results in no acceptors") {
+        const std::string host = "localhost";
+        constexpr std::uint16_t port = 0;
+        builder_impl->listen_to(URI(scheme, host, port));
+
+        auto method = std::make_unique<MockMethod>();
+        auto& method_ref = *method;
+        const auto method_name = MethodNameView("test_method");
+        ALLOW_CALL(method_ref, name()).RETURN(method_name);
+        builder_impl->add_method(std::move(method));
+
+        const auto acceptor_factory = std::make_shared<MockAcceptorFactory>();
+        REQUIRE_CALL(*acceptor_factory, create(_))
+            .TIMES(1)
+            .RETURN(std::vector<std::shared_ptr<IAcceptor>>{});
+        REQUIRE_CALL(*backend, create_acceptor_factory())
+            .TIMES(1)
+            .RETURN(acceptor_factory);
+
+        CHECK_THROWS((void)builder_impl->build());
+    }
 }

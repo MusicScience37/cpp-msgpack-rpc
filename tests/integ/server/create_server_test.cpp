@@ -78,6 +78,12 @@ SCENARIO("Create a server") {
                     }
                 }
             }
+
+            WHEN("No URI is added") {
+                THEN("Server cannot be built") {
+                    CHECK_THROWS((void)builder.build());
+                }
+            }
         }
     }
 
