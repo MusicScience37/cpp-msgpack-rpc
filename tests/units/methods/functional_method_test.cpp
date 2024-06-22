@@ -19,14 +19,12 @@
  */
 #include "msgpack_rpc/methods/functional_method.h"
 
-#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/core.h>
 
 #include "../create_test_logger.h"
 #include "msgpack_rpc/messages/call_result.h"

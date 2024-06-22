@@ -23,7 +23,7 @@
 #include <string_view>
 #include <type_traits>
 
-#include <fmt/core.h>
+#include <fmt/core.h>  // IWYU pragma: keep
 #include <msgpack.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

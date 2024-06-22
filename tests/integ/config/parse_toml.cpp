@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <exception>
 #include <filesystem>
-#include <functional>
 #include <string_view>
 
 #include <fmt/core.h>
@@ -14,6 +13,7 @@
 #include "msgpack_rpc/config/executor_config.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
+#include "msgpack_rpc/config/reconnection_config.h"
 #include "msgpack_rpc/config/server_config.h"
 #include "msgpack_rpc/logging/log_level.h"
 

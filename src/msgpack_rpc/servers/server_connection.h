@@ -21,7 +21,6 @@
 
 #include <atomic>
 #include <cassert>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -36,6 +35,7 @@
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"

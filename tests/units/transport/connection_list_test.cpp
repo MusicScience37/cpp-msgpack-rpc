@@ -20,7 +20,6 @@
 #include "msgpack_rpc/transport/connection_list.h"
 
 #include <memory>
-#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 

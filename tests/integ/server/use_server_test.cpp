@@ -18,23 +18,19 @@
  * \brief Test of servers.
  */
 #include <chrono>
-#include <exception>
 #include <functional>
 #include <future>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
-#include <fmt/core.h>
 #include <fmt/format.h>
-#include <msgpack.hpp>
 
 #include "../transport/transport_helper.h"
 #include "create_test_logger.h"
@@ -55,12 +51,12 @@
 #include "msgpack_rpc/messages/parsed_message.h"
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
-#include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "msgpack_rpc/transport/i_connector.h"
 #include "trompeloeil_catch2.h"
 
 SCENARIO("Use a server") {

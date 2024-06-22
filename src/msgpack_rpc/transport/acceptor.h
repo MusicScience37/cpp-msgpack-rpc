@@ -24,7 +24,6 @@
 #include <optional>
 #include <string>
 #include <system_error>
-#include <type_traits>
 #include <utility>
 
 #include <asio/any_io_executor.hpp>

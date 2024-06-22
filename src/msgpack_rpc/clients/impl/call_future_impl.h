@@ -25,7 +25,6 @@
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <string_view>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/i_call_future_impl.h"

@@ -21,10 +21,8 @@
 
 #include <atomic>
 #include <exception>
-#include <functional>
 #include <memory>
-#include <string_view>
-#include <type_traits>
+#include <optional>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call.h"
@@ -40,7 +38,6 @@
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 

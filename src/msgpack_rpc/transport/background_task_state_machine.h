@@ -20,7 +20,6 @@
 #pragma once
 
 #include <atomic>
-#include <string_view>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"

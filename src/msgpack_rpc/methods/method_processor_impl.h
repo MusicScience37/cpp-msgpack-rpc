@@ -25,6 +25,7 @@
 
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_serializer.h"
+#include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_notification.h"
 #include "msgpack_rpc/messages/parsed_request.h"
 #include "msgpack_rpc/messages/serialized_message.h"

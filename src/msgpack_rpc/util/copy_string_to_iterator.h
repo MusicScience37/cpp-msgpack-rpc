@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <algorithm>
+#include <algorithm>  // IWYU pragma: keep
 #include <string_view>
 
 namespace msgpack_rpc::util {

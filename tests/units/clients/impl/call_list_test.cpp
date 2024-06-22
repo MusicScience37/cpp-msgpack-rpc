@@ -20,15 +20,14 @@
 #include "msgpack_rpc/clients/impl/call_list.h"
 
 #include <chrono>
-#include <ratio>
 #include <string>
 #include <tuple>
 
 #include <catch2/catch_test_macros.hpp>
-#include <msgpack.hpp>
 
 #include "../../create_test_logger.h"
 #include "msgpack_rpc/clients/impl/call.h"
+#include "msgpack_rpc/clients/impl/call_future_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"

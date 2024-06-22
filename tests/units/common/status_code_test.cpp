@@ -19,9 +19,9 @@
  */
 #include "msgpack_rpc/common/status_code.h"
 
-#include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>

@@ -22,7 +22,6 @@
 #include <atomic>
 #include <memory>
 #include <optional>
-#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/client_connector.h"

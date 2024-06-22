@@ -19,7 +19,6 @@
  */
 #include "msgpack_rpc/config/toml/parse_toml_root.h"
 
-#include <functional>
 #include <string_view>
 #include <vector>
 

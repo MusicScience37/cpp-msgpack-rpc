@@ -24,6 +24,7 @@ Checks: >
     -readability-function-cognitive-complexity,
     -readability-suspicious-call-argument,
     -readability-avoid-unconditional-preprocessor-if,
+    -readability-redundant-member-init,
   modernize-*,
     -modernize-return-braced-init-list,
     -modernize-use-trailing-return-type,
