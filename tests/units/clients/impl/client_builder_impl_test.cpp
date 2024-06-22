@@ -19,9 +19,9 @@
  */
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 

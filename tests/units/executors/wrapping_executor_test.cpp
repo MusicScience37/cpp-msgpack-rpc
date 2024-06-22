@@ -18,7 +18,6 @@
  * \brief Test of WrappingExecutor class.
  */
 #include <memory>
-#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>

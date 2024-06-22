@@ -20,7 +20,6 @@
 #include "msgpack_rpc/config/toml/parse_toml_client_server.h"
 
 #include <chrono>
-#include <ratio>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>

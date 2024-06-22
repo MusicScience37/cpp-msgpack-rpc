@@ -21,7 +21,6 @@
 #include <memory>
 #include <optional>
 #include <string_view>
-#include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -46,8 +45,10 @@
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connection.h"
+#include "msgpack_rpc/transport/i_connector.h"
 #include "transport_helper.h"
 #include "trompeloeil_catch2.h"
 

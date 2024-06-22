@@ -20,7 +20,6 @@
 #include "msgpack_rpc/config/reconnection_config.h"
 
 #include <chrono>
-#include <ratio>
 
 #include <catch2/catch_test_macros.hpp>
 

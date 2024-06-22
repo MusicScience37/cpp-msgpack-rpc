@@ -20,7 +20,6 @@
 #include "msgpack_rpc/clients/client_builder.h"
 
 #include <string>
-#include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
 

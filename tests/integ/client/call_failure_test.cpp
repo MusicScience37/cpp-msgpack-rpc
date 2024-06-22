@@ -18,22 +18,17 @@
  * \brief Test of failures in method calls.
  */
 #include <chrono>
-#include <exception>
 #include <future>
 #include <memory>
-#include <ratio>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <thread>
-#include <type_traits>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
-#include <fmt/core.h>
 #include <fmt/format.h>
-#include <msgpack.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"

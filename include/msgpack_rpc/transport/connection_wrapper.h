@@ -20,7 +20,6 @@
 #pragma once
 
 #include <memory>
-#include <type_traits>
 #include <utility>
 
 #include "msgpack_rpc/addresses/i_address.h"

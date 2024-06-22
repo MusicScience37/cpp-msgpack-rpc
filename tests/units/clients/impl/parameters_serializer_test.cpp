@@ -24,7 +24,6 @@
 #include <tuple>
 
 #include <catch2/catch_test_macros.hpp>
-#include <msgpack.hpp>
 
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"

@@ -20,11 +20,8 @@
 #include "msgpack_rpc/clients/client.h"
 
 #include <cstdlib>
-#include <exception>
 #include <string>
 
-#include <fmt/core.h>
-#include <msgpack.hpp>
 #include <stat_bench/benchmark_macros.h>
 #include <stat_bench/do_not_optimize.h>
 #include <stat_bench/fixture_base.h>

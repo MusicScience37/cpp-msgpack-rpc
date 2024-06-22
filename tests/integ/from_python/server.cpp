@@ -17,14 +17,10 @@
  * \file
  * \brief Definition of a server for tests.
  */
-#include <exception>
 #include <memory>
 #include <string>
 
-#include <msgpack.hpp>
-
 #include "common.h"
-#include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 

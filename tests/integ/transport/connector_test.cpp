@@ -20,8 +20,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <string_view>
-#include <type_traits>
 #include <utility>
 
 #include <catch2/catch_test_macros.hpp>
@@ -34,6 +32,7 @@
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/transport/backends.h"
+#include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connector.h"
 
 SCENARIO("Create a connector") {

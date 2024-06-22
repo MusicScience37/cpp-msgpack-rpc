@@ -19,15 +19,12 @@
  */
 #include "msgpack_rpc/servers/server_builder.h"
 
-#include <exception>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <msgpack.hpp>
 
 #include "../create_test_logger.h"
 #include "../transport/mock_acceptor.h"
@@ -36,7 +33,6 @@
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/wrap_executor.h"
-#include "msgpack_rpc/methods/method_exception.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
 #include "msgpack_rpc/transport/i_acceptor.h"

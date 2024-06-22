@@ -25,7 +25,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include <catch2/catch_message.hpp>
