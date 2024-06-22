@@ -15,9 +15,9 @@
  */
 /*!
  * \file
- * \brief Test of Server class..
+ * \brief Test of ServerImpl class.
  */
-#include "msgpack_rpc/servers/server.h"
+#include "msgpack_rpc/servers/server_impl.h"
 
 #include <functional>
 #include <memory>
@@ -42,14 +42,14 @@
 #include "msgpack_rpc/messages/parsed_response.h"
 #include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/methods/i_method.h"
+#include "msgpack_rpc/methods/i_method_processor.h"
 #include "msgpack_rpc/methods/method_processor.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
 #include "trompeloeil_catch2.h"
 
-TEST_CASE("msgpack_rpc::servers::Server") {
+TEST_CASE("msgpack_rpc::servers::ServerImpl") {
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::executors::OperationType;
     using msgpack_rpc::messages::MessageID;
@@ -57,7 +57,7 @@ TEST_CASE("msgpack_rpc::servers::Server") {
     using msgpack_rpc::messages::MethodNameView;
     using msgpack_rpc::messages::SerializedMessage;
     using msgpack_rpc::servers::IServer;
-    using msgpack_rpc::servers::Server;
+    using msgpack_rpc::servers::ServerImpl;
     using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc::transport::IConnection;
     using msgpack_rpc_test::create_parsed_notification;
@@ -95,7 +95,7 @@ TEST_CASE("msgpack_rpc::servers::Server") {
         // the server.
         REQUIRE_CALL(*acceptor, stop()).TIMES(1);
 
-        const std::shared_ptr<IServer> server = std::make_shared<Server>(
+        const std::shared_ptr<IServer> server = std::make_shared<ServerImpl>(
             std::vector<std::shared_ptr<IAcceptor>>{acceptor},
             std::move(processor), executor_wrapper, logger);
 
@@ -215,7 +215,7 @@ TEST_CASE("msgpack_rpc::servers::Server") {
     }
 
     SECTION("stop without starting") {
-        const std::shared_ptr<IServer> server = std::make_shared<Server>(
+        const std::shared_ptr<IServer> server = std::make_shared<ServerImpl>(
             std::vector<std::shared_ptr<IAcceptor>>{acceptor},
             std::move(processor), executor_wrapper, logger);
 

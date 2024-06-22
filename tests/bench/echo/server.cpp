@@ -17,7 +17,9 @@
  * \file
  * \brief Implementation of servers for benchmarks.
  */
-#include <memory>
+#include "msgpack_rpc/servers/server.h"
+
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -26,13 +28,12 @@
 
 #include "common.h"
 #include "msgpack_rpc/addresses/uri.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 int main() {
-    std::unique_ptr<msgpack_rpc::servers::IServer> echo_server;
+    std::optional<msgpack_rpc::servers::Server> echo_server;
 
-    const auto command_server =
+    auto command_server =
         msgpack_rpc::servers::ServerBuilder()
             .listen_to(msgpack_rpc_test::COMMAND_SERVER_URI)
             .add_method<std::string(int)>("prepare",
@@ -62,7 +63,7 @@ int main() {
                         "{}", echo_server->local_endpoint_uris().front());
                 })
             .build();
-    command_server->run_until_signal();
+    command_server.run_until_signal();
 
     return 0;
 }

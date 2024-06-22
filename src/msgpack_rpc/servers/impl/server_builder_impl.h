@@ -31,7 +31,7 @@
 #include "msgpack_rpc/methods/method_processor.h"
 #include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
-#include "msgpack_rpc/servers/server.h"
+#include "msgpack_rpc/servers/server_impl.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
@@ -89,7 +89,7 @@ public:
                 acceptors.push_back(acceptor);
             }
         }
-        return std::make_unique<Server>(
+        return std::make_unique<ServerImpl>(
             std::move(acceptors), std::move(processor_), executor_, logger_);
     }
 

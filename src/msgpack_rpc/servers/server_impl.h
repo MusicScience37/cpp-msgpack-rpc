@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of Server class.
+ * \brief Definition of ServerImpl class.
  */
 #pragma once
 
@@ -45,7 +45,7 @@ namespace msgpack_rpc::servers {
 /*!
  * \brief Class of servers.
  */
-class Server final : public IServer {
+class ServerImpl final : public IServer {
 public:
     /*!
      * \brief Constructor.
@@ -55,7 +55,7 @@ public:
      * \param[in] executor Executor.
      * \param[in] logger Logger.
      */
-    Server(std::vector<std::shared_ptr<transport::IAcceptor>> acceptors,
+    ServerImpl(std::vector<std::shared_ptr<transport::IAcceptor>> acceptors,
         std::unique_ptr<methods::IMethodProcessor> processor,
         std::shared_ptr<executors::IAsyncExecutor> executor,
         std::shared_ptr<logging::Logger> logger)
@@ -65,7 +65,7 @@ public:
           logger_(std::move(logger)) {}
 
     //! Destructor.
-    ~Server() override {
+    ~ServerImpl() override {
         try {
             stop();
         } catch (const std::exception& e) {
@@ -77,10 +77,10 @@ public:
         }
     }
 
-    Server(const Server&) = delete;
-    Server(Server&&) = delete;
-    Server& operator=(const Server&) = delete;
-    Server& operator=(Server&&) = delete;
+    ServerImpl(const ServerImpl&) = delete;
+    ServerImpl(ServerImpl&&) = delete;
+    ServerImpl& operator=(const ServerImpl&) = delete;
+    ServerImpl& operator=(ServerImpl&&) = delete;
 
     //! \copydoc msgpack_rpc::servers::IServer::start
     void start() override {

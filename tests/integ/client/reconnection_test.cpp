@@ -18,7 +18,6 @@
  * \brief Test to reconnect clients to servers.
  */
 #include <chrono>
-#include <memory>
 #include <ratio>
 #include <string_view>
 #include <thread>
@@ -32,7 +31,7 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/reconnection_config.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
 
 SCENARIO("Clients reconnect to servers") {
@@ -82,7 +81,7 @@ SCENARIO("Clients reconnect to servers") {
                                       .add_method<int(int, int)>("add",
                                           [](int x, int y) { return x + y; })
                                       .build();
-                    server->start();
+                    server.start();
 
                     THEN("The client can call methods") {
                         const int result = client.call<int>("add", 1, 2);
@@ -100,7 +99,7 @@ SCENARIO("Clients reconnect to servers") {
                           .add_method<int(int, int)>(
                               "add", [](int x, int y) { return x + y; })
                           .build();
-        server->start();
+        server.start();
 
         Client client = ClientBuilder{client_config, logger}
                             .connect_to(server_uris.at(1))
@@ -112,8 +111,7 @@ SCENARIO("Clients reconnect to servers") {
         CHECK(client.call<int>("add", 1, 2) == 3);
 
         WHEN("The server is shuted down") {
-            server->stop();
-            server.reset();
+            server.stop();
 
             THEN(
                 "The client runs without serious error like death of the "
@@ -127,7 +125,7 @@ SCENARIO("Clients reconnect to servers") {
                                       .add_method<int(int, int)>("add",
                                           [](int x, int y) { return x + y; })
                                       .build();
-                    server->start();
+                    server.start();
 
                     THEN("The client can call methods") {
                         const int result = client.call<int>("add", 1, 2);

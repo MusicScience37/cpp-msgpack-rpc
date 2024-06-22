@@ -32,8 +32,8 @@
 #include "msgpack_rpc/messages/method_name.h"
 #include "msgpack_rpc/methods/functional_method.h"
 #include "msgpack_rpc/methods/i_method.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
+#include "msgpack_rpc/servers/server.h"
 
 namespace msgpack_rpc::servers {
 
@@ -137,7 +137,7 @@ public:
      *
      * \return Server.
      */
-    [[nodiscard]] std::unique_ptr<IServer> build() { return impl_->build(); }
+    [[nodiscard]] Server build() { return Server{impl_->build()}; }
 
 private:
     //! Internal implementation.

@@ -42,7 +42,7 @@ set(SOURCE_FILES
     methods/method_processor_test.cpp
     servers/server_builder_impl_test.cpp
     servers/server_builder_test.cpp
-    servers/server_test.cpp
+    servers/server_impl_test.cpp
     test_main.cpp
     transport/async_connect_test.cpp
     transport/backend_list_test.cpp
