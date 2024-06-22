@@ -24,6 +24,8 @@
 #include <vector>
 
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/i_async_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/i_method.h"
@@ -79,6 +81,11 @@ public:
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::build
     [[nodiscard]] std::unique_ptr<IServerImpl> build() override {
+        if (uris_.empty()) {
+            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+                "No URI to listen to was given.");
+        }
+
         std::vector<std::shared_ptr<transport::IAcceptor>> acceptors;
         for (const auto& uri : uris_) {
             const auto backend = backends_.find(uri.scheme());
@@ -89,6 +96,12 @@ public:
                 acceptors.push_back(acceptor);
             }
         }
+
+        if (acceptors.empty()) {
+            throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
+                "All URI set to listen to was unusable.");
+        }
+
         return std::make_unique<ServerImpl>(
             std::move(acceptors), std::move(processor_), executor_, logger_);
     }
