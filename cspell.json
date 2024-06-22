@@ -95,6 +95,7 @@
     "rpcd",
     "SAST",
     "sbuffer",
+    "setuptools",
     "spdlog",
     "sphinxcontrib",
     "startsub",

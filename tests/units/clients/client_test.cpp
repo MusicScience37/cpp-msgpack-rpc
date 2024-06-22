@@ -73,6 +73,8 @@ TEST_CASE("msgpack_rpc::clients::Client") {
                     .RETURN(call_result);
 
                 const std::string result = future.get_result();
+
+                CHECK(result == "def");
             }
 
             SECTION("and get the error") {
@@ -117,6 +119,8 @@ TEST_CASE("msgpack_rpc::clients::Client") {
 
             const std::string result =
                 client.call<std::string>("method1", 3, "abc");
+
+            CHECK(result == "def");
         }
 
         SECTION("and call a method without results asynchronously") {

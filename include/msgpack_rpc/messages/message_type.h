@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
@@ -30,7 +31,7 @@ namespace msgpack_rpc::messages {
  *
  * \note Values are same as values in MessagePack-RPC specification.
  */
-enum class MessageType {
+enum class MessageType : std::uint8_t {
     //! Request.
     REQUEST = 0,
 

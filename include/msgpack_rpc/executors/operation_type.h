@@ -19,12 +19,14 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace msgpack_rpc::executors {
 
 /*!
  * \brief Enumeration of types of operations.
  */
-enum class OperationType {
+enum class OperationType : std::uint8_t {
     //! Transport.
     TRANSPORT,
 

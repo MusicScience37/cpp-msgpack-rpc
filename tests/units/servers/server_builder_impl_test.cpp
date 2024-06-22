@@ -70,7 +70,6 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
 
     SECTION("create a server") {
         const std::string host = "localhost";
-        const std::string ip_address = "127.0.0.1";
         constexpr std::uint16_t port = 0;
         builder_impl->listen_to(URI(scheme, host, port));
 
