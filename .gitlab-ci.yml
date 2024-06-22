@@ -47,11 +47,11 @@ line count:
 pre-commit:
   stage: test
   needs: []
-  image: musicscience37/clang-ci:clang17
+  image: musicscience37/clang-ci:clang18
   script:
     - mkdir -p .venv
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.11
+    - poetry env use 3.12
     - poetry install
     - poetry run pre-commit run --all-files
   cache:
@@ -94,7 +94,7 @@ test release:
     matrix:
       - COMPILER_TYPE: ["gcc12"]
         IMAGE_PATH: "musicscience37/gcc-ci"
-      - COMPILER_TYPE: ["clang17"]
+      - COMPILER_TYPE: ["clang18"]
         IMAGE_PATH: "musicscience37/clang-ci"
   image: ${IMAGE_PATH}:${COMPILER_TYPE}
   variables:
@@ -108,7 +108,7 @@ test release:
     POETRY_CACHE_DIR: ${CI_PROJECT_DIR}/.poetry-cache
   before_script:
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.11
+    - poetry env use 3.12
     - poetry install
     - mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
     - mkdir $BUILD_DIR
@@ -160,7 +160,7 @@ test debug:
     matrix:
       - COMPILER_TYPE: ["gcc12"]
         IMAGE_PATH: "musicscience37/gcc-ci"
-      - COMPILER_TYPE: ["clang17"]
+      - COMPILER_TYPE: ["clang18"]
         IMAGE_PATH: "musicscience37/clang-ci"
   variables:
     BUILD_TYPE: Debug
@@ -183,7 +183,7 @@ static analysis:
   extends: test release
   parallel:
     matrix:
-      - COMPILER_TYPE: "clang17"
+      - COMPILER_TYPE: "clang18"
         IMAGE_PATH: "musicscience37/clang-ci"
   variables:
     BUILD_TYPE: Debug
@@ -225,10 +225,10 @@ static analysis:
 complexity:
   stage: test
   needs: []
-  image: musicscience37/clang-ci:clang17
+  image: musicscience37/clang-ci:clang18
   script:
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.11
+    - poetry env use 3.12
     - poetry install
     - mkdir -p complexity
     - poetry run lizard -o complexity/complexity_per_function.html include src
@@ -250,7 +250,7 @@ clang coverage:
   extends: test release
   parallel:
     matrix:
-      - COMPILER_TYPE: "clang17"
+      - COMPILER_TYPE: "clang18"
         IMAGE_PATH: "musicscience37/clang-ci"
   variables:
     BUILD_TYPE: Debug
@@ -296,7 +296,7 @@ test asan ubsan:
   extends: test release
   parallel:
     matrix:
-      - COMPILER_TYPE: "clang17"
+      - COMPILER_TYPE: "clang18"
         IMAGE_PATH: "musicscience37/clang-ci"
   variables:
     BUILD_TYPE: Debug
@@ -321,7 +321,7 @@ doc:
   extends: test release
   parallel:
     matrix:
-      - COMPILER_TYPE: "clang17"
+      - COMPILER_TYPE: "clang18"
         IMAGE_PATH: "musicscience37/sphinx-doxygen"
   variables:
     BUILD_TYPE: Release

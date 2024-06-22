@@ -3,17 +3,17 @@
 """
 
 import asyncio
+import multiprocessing
 import pathlib
 import random
 import typing
-import multiprocessing
 
 import click
 import tqdm
 
 CLANG_INCLUDE_OPTION = [
     "-isystem",
-    "/usr/lib/llvm-15/include/c++/v1/",
+    "/usr/lib/llvm-18/include/c++/v1/",
 ]
 
 ROOT_DIR = pathlib.Path(__file__).absolute().parent.parent
