@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
@@ -29,7 +30,7 @@ inline namespace common {
 /*!
  * \brief Enumeration of status codes.
  */
-enum class StatusCode {
+enum class StatusCode : std::uint8_t {
     //! Success.
     SUCCESS = 0,
 

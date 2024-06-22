@@ -19,12 +19,14 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace msgpack_rpc::logging {
 
 /*!
  * \brief Enumeration of log levels.
  */
-enum class LogLevel {
+enum class LogLevel : std::uint8_t {
     //! Trace. (Internal operations to send and receive messages.)
     TRACE,
 

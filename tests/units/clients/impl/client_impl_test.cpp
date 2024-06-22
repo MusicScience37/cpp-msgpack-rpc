@@ -163,7 +163,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
 
         SECTION("and notify to a method") {
             const auto method_name = MethodNameView("method2");
-            const auto param1 = static_cast<int>(123);
+            const int param1 = 123;
 
             post([&client, &method_name, &param1] {
                 client->notify(method_name, make_parameters_serializer(param1));
