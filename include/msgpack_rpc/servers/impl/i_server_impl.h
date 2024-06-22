@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of IServer class.
+ * \brief Definition of IServerImpl class.
  */
 #pragma once
 
@@ -25,12 +25,12 @@
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/i_executor.h"
 
-namespace msgpack_rpc::servers {
+namespace msgpack_rpc::servers::impl {
 
 /*!
- * \brief Interface of servers.
+ * \brief Interface of internal implementation of servers.
  */
-class IServer {
+class IServerImpl {
 public:
     /*!
      * \brief Start processing of this server.
@@ -64,17 +64,17 @@ public:
      */
     [[nodiscard]] virtual std::shared_ptr<executors::IExecutor> executor() = 0;
 
-    IServer(const IServer&) = delete;
-    IServer(IServer&&) = delete;
-    IServer& operator=(const IServer&) = delete;
-    IServer& operator=(IServer&&) = delete;
+    IServerImpl(const IServerImpl&) = delete;
+    IServerImpl(IServerImpl&&) = delete;
+    IServerImpl& operator=(const IServerImpl&) = delete;
+    IServerImpl& operator=(IServerImpl&&) = delete;
 
     //! Destructor.
-    virtual ~IServer() noexcept = default;
+    virtual ~IServerImpl() noexcept = default;
 
 protected:
     //! Constructor.
-    IServer() noexcept = default;
+    IServerImpl() noexcept = default;
 };
 
-}  // namespace msgpack_rpc::servers
+}  // namespace msgpack_rpc::servers::impl

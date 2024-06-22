@@ -27,19 +27,19 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "../create_test_logger.h"
-#include "../methods/mock_method.h"
-#include "../transport/mock_acceptor.h"
-#include "../transport/mock_acceptor_factory.h"
-#include "../transport/mock_backend.h"
+#include "../../create_test_logger.h"
+#include "../../methods/mock_method.h"
+#include "../../transport/mock_acceptor.h"
+#include "../../transport/mock_acceptor_factory.h"
+#include "../../transport/mock_backend.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/wrap_executor.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/methods/i_method.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "trompeloeil_catch2.h"
 
@@ -47,8 +47,8 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
     using msgpack_rpc::addresses::TCPAddress;
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::messages::MethodNameView;
-    using msgpack_rpc::servers::IServer;
     using msgpack_rpc::servers::impl::create_empty_server_builder_impl;
+    using msgpack_rpc::servers::impl::IServerImpl;
     using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc_test::MockAcceptor;
     using msgpack_rpc_test::MockAcceptorFactory;
@@ -88,6 +88,6 @@ TEST_CASE("msgpack_rpc::servers::impl::ServerBuilderImpl") {
             .TIMES(1)
             .RETURN(acceptor_factory);
 
-        std::unique_ptr<IServer> server = builder_impl->build();
+        std::unique_ptr<IServerImpl> server = builder_impl->build();
     }
 }

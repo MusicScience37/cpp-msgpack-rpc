@@ -34,18 +34,18 @@
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/i_method_processor.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
 #include "msgpack_rpc/servers/server_connection.h"
 #include "msgpack_rpc/servers/stop_signal_handler.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
-namespace msgpack_rpc::servers {
+namespace msgpack_rpc::servers::impl {
 
 /*!
  * \brief Class of servers.
  */
-class ServerImpl final : public IServer {
+class ServerImpl final : public IServerImpl {
 public:
     /*!
      * \brief Constructor.
@@ -82,7 +82,7 @@ public:
     ServerImpl& operator=(const ServerImpl&) = delete;
     ServerImpl& operator=(ServerImpl&&) = delete;
 
-    //! \copydoc msgpack_rpc::servers::IServer::start
+    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::start
     void start() override {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
@@ -92,7 +92,7 @@ public:
         executor_->start();
     }
 
-    //! \copydoc msgpack_rpc::servers::IServer::stop
+    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::stop
     void stop() override {
         if (!is_started_.load()) {
             return;
@@ -107,7 +107,7 @@ public:
         executor_.reset();
     }
 
-    //! \copydoc msgpack_rpc::servers::IServer::run_until_signal
+    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::run_until_signal
     void run_until_signal() override {
         start();
 
@@ -131,7 +131,7 @@ public:
         }
     }
 
-    //! \copydoc msgpack_rpc::servers::IServer::local_endpoint_uris
+    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::local_endpoint_uris
     [[nodiscard]] std::vector<addresses::URI> local_endpoint_uris() override {
         std::vector<addresses::URI> uris;
         uris.reserve(acceptors_.size());
@@ -141,7 +141,7 @@ public:
         return uris;
     }
 
-    //! \copydoc msgpack_rpc::servers::IServer::executor
+    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::executor
     [[nodiscard]] std::shared_ptr<executors::IExecutor> executor() override {
         return executor_;
     }
@@ -191,4 +191,4 @@ private:
     std::atomic<bool> is_stopped_{false};
 };
 
-}  // namespace msgpack_rpc::servers
+}  // namespace msgpack_rpc::servers::impl

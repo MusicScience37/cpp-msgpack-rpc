@@ -17,7 +17,7 @@
  * \file
  * \brief Test of ServerImpl class.
  */
-#include "msgpack_rpc/servers/server_impl.h"
+#include "msgpack_rpc/servers/impl/server_impl.h"
 
 #include <functional>
 #include <memory>
@@ -25,10 +25,10 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "../create_test_logger.h"
-#include "../methods/mock_method.h"
-#include "../transport/mock_acceptor.h"
-#include "../transport/mock_connection.h"
+#include "../../create_test_logger.h"
+#include "../../methods/mock_method.h"
+#include "../../transport/mock_acceptor.h"
+#include "../../transport/mock_connection.h"
 #include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
@@ -44,6 +44,7 @@
 #include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/i_method_processor.h"
 #include "msgpack_rpc/methods/method_processor.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_connection.h"
 #include "msgpack_rpc_test/create_parsed_messages.h"
@@ -56,8 +57,8 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
     using msgpack_rpc::messages::MessageSerializer;
     using msgpack_rpc::messages::MethodNameView;
     using msgpack_rpc::messages::SerializedMessage;
-    using msgpack_rpc::servers::IServer;
-    using msgpack_rpc::servers::ServerImpl;
+    using msgpack_rpc::servers::impl::IServerImpl;
+    using msgpack_rpc::servers::impl::ServerImpl;
     using msgpack_rpc::transport::IAcceptor;
     using msgpack_rpc::transport::IConnection;
     using msgpack_rpc_test::create_parsed_notification;
@@ -95,9 +96,10 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
         // the server.
         REQUIRE_CALL(*acceptor, stop()).TIMES(1);
 
-        const std::shared_ptr<IServer> server = std::make_shared<ServerImpl>(
-            std::vector<std::shared_ptr<IAcceptor>>{acceptor},
-            std::move(processor), executor_wrapper, logger);
+        const std::shared_ptr<IServerImpl> server =
+            std::make_shared<ServerImpl>(
+                std::vector<std::shared_ptr<IAcceptor>>{acceptor},
+                std::move(processor), executor_wrapper, logger);
 
         IAcceptor::ConnectionCallback on_connection{
             [](auto /*connection*/) { FAIL(); }};
@@ -215,9 +217,10 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
     }
 
     SECTION("stop without starting") {
-        const std::shared_ptr<IServer> server = std::make_shared<ServerImpl>(
-            std::vector<std::shared_ptr<IAcceptor>>{acceptor},
-            std::move(processor), executor_wrapper, logger);
+        const std::shared_ptr<IServerImpl> server =
+            std::make_shared<ServerImpl>(
+                std::vector<std::shared_ptr<IAcceptor>>{acceptor},
+                std::move(processor), executor_wrapper, logger);
 
         REQUIRE_NOTHROW(server->stop());
     }

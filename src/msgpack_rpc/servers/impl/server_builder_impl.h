@@ -29,9 +29,9 @@
 #include "msgpack_rpc/methods/i_method.h"
 #include "msgpack_rpc/methods/i_method_processor.h"
 #include "msgpack_rpc/methods/method_processor.h"
-#include "msgpack_rpc/servers/i_server.h"
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.h"
-#include "msgpack_rpc/servers/server_impl.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
+#include "msgpack_rpc/servers/impl/server_impl.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
@@ -78,7 +78,7 @@ public:
     }
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::build
-    [[nodiscard]] std::unique_ptr<IServer> build() override {
+    [[nodiscard]] std::unique_ptr<IServerImpl> build() override {
         std::vector<std::shared_ptr<transport::IAcceptor>> acceptors;
         for (const auto& uri : uris_) {
             const auto backend = backends_.find(uri.scheme());

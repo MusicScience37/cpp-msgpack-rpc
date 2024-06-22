@@ -27,7 +27,7 @@
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/methods/i_method.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
 #include "msgpack_rpc/transport/i_backend.h"
 
 namespace msgpack_rpc::servers::impl {
@@ -64,7 +64,7 @@ public:
      *
      * \return Server.
      */
-    [[nodiscard]] virtual std::unique_ptr<IServer> build() = 0;
+    [[nodiscard]] virtual std::unique_ptr<IServerImpl> build() = 0;
 
     /*!
      * \brief Get the logger in this builder.

@@ -25,7 +25,7 @@
 
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/executors/i_executor.h"
-#include "msgpack_rpc/servers/i_server.h"
+#include "msgpack_rpc/servers/impl/i_server_impl.h"
 
 namespace msgpack_rpc::servers {
 
@@ -39,7 +39,7 @@ public:
      *
      * \param[in] impl Object of the internal implementation.
      */
-    explicit Server(std::unique_ptr<IServer> impl) noexcept
+    explicit Server(std::unique_ptr<impl::IServerImpl> impl) noexcept
         : impl_(std::move(impl)) {}
 
     /*!
@@ -80,7 +80,7 @@ public:
 
 private:
     //! Object of the internal implementation.
-    std::unique_ptr<IServer> impl_;
+    std::unique_ptr<impl::IServerImpl> impl_;
 };
 
 }  // namespace msgpack_rpc::servers
