@@ -160,6 +160,8 @@ private:
                         connection, executor, processor, logger);
                     handler->start();
                 });
+            MSGPACK_RPC_DEBUG(logger_, "Listening to {}.",
+                acceptor->local_address().to_string());
         }
     }
 

@@ -90,6 +90,8 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
     processor->append(std::move(method));
 
     const auto acceptor = std::make_shared<MockAcceptor>();
+    const auto local_address = TCPAddress("127.0.0.1", 10000);
+    ALLOW_CALL(*acceptor, local_address()).LR_RETURN(local_address);
 
     SECTION("start") {
         // Once started, the server will call stop function in the destructor of
