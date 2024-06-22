@@ -49,18 +49,17 @@ pre-commit:
   needs: []
   image: musicscience37/clang-ci:clang18
   script:
-    - mkdir -p .venv
     - poetry config virtualenvs.in-project true
     - poetry env use 3.12
     - poetry install
     - poetry run pre-commit run --all-files
   cache:
-    key:
-      prefix: cache-${CI_JOB_NAME}
-      files:
-        - poetry.lock
-    paths:
-      - .venv
+    - key:
+        prefix: poetry-${CI_JOB_NAME}
+        files:
+          - poetry.lock
+      paths:
+        - .poetry-cache
   interruptible: true
 
 spell check:
@@ -234,12 +233,12 @@ complexity:
     - poetry run lizard -o complexity/complexity_per_function.html include src
     - poetry run lizard -o complexity/result.txt -E duplicate include src
   cache:
-    key:
-      prefix: cache-${CI_JOB_NAME}
-      files:
-        - poetry.lock
-    paths:
-      - .venv
+    - key:
+        prefix: poetry-${CI_JOB_NAME}
+        files:
+          - poetry.lock
+      paths:
+        - .poetry-cache
   artifacts:
     paths:
       - complexity
