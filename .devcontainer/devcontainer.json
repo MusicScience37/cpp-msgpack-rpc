@@ -43,7 +43,8 @@
         "tamasfe.even-better-toml",
         "redhat.vscode-yaml",
         "ms-python.black-formatter",
-        "ms-python.isort"
+        "ms-python.isort",
+        "mechatroner.rainbow-csv"
       ],
       "settings": {
         "cmakeFormat.exePath": "/workspaces/cpp-msgpack-rpc/.venv/bin/cmake-format",

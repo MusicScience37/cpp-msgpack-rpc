@@ -1,0 +1,5 @@
+add_executable(durability_serve_methods serve_methods.cpp)
+target_link_libraries(durability_serve_methods PRIVATE ${PROJECT_NAME})
+
+add_executable(durability_request_continuously request_continuously.cpp)
+target_link_libraries(durability_request_continuously PRIVATE ${PROJECT_NAME})
