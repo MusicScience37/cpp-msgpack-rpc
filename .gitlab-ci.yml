@@ -263,6 +263,7 @@ clang coverage:
       -DCMAKE_BUILD_TYPE=Debug
       -D${UPPER_PROJECT_NAME}_TESTING:BOOL=ON
       -D${UPPER_PROJECT_NAME}_WRITE_JUNIT:BOOL=ON
+      -D${UPPER_PROJECT_NAME}_EXECUTE_DURABILITY_TESTS:BOOL=OFF
       "-DCMAKE_CXX_FLAGS=-stdlib=libc++ -fprofile-instr-generate -fcoverage-mapping"
       "-DCMAKE_C_FLAGS=-fprofile-instr-generate -fcoverage-mapping"
       "-DCMAKE_MODULE_LINKER_FLAGS=-fprofile-instr-generate -fcoverage-mapping"
