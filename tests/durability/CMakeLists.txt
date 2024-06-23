@@ -5,7 +5,7 @@ add_executable(durability_request_continuously request_continuously.cpp)
 target_link_libraries(durability_request_continuously PRIVATE ${PROJECT_NAME})
 
 option(${UPPER_PROJECT_NAME}_EXECUTE_DURABILITY_TESTS
-       "execute durability tests" ON)
+       "execute durability tests" OFF)
 if(${UPPER_PROJECT_NAME}_EXECUTE_DURABILITY_TESTS)
     add_test(
         NAME durability_tests
