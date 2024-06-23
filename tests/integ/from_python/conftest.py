@@ -4,8 +4,8 @@
 import pathlib
 
 import approvaltests
-from approvaltests.reporters import ReporterThatAutomaticallyApproves
 import pytest
+from approvaltests.reporters import ReporterThatAutomaticallyApproves
 
 
 def pytest_addoption(parser: pytest.Parser):
@@ -14,6 +14,7 @@ def pytest_addoption(parser: pytest.Parser):
     parser.addoption(
         "--build",
         action="store",
+        required=True,
         help="path to build directory",
     )
 
