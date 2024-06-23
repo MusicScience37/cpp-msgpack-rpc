@@ -13,7 +13,7 @@ def test_request_continuously_tcp_v4(
     test_duration: datetime.timedelta,
 ) -> None:
     """Test to request continuously (TCPv4)."""
-    current_log_dir_path = log_parent_dir_path / "test_request_continuously"
+    current_log_dir_path = log_parent_dir_path / "test_request_continuously_tcp_v4"
     if current_log_dir_path.exists():
         shutil.rmtree(str(current_log_dir_path))
     current_log_dir_path.mkdir(exist_ok=True, parents=True)
