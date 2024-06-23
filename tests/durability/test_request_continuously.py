@@ -6,6 +6,8 @@ import shutil
 
 from .process_executor import ProcessExecutor
 
+THIS_DIR = pathlib.Path(__file__).absolute().parent
+
 
 def test_request_continuously_tcp_v4(
     bin_dir_path: pathlib.Path,
@@ -18,11 +20,14 @@ def test_request_continuously_tcp_v4(
         shutil.rmtree(str(current_log_dir_path))
     current_log_dir_path.mkdir(exist_ok=True, parents=True)
 
+    config_file_path = THIS_DIR / "minimal_config.toml"
     server_uri = "tcp://127.0.0.1:12345"
 
     with ProcessExecutor(
         [
             str(bin_dir_path / "durability_serve_methods"),
+            "--config",
+            str(config_file_path),
             "--uri",
             server_uri,
             "--log",
@@ -34,6 +39,8 @@ def test_request_continuously_tcp_v4(
         with ProcessExecutor(
             [
                 str(bin_dir_path / "durability_request_continuously"),
+                "--config",
+                str(config_file_path),
                 "--uri",
                 server_uri,
                 "--log",

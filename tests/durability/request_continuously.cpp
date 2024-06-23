@@ -27,11 +27,13 @@
 #include "msgpack_rpc/clients/client_builder.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/config/config_parser.h"
 #include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/logger.h"
 
 int main(int argc, const char** argv) {
     std::uint32_t test_seconds{3U};
+    std::string config_file_path;
     std::string server_uri;
     std::string log_file_path = "request_continuously.log";
     const auto cli = lyra::cli()
@@ -40,6 +42,10 @@ int main(int argc, const char** argv) {
                                            .name("-s")
                                            .optional()
                                            .help("Number of test seconds."))
+                         .add_argument(lyra::opt(config_file_path, "path")
+                                           .name("--config")
+                                           .required()
+                                           .help("Configuration file path."))
                          .add_argument(lyra::opt(server_uri, "URI")
                                            .name("--uri")
                                            .required()
@@ -56,13 +62,19 @@ int main(int argc, const char** argv) {
     }
     const auto test_duration = std::chrono::seconds(test_seconds);
 
-    const auto logger = msgpack_rpc::logging::Logger::create(
-        msgpack_rpc::config::LoggingConfig().filepath(log_file_path));
+    msgpack_rpc::config::ConfigParser config_parser;
+    config_parser.parse(config_file_path);
+
+    const auto logger =
+        msgpack_rpc::logging::Logger::create(msgpack_rpc::config::LoggingConfig(
+            config_parser.logging_config("durability_test"))
+                                                 .filepath(log_file_path));
     MSGPACK_RPC_INFO(
         logger, "Test duration: {} seconds", test_duration.count());
     MSGPACK_RPC_INFO(logger, "Server URI: {}", server_uri);
 
-    auto client = msgpack_rpc::clients::ClientBuilder(logger)
+    auto client = msgpack_rpc::clients::ClientBuilder(
+        config_parser.client_config("durability_test"), logger)
                       .connect_to(server_uri)
                       .build();
     client.start();
