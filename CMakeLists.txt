@@ -30,6 +30,8 @@ option(${UPPER_PROJECT_NAME}_BUILD_DOC
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_ENABLE_INSTALL
        "enable CMake target to install ${FULL_PROJECT_NAME}" ON)
+option(${UPPER_PROJECT_NAME}_ENABLE_PROFILING
+       "enable build of executables for profiling of ${FULL_PROJECT_NAME}" OFF)
 
 set(BUILD_SHARED_LIBS
     ON
@@ -68,6 +70,20 @@ if(${UPPER_PROJECT_NAME}_TESTING)
                                INTERFACE ${APPROVAL_TESTS_CPP_INCLUDE_DIRS})
     add_library(ApprovalTests::ApprovalTests ALIAS ApprovalTests_ApprovalTests)
 endif()
+if(${UPPER_PROJECT_NAME}_ENABLE_PROFILING)
+    # Find libprofiler
+    find_library(
+        LIBPROFILER_LIBRARY
+        NAMES libprofiler.so
+        HINTS /usr/lib /usr/local/lib REQUIRED)
+    message(STATUS "libprofiler found at ${LIBPROFILER_LIBRARY}")
+    add_library(gperftools::libprofiler SHARED IMPORTED)
+    set_target_properties(gperftools::libprofiler
+                          PROPERTIES IMPORTED_LOCATION ${LIBPROFILER_LIBRARY})
+    # -fno-omit-frame-pointer is required for better profiling results.
+    target_compile_options(gperftools::libprofiler
+                           INTERFACE -fno-omit-frame-pointer)
+endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS
     ON
@@ -89,6 +105,10 @@ endif()
 
 if(${UPPER_PROJECT_NAME}_TESTING)
     add_subdirectory(tests)
+endif()
+
+if(${UPPER_PROJECT_NAME}_ENABLE_PROFILING)
+    add_subdirectory(profiling)
 endif()
 
 if(${UPPER_PROJECT_NAME}_ENABLE_INSTALL)
