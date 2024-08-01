@@ -52,6 +52,9 @@
       "source.organizeImports": "explicit"
     }
   },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "isort.args": ["--profile", "black"],
   "cSpell.enableFiletypes": ["cmake", "plantuml", "shellscript", "toml"],
   "todo-tree.filtering.excludeGlobs": ["**/node_modules/*/**", "**/vcpkg/*/**"],
