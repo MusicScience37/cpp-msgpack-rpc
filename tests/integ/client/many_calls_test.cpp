@@ -26,6 +26,7 @@
 #include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
