@@ -8,6 +8,7 @@
 
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 #include "msgpack_rpc/config/client_config.h"
 #include "msgpack_rpc/config/executor_config.h"
