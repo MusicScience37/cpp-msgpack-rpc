@@ -81,7 +81,6 @@ SCENARIO("Notify to methods") {
             });
 
         auto server = server_builder.build();
-        server.start();
 
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
@@ -95,7 +94,6 @@ SCENARIO("Notify to methods") {
             }
 
             Client client = client_builder.build();
-            client.start();
 
             THEN("The client can notify to methods") {
                 client.notify("empty");

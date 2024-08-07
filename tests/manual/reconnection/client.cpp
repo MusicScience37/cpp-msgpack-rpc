@@ -20,7 +20,6 @@ int main() {
 
     auto client =
         msgpack_rpc::clients::ClientBuilder().connect_to(server_uri).build();
-    client.start();
 
     while (!is_stopped) {
         try {

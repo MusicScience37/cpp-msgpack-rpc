@@ -30,7 +30,6 @@ int main() {
     auto client = msgpack_rpc::clients::ClientBuilder()
                       .connect_to(msgpack_rpc_test::SERVER_URL)
                       .build();
-    client.start();
     const auto res = client.call<std::string>("echo", "test");
     fmt::print("Result: {}\n", res);
     if (res != "test") {

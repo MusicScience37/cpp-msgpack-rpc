@@ -69,7 +69,6 @@ SCENARIO("Call methods") {
             "set_number", [&number](int val) { number = val; });
 
         auto server = server_builder.build();
-        server.start();
 
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
@@ -83,7 +82,6 @@ SCENARIO("Call methods") {
             }
 
             Client client = client_builder.build();
-            client.start();
 
             THEN(
                 "The client can call methods with two parameters "

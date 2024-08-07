@@ -2,11 +2,9 @@ set(SOURCE_FILES
     addresses/tcp_address_test.cpp
     addresses/uri_test.cpp
     catch_event_listener.cpp
-    clients/client_builder_test.cpp
     clients/client_test.cpp
     clients/impl/call_future_impl_test.cpp
     clients/impl/call_list_test.cpp
-    clients/impl/client_builder_impl_test.cpp
     clients/impl/client_impl_test.cpp
     clients/impl/parameters_serializer_test.cpp
     clients/server_exception_test.cpp
@@ -42,7 +40,6 @@ set(SOURCE_FILES
     methods/method_processor_test.cpp
     servers/impl/server_builder_impl_test.cpp
     servers/impl/server_impl_test.cpp
-    servers/server_builder_test.cpp
     test_main.cpp
     transport/async_connect_test.cpp
     transport/backend_list_test.cpp

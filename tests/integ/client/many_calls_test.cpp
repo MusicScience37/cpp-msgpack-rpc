@@ -65,7 +65,6 @@ SCENARIO("Call methods many times") {
             });
 
         auto server = server_builder.build();
-        server.start();
 
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
@@ -80,7 +79,6 @@ SCENARIO("Call methods many times") {
             }
 
             Client client = client_builder.build();
-            client.start();
 
             AND_WHEN("The client calls a method multiple times") {
                 constexpr std::size_t count = 100;

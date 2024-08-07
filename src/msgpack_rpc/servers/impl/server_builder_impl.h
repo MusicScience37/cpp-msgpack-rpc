@@ -102,8 +102,11 @@ public:
                 "All URI set to listen to was unusable.");
         }
 
-        return std::make_unique<ServerImpl>(
+        auto server = std::make_unique<ServerImpl>(
             std::move(acceptors), std::move(processor_), executor_, logger_);
+        server->start();
+
+        return server;
     }
 
     //! \copydoc msgpack_rpc::servers::impl::IServerBuilderImpl::logger

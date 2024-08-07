@@ -77,7 +77,6 @@ int main(int argc, const char** argv) {
         config_parser.client_config("durability_test"), logger)
                       .connect_to(server_uri)
                       .build();
-    client.start();
 
     const auto finish_time = std::chrono::steady_clock::now() + test_duration;
     std::uint64_t num_requests = 0;

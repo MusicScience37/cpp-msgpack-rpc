@@ -98,10 +98,9 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
         // the server.
         REQUIRE_CALL(*acceptor, stop()).TIMES(1);
 
-        const std::shared_ptr<IServerImpl> server =
-            std::make_shared<ServerImpl>(
-                std::vector<std::shared_ptr<IAcceptor>>{acceptor},
-                std::move(processor), executor_wrapper, logger);
+        const auto server = std::make_shared<ServerImpl>(
+            std::vector<std::shared_ptr<IAcceptor>>{acceptor},
+            std::move(processor), executor_wrapper, logger);
 
         IAcceptor::ConnectionCallback on_connection{
             [](auto /*connection*/) { FAIL(); }};

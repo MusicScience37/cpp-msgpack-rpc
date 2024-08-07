@@ -64,7 +64,6 @@ public:
             msgpack_rpc::clients::ClientBuilder()
                 .connect_to(msgpack_rpc_test::COMMAND_SERVER_URI)
                 .build();
-        command_client.start();
         server_uri_ = command_client.call<std::string>(
             "prepare", static_cast<int>(server_type_));
 
@@ -75,7 +74,6 @@ public:
         auto client = msgpack_rpc::clients::ClientBuilder()
                           .connect_to(server_uri_)
                           .build();
-        client.start();
         return client;
     }
 

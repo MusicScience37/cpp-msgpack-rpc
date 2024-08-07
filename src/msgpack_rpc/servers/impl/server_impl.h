@@ -62,7 +62,8 @@ public:
         : acceptors_(std::move(acceptors)),
           processor_(std::move(processor)),
           executor_(std::move(executor)),
-          logger_(std::move(logger)) {}
+          logger_(std::move(logger)),
+          stop_signal_handler_(std::make_shared<StopSignalHandler>(logger_)) {}
 
     //! Destructor.
     ~ServerImpl() override {
@@ -82,13 +83,26 @@ public:
     ServerImpl& operator=(const ServerImpl&) = delete;
     ServerImpl& operator=(ServerImpl&&) = delete;
 
-    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::start
-    void start() override {
+    /*!
+     * \brief Start processing of this server.
+     */
+    void start() {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This server has already been started.");
         }
         start_acceptors();
+
+        executor_->on_exception(
+            [weak_signal_handler =
+                    std::weak_ptr<StopSignalHandler>(stop_signal_handler_)](
+                const std::exception_ptr& /*exception*/) {
+                const auto signal_handler = weak_signal_handler.lock();
+                if (signal_handler) {
+                    signal_handler->stop();
+                }
+            });
+
         executor_->start();
     }
 
@@ -109,19 +123,8 @@ public:
 
     //! \copydoc msgpack_rpc::servers::impl::IServerImpl::run_until_signal
     void run_until_signal() override {
-        start();
+        stop_signal_handler_->wait();
 
-        const auto signal_handler =
-            std::make_shared<StopSignalHandler>(logger_);
-        executor_->on_exception(
-            [weak_signal_handler = std::weak_ptr<StopSignalHandler>(
-                 signal_handler)](const std::exception_ptr& /*exception*/) {
-                const auto signal_handler = weak_signal_handler.lock();
-                if (signal_handler) {
-                    signal_handler->stop();
-                }
-            });
-        signal_handler->wait();
         const auto last_exception = executor_->last_exception();
 
         stop();
@@ -185,6 +188,9 @@ private:
 
     //! Logger.
     std::shared_ptr<logging::Logger> logger_;
+
+    //! Handler of signals to stop processing.
+    std::shared_ptr<StopSignalHandler> stop_signal_handler_;
 
     //! Whether this server has been started.
     std::atomic<bool> is_started_{false};

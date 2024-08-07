@@ -85,8 +85,10 @@ public:
     ClientImpl& operator=(const ClientImpl&) = delete;
     ClientImpl& operator=(ClientImpl&&) = delete;
 
-    //! \copydoc msgpack_rpc::clients::impl::IClientImpl::start
-    void start() override {
+    /*!
+     * \brief Start processing of this client.
+     */
+    void start() {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This client has already been started.");

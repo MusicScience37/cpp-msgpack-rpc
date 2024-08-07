@@ -50,10 +50,6 @@ TEST_CASE("msgpack_rpc::clients::Client") {
     Client client{client_impl};
 
     SECTION("start processing") {
-        REQUIRE_CALL(*client_impl, start()).TIMES(1);
-
-        client.start();
-
         SECTION("and call a method asynchronously") {
             const auto call_future_impl =
                 std::make_shared<MockCallFutureImpl>();

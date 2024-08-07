@@ -33,11 +33,6 @@ namespace msgpack_rpc::servers::impl {
 class IServerImpl {
 public:
     /*!
-     * \brief Start processing of this server.
-     */
-    virtual void start() = 0;
-
-    /*!
      * \brief Stop processing of this server.
      */
     virtual void stop() = 0;
