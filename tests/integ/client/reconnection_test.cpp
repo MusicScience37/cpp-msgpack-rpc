@@ -71,8 +71,6 @@ SCENARIO("Clients reconnect to servers") {
                 "The client runs without serious error like death of the "
                 "process") {
                 constexpr auto test_time = 5 * max_reconnection_waiting_time;
-
-                client.start();
                 std::this_thread::sleep_for(test_time);
 
                 WHEN("A server is started after the client starts") {
@@ -81,7 +79,6 @@ SCENARIO("Clients reconnect to servers") {
                                       .add_method<int(int, int)>("add",
                                           [](int x, int y) { return x + y; })
                                       .build();
-                    server.start();
 
                     THEN("The client can call methods") {
                         const int result = client.call<int>("add", 1, 2);
@@ -99,13 +96,11 @@ SCENARIO("Clients reconnect to servers") {
                           .add_method<int(int, int)>(
                               "add", [](int x, int y) { return x + y; })
                           .build();
-        server.start();
 
         Client client = ClientBuilder{client_config, logger}
                             .connect_to(server_uris.at(1))
                             .connect_to(server_uris.at(2))
                             .build();
-        client.start();
 
         // Wait for the connection.
         CHECK(client.call<int>("add", 1, 2) == 3);
@@ -125,7 +120,6 @@ SCENARIO("Clients reconnect to servers") {
                                       .add_method<int(int, int)>("add",
                                           [](int x, int y) { return x + y; })
                                       .build();
-                    server.start();
 
                     THEN("The client can call methods") {
                         const int result = client.call<int>("add", 1, 2);

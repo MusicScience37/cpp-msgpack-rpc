@@ -57,7 +57,6 @@ int main() {
                     builder.add_method<std::string(std::string)>(
                         "echo", [](const std::string& str) { return str; });
                     echo_server = builder.build();
-                    echo_server->start();
 
                     return fmt::format(
                         "{}", echo_server->local_endpoint_uris().front());

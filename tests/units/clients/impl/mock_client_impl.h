@@ -31,7 +31,6 @@
 namespace msgpack_rpc_test {
 
 class MockClientImpl final : public msgpack_rpc::clients::impl::IClientImpl {
-    MAKE_MOCK0(start, void(), override);
     MAKE_MOCK0(stop, void(), override);
     MAKE_MOCK2(async_call,
         std::shared_ptr<msgpack_rpc::clients::impl::ICallFutureImpl>(

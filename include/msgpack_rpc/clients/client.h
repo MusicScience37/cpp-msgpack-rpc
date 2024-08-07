@@ -45,11 +45,6 @@ public:
         : impl_(std::move(impl)) {}
 
     /*!
-     * \brief Start processing of this client.
-     */
-    void start() { impl_->start(); }
-
-    /*!
      * \brief Stop processing of this client.
      *
      * \note Destructing this client without call of this function will

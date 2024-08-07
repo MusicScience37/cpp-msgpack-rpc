@@ -119,9 +119,8 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
 
         const auto client_connector = std::make_shared<ClientConnector>(
             executor, backends, server_uris, ReconnectionConfig(), logger);
-        const std::shared_ptr<IClientImpl> client =
-            std::make_shared<ClientImpl>(
-                client_connector, call_list, async_executor, logger);
+        const auto client = std::make_shared<ClientImpl>(
+            client_connector, call_list, async_executor, logger);
 
         post([&client] { client->start(); });
 
@@ -197,9 +196,8 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
 
         const auto client_connector = std::make_shared<ClientConnector>(
             executor, backends, server_uris, ReconnectionConfig(), logger);
-        const std::shared_ptr<IClientImpl> client =
-            std::make_shared<ClientImpl>(
-                client_connector, call_list, async_executor, logger);
+        const auto client = std::make_shared<ClientImpl>(
+            client_connector, call_list, async_executor, logger);
 
         post([&client] { client->start(); });
 

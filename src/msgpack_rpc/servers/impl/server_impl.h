@@ -82,8 +82,10 @@ public:
     ServerImpl& operator=(const ServerImpl&) = delete;
     ServerImpl& operator=(ServerImpl&&) = delete;
 
-    //! \copydoc msgpack_rpc::servers::impl::IServerImpl::start
-    void start() override {
+    /*!
+     * \brief Start processing of this server.
+     */
+    void start() {
         if (is_started_.exchange(true)) {
             throw MsgpackRPCException(StatusCode::PRECONDITION_NOT_MET,
                 "This server has already been started.");
@@ -109,8 +111,6 @@ public:
 
     //! \copydoc msgpack_rpc::servers::impl::IServerImpl::run_until_signal
     void run_until_signal() override {
-        start();
-
         const auto signal_handler =
             std::make_shared<StopSignalHandler>(logger_);
         executor_->on_exception(

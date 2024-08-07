@@ -43,11 +43,6 @@ public:
         : impl_(std::move(impl)) {}
 
     /*!
-     * \brief Start processing of this server.
-     */
-    void start() { impl_->start(); }
-
-    /*!
      * \brief Stop processing of this server.
      */
     void stop() { impl_->stop(); }

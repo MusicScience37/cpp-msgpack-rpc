@@ -87,7 +87,6 @@ SCENARIO("Use a server") {
             });
 
         auto server = builder.build();
-        server.start();
 
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));

@@ -76,8 +76,11 @@ public:
         const auto call_list = std::make_shared<CallList>(
             config_.call_timeout(), executor_, logger_);
 
-        return std::make_shared<ClientImpl>(
+        auto client = std::make_shared<ClientImpl>(
             connector, call_list, executor_, logger_);
+        client->start();
+
+        return client;
     }
 
 private:

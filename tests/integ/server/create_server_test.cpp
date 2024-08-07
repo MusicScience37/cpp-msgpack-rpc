@@ -67,8 +67,6 @@ SCENARIO("Create a server") {
                         auto server = builder.build();
 
                         AND_THEN("The server can be connectable") {
-                            server.start();
-
                             const auto uris = server.local_endpoint_uris();
                             MSGPACK_RPC_DEBUG(logger, "Server URIs: {}",
                                 fmt::join(uris, ", "));
@@ -107,8 +105,6 @@ SCENARIO("Create a server") {
                     auto server = builder.build();
 
                     AND_THEN("The server can be connectable") {
-                        server.start();
-
                         const auto uris = server.local_endpoint_uris();
                         MSGPACK_RPC_DEBUG(
                             logger, "Server URIs: {}", fmt::join(uris, ", "));

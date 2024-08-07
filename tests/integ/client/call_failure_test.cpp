@@ -83,7 +83,6 @@ SCENARIO("Call methods to fail") {
         });
 
         auto server = server_builder.build();
-        server.start();
 
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
@@ -97,7 +96,6 @@ SCENARIO("Call methods to fail") {
             }
 
             Client client = client_builder.build();
-            client.start();
 
             THEN("The client can call a method with correct parameters") {
                 CHECK(client.call<std::string>("echo", "Hello.") ==
@@ -192,7 +190,6 @@ SCENARIO("Call methods to fail") {
             }
 
             Client client = client_builder.build();
-            client.start();
 
             THEN("The client will receive an exception for timeout") {
                 const double param = 0.01;
@@ -202,21 +199,6 @@ SCENARIO("Call methods to fail") {
                 } catch (const MsgpackRPCException& e) {
                     CHECK(e.status().code() == StatusCode::TIMEOUT);
                 }
-            }
-        }
-
-        WHEN("A client is correctly created but not started") {
-            ClientBuilder client_builder{logger};
-
-            for (const auto& uri : uris) {
-                client_builder.connect_to(uri);
-            }
-
-            Client client = client_builder.build();
-
-            THEN("The client fails to call a method") {
-                CHECK_THROWS_AS(client.call<std::string>("echo", "Hello."),
-                    MsgpackRPCException);
             }
         }
     }

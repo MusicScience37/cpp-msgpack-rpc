@@ -36,13 +36,11 @@ int main() {
             .add_method<std::string(std::string)>(
                 "echo", [](const std::string& str) { return str; })
             .build();
-    server.start();
 
     msgpack_rpc::clients::Client client =
         msgpack_rpc::clients::ClientBuilder(logger)
             .connect_to(server.local_endpoint_uris().at(0))
             .build();
-    client.start();
 
     ProfilerStart("profiling_echo.prof");
 
