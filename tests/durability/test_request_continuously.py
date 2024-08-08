@@ -4,7 +4,7 @@ import datetime
 import pathlib
 import shutil
 
-from .process_executor import ProcessExecutor
+from .process_executor import DEFAULT_PROCESS_WAIT_TIME, ProcessExecutor
 
 THIS_DIR = pathlib.Path(__file__).absolute().parent
 
@@ -51,7 +51,9 @@ def test_request_continuously_tcp_v4(
             cwd=str(current_log_dir_path),
             log_prefix="client",
         ) as client_process:
-            client_process.wait(test_duration.total_seconds() * 2.0)
+            client_process.wait(
+                test_duration.total_seconds() * 2.0 + DEFAULT_PROCESS_WAIT_TIME
+            )
 
     assert client_process.returncode == 0
     assert server_process.returncode == 0

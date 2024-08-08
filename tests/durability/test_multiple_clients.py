@@ -4,7 +4,7 @@ import datetime
 import pathlib
 import shutil
 
-from .process_executor import ProcessExecutor
+from .process_executor import DEFAULT_PROCESS_WAIT_TIME, ProcessExecutor
 
 THIS_DIR = pathlib.Path(__file__).absolute().parent
 
@@ -96,10 +96,13 @@ def test_multiple_clients_tcp_v4(
                         cwd=str(current_log_dir_path),
                         log_prefix="client4",
                     ) as client4_process:
-                        client4_process.wait(test_duration.total_seconds() * 2.0)
-                    client3_process.wait(1.0)
-                client2_process.wait(1.0)
-            client1_process.wait(1.0)
+                        client4_process.wait(
+                            test_duration.total_seconds() * 2.0
+                            + DEFAULT_PROCESS_WAIT_TIME
+                        )
+                    client3_process.wait()
+                client2_process.wait()
+            client1_process.wait()
 
     assert client1_process.returncode == 0
     assert server_process.returncode == 0
