@@ -1,5 +1,6 @@
 [logging.durability_test]
-output_log_level = "debug"
+output_log_level = "trace"
+max_files = 20
 
 [client.durability_test.executor]
 num_transport_threads = 1
