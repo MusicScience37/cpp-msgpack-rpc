@@ -25,7 +25,7 @@
 #include <string_view>
 
 #include <asio/ip/tcp.hpp>
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/addresses/uri.h"

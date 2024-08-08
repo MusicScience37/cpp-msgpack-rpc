@@ -32,7 +32,7 @@
 #include <asio/error_code.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/post.hpp>
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/i_address.h"

@@ -20,6 +20,7 @@
 #include "msgpack_rpc/addresses/uri.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <fmt/format.h>
 
 TEST_CASE("msgpack_rpc::addresses::URI") {
     using msgpack_rpc::addresses::URI;

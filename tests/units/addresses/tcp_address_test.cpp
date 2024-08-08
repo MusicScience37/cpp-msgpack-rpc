@@ -22,6 +22,7 @@
 #include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+#include <fmt/format.h>
 
 #include "approval_test_fmt.h"
 

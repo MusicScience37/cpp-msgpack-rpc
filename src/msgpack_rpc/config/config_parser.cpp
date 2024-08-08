@@ -19,7 +19,7 @@
  */
 #include "msgpack_rpc/config/config_parser.h"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"

@@ -25,7 +25,7 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 

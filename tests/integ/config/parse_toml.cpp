@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <string_view>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 

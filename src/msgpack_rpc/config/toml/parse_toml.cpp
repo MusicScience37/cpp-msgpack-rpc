@@ -19,7 +19,7 @@
  */
 #include "msgpack_rpc/config/toml/parse_toml.h"
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <toml++/toml.h>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

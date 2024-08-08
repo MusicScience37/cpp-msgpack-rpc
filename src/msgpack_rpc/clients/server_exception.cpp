@@ -22,7 +22,7 @@
 #include <string>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "msgpack_rpc/util/format_msgpack_object.h"
 
