@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <msgpack.hpp>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"

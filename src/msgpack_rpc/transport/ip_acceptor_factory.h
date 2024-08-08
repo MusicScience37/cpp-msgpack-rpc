@@ -31,7 +31,7 @@
 #include <asio/ip/basic_resolver_entry.hpp>
 #include <asio/ip/basic_resolver_iterator.hpp>
 #include <asio/ip/tcp.hpp>
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/tcp_address.h"

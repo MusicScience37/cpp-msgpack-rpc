@@ -28,7 +28,7 @@
 #include <string_view>
 #include <utility>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/config/logging_config.h"

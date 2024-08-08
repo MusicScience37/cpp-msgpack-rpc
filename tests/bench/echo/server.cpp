@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "common.h"
 #include "msgpack_rpc/addresses/uri.h"

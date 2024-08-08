@@ -35,7 +35,7 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/post.hpp>
 #include <asio/write.hpp>
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/addresses/tcp_address.h"

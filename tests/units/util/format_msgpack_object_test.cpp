@@ -25,6 +25,7 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
+#include <fmt/format.h>
 #include <msgpack.hpp>
 
 TEST_CASE("msgpack_rpc::util::format_msgpack_object") {

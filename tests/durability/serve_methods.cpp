@@ -21,11 +21,11 @@
 #include <string>
 #include <vector>
 
-#include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <lyra/lyra.hpp>
 
 #include "msgpack_rpc/config/config_parser.h"
+#include "msgpack_rpc/config/logging_config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"

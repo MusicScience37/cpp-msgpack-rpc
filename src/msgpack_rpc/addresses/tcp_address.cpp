@@ -24,6 +24,7 @@
 
 #include <asio/ip/address.hpp>
 #include <asio/ip/basic_endpoint.hpp>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/schemes.h"

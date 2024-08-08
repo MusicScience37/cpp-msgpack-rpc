@@ -26,9 +26,8 @@
 #include <string>
 #include <string_view>
 
-#include <fmt/core.h>
-// This header is required for formatter<std::string_view>
-#include <fmt/format.h>  // IWYU pragma: keep
+#include <fmt/base.h>
+#include <fmt/format.h>
 
 #include "msgpack_rpc/messages/method_name.h"
 

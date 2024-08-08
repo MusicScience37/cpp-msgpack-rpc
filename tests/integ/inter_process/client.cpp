@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"

@@ -28,7 +28,7 @@
 #include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/system_error.hpp>
-#include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/schemes.h"

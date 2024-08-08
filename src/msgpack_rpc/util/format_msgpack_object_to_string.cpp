@@ -22,6 +22,7 @@
 #include <iterator>
 #include <string>
 
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <msgpack.hpp>
 
