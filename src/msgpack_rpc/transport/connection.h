@@ -114,10 +114,11 @@ public:
         on_received_ = std::move(on_received);
         on_sent_ = std::move(on_sent);
         on_closed_ = std::move(on_closed);
-        asio::post(socket_.get_executor(),
-            [self = this->shared_from_this()] { self->async_read_next(); });
 
         state_machine_.handle_processing_started();
+
+        asio::post(socket_.get_executor(),
+            [self = this->shared_from_this()] { self->async_read_next(); });
     }
 
     //! \copydoc msgpack_rpc::transport::IConnection::async_send
