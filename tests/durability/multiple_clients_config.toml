@@ -4,6 +4,10 @@ output_log_level = "debug"
 [client.durability_test.executor]
 num_transport_threads = 1
 num_callback_threads = 1
+call_timeout_sec = 5.0
+
+[client.durability_test.reconnection]
+initial_waiting_time_sec = 0.1
 
 [server.durability_test.executor]
 num_transport_threads = 2

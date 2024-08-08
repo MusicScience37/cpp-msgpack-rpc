@@ -10,6 +10,8 @@ import pandas
 import plotly.express
 import psutil
 
+DEFAULT_PROCESS_WAIT_TIME = 10.0
+
 
 class ProcessExecutor:
     """Class to execute processes."""
@@ -29,7 +31,7 @@ class ProcessExecutor:
         )
         self._watch_process_resources_thread.start()
 
-    def stop(self, timeout: float = 3.0) -> None:
+    def stop(self, timeout: float = DEFAULT_PROCESS_WAIT_TIME) -> None:
         if self._process.returncode is None:
             self._process.terminate()
             try:
@@ -39,7 +41,7 @@ class ProcessExecutor:
         self._watch_process_resources_thread.join(timeout=1.0)
         self._plot_resources()
 
-    def wait(self, timeout: float) -> None:
+    def wait(self, timeout: float = DEFAULT_PROCESS_WAIT_TIME) -> None:
         self._process.wait(timeout=timeout)
 
     def __enter__(self) -> "ProcessExecutor":
