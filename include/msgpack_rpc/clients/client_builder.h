@@ -42,10 +42,18 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] logger Logger.
+     * This will use the default configurations for clients and loggers.
      */
-    explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger =
-                               logging::Logger::create())
+    ClientBuilder() : ClientBuilder(logging::Logger::create()) {}
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] logger Logger.
+     *
+     * This will use the default configurations for clients.
+     */
+    explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger)
         : ClientBuilder(config::ClientConfig(), logger) {}
 
     /*!
@@ -64,6 +72,8 @@ public:
      * \brief Constructor.
      *
      * \param[in] impl Object of the internal implementation.
+     *
+     * \warning This constructor is for internal tests.
      */
     explicit ClientBuilder(std::unique_ptr<impl::IClientBuilderImpl> impl)
         : impl_(std::move(impl)) {}
