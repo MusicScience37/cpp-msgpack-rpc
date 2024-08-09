@@ -42,7 +42,8 @@ public:
     /*!
      * \brief Constructor.
      *
-     * This will use the default configurations for clients and loggers.
+     * This overload will use the default configurations for clients and
+     * loggers.
      */
     ClientBuilder() : ClientBuilder(logging::Logger::create()) {}
 
@@ -51,7 +52,7 @@ public:
      *
      * \param[in] logger Logger.
      *
-     * This will use the default configurations for clients.
+     * This overload will use the default configurations for clients.
      */
     explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger)
         : ClientBuilder(config::ClientConfig(), logger) {}

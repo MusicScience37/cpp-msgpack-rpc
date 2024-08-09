@@ -33,6 +33,8 @@ namespace msgpack_rpc::clients {
  * \brief Class of future object to wait for asynchronous RPCs.
  *
  * \tparam Result Type of the result.
+ *
+ * Objects of this class are created by Client::async_call function.
  */
 template <typename Result>
 class CallFuture {
@@ -41,6 +43,9 @@ public:
      * \brief Constructor.
      *
      * \param[in] impl Object of the internal implementation.
+     *
+     * \warning Users should create objects of this class using
+     * Client::async_call function.
      */
     explicit CallFuture(std::shared_ptr<impl::ICallFutureImpl> impl)
         : impl_(std::move(impl)) {}
@@ -92,6 +97,8 @@ private:
 
 /*!
  * \brief Specialization of msgpack_rpc::clients::CallFuture for void type.
+ *
+ * Objects of this class are created by Client::async_call function.
  */
 template <>
 class CallFuture<void> {
@@ -100,6 +107,9 @@ public:
      * \brief Constructor.
      *
      * \param[in] impl Object of the internal implementation.
+     *
+     * \warning Users should create objects of this class using
+     * Client::async_call function.
      */
     explicit CallFuture(std::shared_ptr<impl::ICallFutureImpl> impl)
         : impl_(std::move(impl)) {}

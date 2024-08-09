@@ -45,10 +45,19 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] logger Logger.
+     * This overload will use the default configurations for servers and
+     * loggers.
      */
-    explicit ServerBuilder(const std::shared_ptr<logging::Logger>& logger =
-                               logging::Logger::create())
+    ServerBuilder() : ServerBuilder(logging::Logger::create()) {}
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] logger Logger.
+     *
+     * This overload will use the default configurations for servers.
+     */
+    explicit ServerBuilder(const std::shared_ptr<logging::Logger>& logger)
         : ServerBuilder(config::ServerConfig(), logger) {}
 
     /*!
@@ -102,6 +111,8 @@ public:
      *
      * \param[in] method Method.
      * \return This.
+     *
+     * \note This overload should not be used in most applications.
      */
     ServerBuilder& add_method(std::unique_ptr<methods::IMethod> method) {
         impl_->add_method(std::move(method));
@@ -116,6 +127,10 @@ public:
      * \param[in] name Name of the method.
      * \param[in] function Function implementing the method.
      * \return This.
+     *
+     * \note The function can throw exceptions using
+     * msgpack_rpc::methods::MethodException class to notify errors using any
+     * serializable objects.
      */
     template <typename Signature, typename Function>
     ServerBuilder& add_method(messages::MethodName name, Function&& function) {

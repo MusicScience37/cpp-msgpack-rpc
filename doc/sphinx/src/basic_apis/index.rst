@@ -8,3 +8,6 @@ Full API reference can be viewed `here <../api/index.html>`_.
 
     clients
     servers
+    common
+    logging
+    configurations

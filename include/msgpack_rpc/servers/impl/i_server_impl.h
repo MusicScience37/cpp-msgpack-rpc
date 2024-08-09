@@ -38,7 +38,9 @@ public:
     virtual void stop() = 0;
 
     /*!
-     * \brief Run processing of this server until a signal is received.
+     * \brief Run processing of this server until SIGINT or SIGTERM is received.
+     *
+     * \note When this function returns, this server is stopped automatically.
      */
     virtual void run_until_signal() = 0;
 

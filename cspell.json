@@ -46,6 +46,7 @@
     "Doxyfile",
     "doxygen",
     "doxygenclass",
+    "doxygenenum",
     "DVCPKG",
     "endforeach",
     "endfunction",

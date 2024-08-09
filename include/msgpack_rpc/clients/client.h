@@ -33,6 +33,8 @@ namespace msgpack_rpc::clients {
 
 /*!
  * \brief Class of clients.
+ *
+ * Clients can be created using ClientBuilder.
  */
 class Client {
 public:
@@ -40,6 +42,9 @@ public:
      * \brief Constructor.
      *
      * \param[in] impl Object of the internal implementation.
+     *
+     * \warning Users should create clients using ClientBuilder instead of this
+     * constructor.
      */
     explicit Client(std::shared_ptr<impl::IClientImpl> impl)
         : impl_(std::move(impl)) {}
@@ -60,6 +65,9 @@ public:
      * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
      * \return Future object to get the result of the RPC.
+     *
+     * \throw ServerException Errors in the server.
+     * \throw MsgpackRPCException Other errors.
      */
     template <typename Result, typename... Parameters>
     [[nodiscard]] CallFuture<std::decay_t<Result>> async_call(
@@ -76,6 +84,9 @@ public:
      * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
      * \return Result of the RPC.
+     *
+     * \throw ServerException Errors in the server.
+     * \throw MsgpackRPCException Other errors.
      */
     template <typename Result, typename... Parameters>
     std::decay_t<Result> call(
