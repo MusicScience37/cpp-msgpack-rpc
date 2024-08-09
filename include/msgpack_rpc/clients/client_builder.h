@@ -69,16 +69,6 @@ public:
               std::move(client_config), logger)) {}
 
     /*!
-     * \brief Constructor.
-     *
-     * \param[in] impl Object of the internal implementation.
-     *
-     * \warning This constructor is for internal tests.
-     */
-    explicit ClientBuilder(std::unique_ptr<impl::IClientBuilderImpl> impl)
-        : impl_(std::move(impl)) {}
-
-    /*!
      * \brief Add a URI to connect to.
      *
      * \param[in] uri URI.

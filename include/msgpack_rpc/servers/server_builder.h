@@ -63,14 +63,6 @@ public:
         : impl_(impl::create_default_builder_impl(server_config, logger)) {}
 
     /*!
-     * \brief Constructor.
-     *
-     * \param[in] impl Internal implementation.
-     */
-    explicit ServerBuilder(std::unique_ptr<impl::IServerBuilderImpl> impl)
-        : impl_(std::move(impl)) {}
-
-    /*!
      * \brief Add a URI to listen to.
      *
      * \param[in] uri URI.
