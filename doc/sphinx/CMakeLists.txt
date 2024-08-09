@@ -9,7 +9,8 @@ set(PLANTUML_JAR_PATH
 
 set(${UPPER_PROJECT_NAME}_SPHINX_OPTIONS
     -D "plantuml=java -jar ${PLANTUML_JAR_PATH}" -D
-    "release=${PROJECT_VERSION}")
+    "release=${PROJECT_VERSION}" -D
+    breathe_projects.msgpack_rpc="${${UPPER_PROJECT_NAME}_DOXYGEN_XML_PATH}")
 
 add_custom_target(
     ${PROJECT_NAME}_doc_sphinx_html ALL
