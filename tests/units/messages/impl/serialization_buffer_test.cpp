@@ -41,4 +41,18 @@ TEST_CASE("msgpack_rpc::messages::impl::SerializationBuffer") {
         const SerializedMessage message = buffer.release();
         CHECK(std::string_view(message.data(), message.size()) == "abcde");
     }
+
+    SECTION("create a large data") {
+        SerializationBuffer buffer;
+
+        const std::string data1(10, 'a');
+        buffer.write(data1.data(), data1.size());
+
+        const std::string data2(300, 'a');
+        buffer.write(data2.data(), data2.size());
+
+        const SerializedMessage message = buffer.release();
+        const std::string expected(310, 'a');
+        CHECK(std::string_view(message.data(), message.size()) == expected);
+    }
 }
