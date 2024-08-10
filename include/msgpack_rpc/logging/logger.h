@@ -42,7 +42,13 @@ namespace msgpack_rpc::logging {
 /*!
  * \brief Class to write logs.
  *
- * \note This class is assumed to be used in logging macros.
+ * \note This class is assumed to be used in the following logging macros.
+ * - \ref MSGPACK_RPC_TRACE
+ * - \ref MSGPACK_RPC_DEBUG
+ * - \ref MSGPACK_RPC_INFO
+ * - \ref MSGPACK_RPC_WARN
+ * - \ref MSGPACK_RPC_ERROR
+ * - \ref MSGPACK_RPC_CRITICAL
  */
 class Logger {
 public:

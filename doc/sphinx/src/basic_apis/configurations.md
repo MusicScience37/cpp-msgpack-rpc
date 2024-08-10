@@ -1,6 +1,11 @@
 # Configurations
 
-TODO
+[Configuration files](configuration_files) can be parsed using
+{cpp:class}`msgpack_rpc::config::ConfigParser`.
+Examples to parse configuration files can be found in
+
+- [More APIs in Clients](./clients.md#more-apis)
+- [More APIs in Servers](./servers.md#more-apis)
 
 ## APIs of Configurations
 
