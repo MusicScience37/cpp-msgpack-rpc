@@ -146,8 +146,7 @@ public:
         check_executor_state();
 
         const auto serialized_notification =
-            std::make_shared<messages::SerializedMessage>(
-                parameters.create_serialized_notification(method_name));
+            parameters.create_serialized_notification(method_name);
 
         sender_->send(serialized_notification);
 

@@ -19,6 +19,7 @@
 #include "msgpack_rpc/logging/log_sinks.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/messages/message_parser.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/messages/message_type.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/messages/serialized_message.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/methods/method_exception.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/methods/method_processor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)

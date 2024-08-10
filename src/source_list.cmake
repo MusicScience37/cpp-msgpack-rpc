@@ -20,6 +20,7 @@ set(SOURCE_FILES
     msgpack_rpc/logging/log_sinks.cpp
     msgpack_rpc/messages/message_parser.cpp
     msgpack_rpc/messages/message_type.cpp
+    msgpack_rpc/messages/serialized_message.cpp
     msgpack_rpc/methods/method_exception.cpp
     msgpack_rpc/methods/method_processor.cpp
     msgpack_rpc/servers/impl/i_server_builder_impl.cpp

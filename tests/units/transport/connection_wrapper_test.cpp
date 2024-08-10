@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -67,7 +68,7 @@ TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
         const auto param1 = std::string("abc");
         const auto param2 = static_cast<std::int32_t>(456);
 
-        std::shared_ptr<const SerializedMessage> message;
+        std::optional<SerializedMessage> message;
         REQUIRE_CALL(*connection, async_send(_))
             .TIMES(1)
             .LR_SIDE_EFFECT(message = _1);
@@ -86,7 +87,7 @@ TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
         const auto message_id = static_cast<MessageID>(12345);
         const auto result = std::make_tuple(123, "abc");
 
-        std::shared_ptr<const SerializedMessage> message;
+        std::optional<SerializedMessage> message;
         REQUIRE_CALL(*connection, async_send(_))
             .TIMES(1)
             .LR_SIDE_EFFECT(message = _1);
@@ -105,7 +106,7 @@ TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
         const auto message_id = static_cast<MessageID>(12345);
         const auto error = std::make_tuple(123, "abc");
 
-        std::shared_ptr<const SerializedMessage> message;
+        std::optional<SerializedMessage> message;
         REQUIRE_CALL(*connection, async_send(_))
             .TIMES(1)
             .LR_SIDE_EFFECT(message = _1);
@@ -124,7 +125,7 @@ TEST_CASE("msgpack_rpc::transport::ConnectionWrapper") {
         const auto param1 = std::string("abc");
         const auto param2 = static_cast<std::int32_t>(456);
 
-        std::shared_ptr<const SerializedMessage> message;
+        std::optional<SerializedMessage> message;
         REQUIRE_CALL(*connection, async_send(_))
             .TIMES(1)
             .LR_SIDE_EFFECT(message = _1);

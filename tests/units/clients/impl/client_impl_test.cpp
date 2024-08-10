@@ -150,7 +150,7 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
                 .TIMES(1)
                 .LR_SIDE_EFFECT(post(on_sent))
                 .LR_SIDE_EFFECT(post([&on_received, serialized_request = _1] {
-                    const auto request = parse_request(*serialized_request);
+                    const auto request = parse_request(serialized_request);
                     const auto request_id = request.id();
                     on_received(create_parsed_successful_response(
                         request_id, "result"));

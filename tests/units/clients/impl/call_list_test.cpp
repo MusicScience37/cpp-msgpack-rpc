@@ -68,7 +68,7 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
         Call call =
             list->create(method_name, make_parameters_serializer(param1));
 
-        const auto request = parse_request(*call.serialized_request());
+        const auto request = parse_request(call.serialized_request());
         CHECK(request.method_name() == method_name);
         CHECK(request.id() == call.id());
         CHECK(request.parameters().as<std::string>() ==
@@ -104,7 +104,7 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
         Call call =
             list->create(method_name, make_parameters_serializer(param1));
 
-        const auto request = parse_request(*call.serialized_request());
+        const auto request = parse_request(call.serialized_request());
         CHECK(request.method_name() == method_name);
         CHECK(request.id() == call.id());
         CHECK(request.parameters().as<std::string>() ==

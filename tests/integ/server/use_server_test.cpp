@@ -147,8 +147,7 @@ SCENARIO("Use a server") {
                 const auto message = MessageSerializer::serialize_request(
                     "add", request_id, 2, 3);
                 on_connected = [&client_connection, &message] {
-                    client_connection->async_send(
-                        std::make_shared<SerializedMessage>(message));
+                    client_connection->async_send(message);
                 };
 
                 THEN("Server send a response") {
@@ -179,8 +178,7 @@ SCENARIO("Use a server") {
                 const auto message = MessageSerializer::serialize_notification(
                     "write", "Test string.");
                 on_connected = [&client_connection, &message] {
-                    client_connection->async_send(
-                        std::make_shared<SerializedMessage>(message));
+                    client_connection->async_send(message);
                 };
 
                 THEN("Server receives the message") {

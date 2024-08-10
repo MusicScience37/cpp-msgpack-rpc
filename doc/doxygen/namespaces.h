@@ -188,6 +188,11 @@ namespace msgpack_rpc {
     namespace messages {
 
         /*!
+         * \dir include/msgpack_rpc/messages/impl
+         * \brief Directory of internal implementation.
+         */
+
+        /*!
          * \dir src/msgpack_rpc/messages/impl
          * \brief Directory of internal implementation.
          */

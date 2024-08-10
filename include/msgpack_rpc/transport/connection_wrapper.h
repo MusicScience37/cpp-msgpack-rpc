@@ -95,9 +95,8 @@ public:
     template <typename... Parameters>
     void async_request(messages::MethodNameView method_name,
         messages::MessageID message_id, const Parameters&... parameters) {
-        connection_->async_send(std::make_shared<messages::SerializedMessage>(
-            messages::MessageSerializer::serialize_request(
-                method_name, message_id, parameters...)));
+        connection_->async_send(messages::MessageSerializer::serialize_request(
+            method_name, message_id, parameters...));
     }
 
     /*!
@@ -110,9 +109,9 @@ public:
     template <typename T>
     void async_response_success(
         messages::MessageID request_id, const T& result) {
-        connection_->async_send(std::make_shared<messages::SerializedMessage>(
+        connection_->async_send(
             messages::MessageSerializer::serialize_successful_response(
-                request_id, result)));
+                request_id, result));
     }
 
     /*!
@@ -124,9 +123,9 @@ public:
      */
     template <typename T>
     void async_response_error(messages::MessageID request_id, const T& error) {
-        connection_->async_send(std::make_shared<messages::SerializedMessage>(
+        connection_->async_send(
             messages::MessageSerializer::serialize_error_response(
-                request_id, error)));
+                request_id, error));
     }
 
     /*!
@@ -139,9 +138,9 @@ public:
     template <typename... Parameters>
     void async_notify(
         messages::MethodNameView method_name, const Parameters&... parameters) {
-        connection_->async_send(std::make_shared<messages::SerializedMessage>(
+        connection_->async_send(
             messages::MessageSerializer::serialize_notification(
-                method_name, parameters...)));
+                method_name, parameters...));
     }
 
     /*!

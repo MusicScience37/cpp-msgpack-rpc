@@ -19,7 +19,6 @@
  */
 #pragma once
 
-#include <memory>
 #include <mutex>
 #include <optional>
 #include <queue>
@@ -44,12 +43,12 @@ public:
      *
      * \return Next message and its message ID if exists.
      */
-    [[nodiscard]] std::tuple<std::shared_ptr<messages::SerializedMessage>,
+    [[nodiscard]] std::tuple<std::optional<messages::SerializedMessage>,
         std::optional<messages::MessageID>>
     next() {
         std::unique_lock<std::mutex> lock(mutex_);
         if (queue_.empty()) {
-            return {nullptr, std::nullopt};
+            return {std::nullopt, std::nullopt};
         }
         return queue_.front();
     }
@@ -68,7 +67,7 @@ public:
      * \param[in] message Message.
      * \param[in] id Message ID (for requests).
      */
-    void push(std::shared_ptr<messages::SerializedMessage> message,
+    void push(messages::SerializedMessage message,
         std::optional<messages::MessageID> id = std::nullopt) {
         std::unique_lock<std::mutex> lock(mutex_);
         queue_.emplace(std::move(message), id);
@@ -76,7 +75,7 @@ public:
 
 private:
     //! Queue.
-    std::queue<std::tuple<std::shared_ptr<messages::SerializedMessage>,
+    std::queue<std::tuple<messages::SerializedMessage,
         std::optional<messages::MessageID>>>
         queue_{};
 
