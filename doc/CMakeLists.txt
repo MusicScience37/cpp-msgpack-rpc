@@ -12,3 +12,8 @@ option(${UPPER_PROJECT_NAME}_BUILD_DOC_SPHINX
 if(${UPPER_PROJECT_NAME}_BUILD_DOC_SPHINX)
     add_subdirectory(sphinx)
 endif()
+
+configure_file(${${UPPER_PROJECT_NAME}_SOURCE_DIR}/schemas/config_schema_v1.json
+               ${${UPPER_PROJECT_NAME}_HTML_ROOT}/schemas/config_schema_v1.json)
+configure_file(${${UPPER_PROJECT_NAME}_SOURCE_DIR}/schemas/config_schema_v1.json
+               ${${UPPER_PROJECT_NAME}_HTML_ROOT}/schemas/config_schema.json)
