@@ -29,12 +29,14 @@ set(SOURCE_FILES
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
+    messages/impl/sharable_binary_header_test.cpp
     messages/message_parser_test.cpp
     messages/message_serializer_test.cpp
     messages/message_type_test.cpp
     messages/method_name_test.cpp
     messages/method_name_view_test.cpp
     messages/parsed_parameters_test.cpp
+    messages/serialized_message_test.cpp
     methods/functional_method_test.cpp
     methods/method_exception_test.cpp
     methods/method_processor_test.cpp

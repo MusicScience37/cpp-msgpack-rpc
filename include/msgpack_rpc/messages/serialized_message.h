@@ -20,14 +20,18 @@
 #pragma once
 
 #include <cstddef>
-#include <string>
+
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/messages/impl/sharable_binary_header_fwd.h"
 
 namespace msgpack_rpc::messages {
 
 /*!
  * \brief Class of serialized message data.
+ *
+ * \note Objects of this class shares internal buffers for the same data.
  */
-class SerializedMessage {
+class MSGPACK_RPC_EXPORT SerializedMessage {
 public:
     /*!
      * \brief Constructor.
@@ -35,25 +39,60 @@ public:
      * \param[in] data Pointer to the data.
      * \param[in] size Size of the data.
      */
-    SerializedMessage(const char* data, std::size_t size) : data_(data, size) {}
+    SerializedMessage(const char* data, std::size_t size);
+
+    /*!
+     * \brief Copy constructor.
+     *
+     * \param[in] other Object to copy from.
+     */
+    SerializedMessage(const SerializedMessage& other) noexcept;
+
+    /*!
+     * \brief Move constructor.
+     *
+     * \param[in,out] other Object to move from.
+     */
+    SerializedMessage(SerializedMessage&& other) noexcept;
+
+    /*!
+     * \brief Copy assignment operator.
+     *
+     * \param[in] other Object to copy from.
+     * \return This object after copy.
+     */
+    SerializedMessage& operator=(const SerializedMessage& other) noexcept;
+
+    /*!
+     * \brief Move assignment operator.
+     *
+     * \param[in,out] other Object to move from.
+     * \return This object after move.
+     */
+    SerializedMessage& operator=(SerializedMessage&& other) noexcept;
+
+    /*!
+     * \brief Destructor.
+     */
+    ~SerializedMessage() noexcept;
 
     /*!
      * \brief Get the pointer to the data.
      *
      * \return Pointer to the data.
      */
-    [[nodiscard]] const char* data() const noexcept { return data_.data(); }
+    [[nodiscard]] const char* data() const noexcept;
 
     /*!
      * \brief Get the size of the data.
      *
      * \return Size of the data.
      */
-    [[nodiscard]] std::size_t size() const noexcept { return data_.size(); }
+    [[nodiscard]] std::size_t size() const noexcept;
 
 private:
-    //! Data.
-    std::string data_;
+    //! Buffer.
+    impl::SharableBinaryHeader* buffer_;
 };
 
 }  // namespace msgpack_rpc::messages
