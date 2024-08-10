@@ -4,6 +4,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
                ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
 file(MAKE_DIRECTORY ${${UPPER_PROJECT_NAME}_HTML_ROOT}/api)
+file(MAKE_DIRECTORY ${${UPPER_PROJECT_NAME}_DOXYGEN_XML_PATH})
 
 add_custom_target(
     ${PROJECT_NAME}_doc_doxygen ALL

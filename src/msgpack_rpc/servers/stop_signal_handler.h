@@ -32,7 +32,7 @@
 namespace msgpack_rpc::servers {
 
 /*!
- * \brief Class to handle Linux signals to stop a server.
+ * \brief Class to handle Linux signals SIGINT and SIGTERM to stop a server.
  */
 class StopSignalHandler {
 public:
@@ -47,7 +47,7 @@ public:
           logger_(std::move(logger)) {}
 
     /*!
-     * \brief Wait for a signal.
+     * \brief Wait for a signal SIGINT or SIGTERM.
      */
     void wait() {
         signal_set_.async_wait(

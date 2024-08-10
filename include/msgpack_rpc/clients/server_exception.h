@@ -31,6 +31,9 @@ namespace msgpack_rpc::clients {
 
 /*!
  * \brief Class of exceptions specifying errors in servers.
+ *
+ * Exceptions of this class can be thrown by Client::call and Client::async_call
+ * functions.
  */
 class MSGPACK_RPC_EXPORT ServerException : public MsgpackRPCException {
 public:

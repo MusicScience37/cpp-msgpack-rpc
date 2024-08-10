@@ -43,6 +43,8 @@ public:
      *
      * \param[in] value Value.
      * \return This.
+     *
+     * \note Empty filepath specifies output to console.
      */
     LoggingConfig& filepath(std::string_view value);
 

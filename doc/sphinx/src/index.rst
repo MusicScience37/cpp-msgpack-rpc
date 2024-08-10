@@ -6,8 +6,6 @@ An RPC library implementing MessagePack RPC.
 Developed at
 `https://gitlab.com/MusicScience37Projects/utility-libraries/cpp-msgpack-rpc <https://gitlab.com/MusicScience37Projects/utility-libraries/cpp-msgpack-rpc>`_.
 
-API reference can be viewed `here <api/index.html>`_.
-
 .. toctree::
     :maxdepth: 1
     :caption: About
@@ -20,6 +18,9 @@ API reference can be viewed `here <api/index.html>`_.
     :caption: Usage
 
     how_to_use
+    basic_apis/index
+    configurations/index
+    API Reference <https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/api/index.html>
 
 .. toctree::
     :maxdepth: 1

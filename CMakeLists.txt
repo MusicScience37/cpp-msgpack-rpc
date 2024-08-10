@@ -27,6 +27,8 @@ include(CTest)
 
 option(${UPPER_PROJECT_NAME}_BUILD_DOC
        "build documentation of ${FULL_PROJECT_NAME}" OFF)
+option(${UPPER_PROJECT_NAME}_BUILD_EXAMPLES
+       "build examples of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_TESTING "enable tests of ${FULL_PROJECT_NAME}" OFF)
 option(${UPPER_PROJECT_NAME}_ENABLE_INSTALL
        "enable CMake target to install ${FULL_PROJECT_NAME}" ON)
@@ -101,6 +103,10 @@ add_subdirectory(src)
 
 if(${UPPER_PROJECT_NAME}_BUILD_DOC)
     add_subdirectory(doc)
+endif()
+
+if(${UPPER_PROJECT_NAME}_BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()
 
 if(${UPPER_PROJECT_NAME}_TESTING)

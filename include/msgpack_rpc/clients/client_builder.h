@@ -42,10 +42,19 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] logger Logger.
+     * This overload will use the default configurations for clients and
+     * loggers.
      */
-    explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger =
-                               logging::Logger::create())
+    ClientBuilder() : ClientBuilder(logging::Logger::create()) {}
+
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] logger Logger.
+     *
+     * This overload will use the default configurations for clients.
+     */
+    explicit ClientBuilder(const std::shared_ptr<logging::Logger>& logger)
         : ClientBuilder(config::ClientConfig(), logger) {}
 
     /*!
@@ -59,14 +68,6 @@ public:
             logging::Logger::create())
         : impl_(impl::create_default_client_builder_impl(
               std::move(client_config), logger)) {}
-
-    /*!
-     * \brief Constructor.
-     *
-     * \param[in] impl Object of the internal implementation.
-     */
-    explicit ClientBuilder(std::unique_ptr<impl::IClientBuilderImpl> impl)
-        : impl_(std::move(impl)) {}
 
     /*!
      * \brief Add a URI to connect to.

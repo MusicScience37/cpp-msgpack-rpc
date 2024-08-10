@@ -31,6 +31,8 @@ namespace msgpack_rpc::servers {
 
 /*!
  * \brief Class of servers.
+ *
+ * Servers can be created using ServerBuilder.
  */
 class Server {
 public:
@@ -38,17 +40,25 @@ public:
      * \brief Constructor.
      *
      * \param[in] impl Object of the internal implementation.
+     *
+     * \warning Users should create servers using ServerBuilder instead of this
+     * constructor.
      */
     explicit Server(std::unique_ptr<impl::IServerImpl> impl) noexcept
         : impl_(std::move(impl)) {}
 
     /*!
      * \brief Stop processing of this server.
+     *
+     * \note Destructing this server without call of this function will
+     * automatically stop this server internally.
      */
     void stop() { impl_->stop(); }
 
     /*!
-     * \brief Run processing of this server until a signal is received.
+     * \brief Run processing of this server until SIGINT or SIGTERM is received.
+     *
+     * \note When this function returns, this server is stopped automatically.
      */
     void run_until_signal() { impl_->run_until_signal(); }
 

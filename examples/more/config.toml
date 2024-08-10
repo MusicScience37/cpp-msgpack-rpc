@@ -1,0 +1,6 @@
+[logging.example]
+output_log_level = "trace"
+
+[client.example]
+
+[server.example]

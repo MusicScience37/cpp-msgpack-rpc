@@ -5,4 +5,5 @@ poetry run sphinx-autobuild \
     ${CMAKE_CURRENT_SOURCE_DIR}/src ${${UPPER_PROJECT_NAME}_HTML_ROOT} \
     -D plantuml="java -jar ${PLANTUML_JAR_PATH}" \
     -D release=${PROJECT_VERSION} \
+    -D breathe_projects.msgpack_rpc="${${UPPER_PROJECT_NAME}_DOXYGEN_XML_PATH}" \
     --port 5864
