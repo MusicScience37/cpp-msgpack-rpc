@@ -23,6 +23,7 @@
 
 #include <msgpack.hpp>
 
+#include "msgpack_rpc/messages/impl/serialization_buffer.h"
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/serialized_message.h"
@@ -47,14 +48,14 @@ public:
     [[nodiscard]] static SerializedMessage serialize_request(
         MethodNameView method_name, MessageID message_id,
         const Parameters&... parameters) {
-        msgpack::sbuffer buffer;
-        msgpack::packer<msgpack::sbuffer> packer{buffer};
+        impl::SerializationBuffer buffer;
+        msgpack::packer<impl::SerializationBuffer> packer{buffer};
         packer.pack_array(4);
         packer.pack(0);
         packer.pack(message_id);
         packer.pack(method_name.name());
         packer.pack(std::forward_as_tuple(parameters...));
-        return SerializedMessage(buffer.data(), buffer.size());
+        return buffer.release();
     }
 
     /*!
@@ -68,14 +69,14 @@ public:
     template <typename T>
     [[nodiscard]] static SerializedMessage serialize_successful_response(
         MessageID request_id, const T& result) {
-        msgpack::sbuffer buffer;
-        msgpack::packer<msgpack::sbuffer> packer{buffer};
+        impl::SerializationBuffer buffer;
+        msgpack::packer<impl::SerializationBuffer> packer{buffer};
         packer.pack_array(4);
         packer.pack(1);
         packer.pack(request_id);
         packer.pack_nil();
         packer.pack(result);
-        return SerializedMessage(buffer.data(), buffer.size());
+        return buffer.release();
     }
 
     /*!
@@ -89,14 +90,14 @@ public:
     template <typename T>
     [[nodiscard]] static SerializedMessage serialize_error_response(
         MessageID request_id, const T& error) {
-        msgpack::sbuffer buffer;
-        msgpack::packer<msgpack::sbuffer> packer{buffer};
+        impl::SerializationBuffer buffer;
+        msgpack::packer<impl::SerializationBuffer> packer{buffer};
         packer.pack_array(4);
         packer.pack(1);
         packer.pack(request_id);
         packer.pack(error);
         packer.pack_nil();
-        return SerializedMessage(buffer.data(), buffer.size());
+        return buffer.release();
     }
 
     /*!
@@ -110,13 +111,13 @@ public:
     template <typename... Parameters>
     [[nodiscard]] static SerializedMessage serialize_notification(
         MethodNameView method_name, const Parameters&... parameters) {
-        msgpack::sbuffer buffer;
-        msgpack::packer<msgpack::sbuffer> packer{buffer};
+        impl::SerializationBuffer buffer;
+        msgpack::packer<impl::SerializationBuffer> packer{buffer};
         packer.pack_array(3);
         packer.pack(2);
         packer.pack(method_name.name());
         packer.pack(std::forward_as_tuple(parameters...));
-        return SerializedMessage(buffer.data(), buffer.size());
+        return buffer.release();
     }
 };
 
