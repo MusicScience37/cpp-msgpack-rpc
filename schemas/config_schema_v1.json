@@ -147,9 +147,13 @@
       "additionalProperties": false
     },
     "server": {
+      "title": "Server configurations",
+      "description": "Configurations of servers. This is a mapping from configuration names to the configurations of servers.",
       "type": "object",
       "patternProperties": {
         ".+": {
+          "title": "Server configurations",
+          "description": "Configurations of servers.",
           "type": "object",
           "properties": {
             "uris": {
