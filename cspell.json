@@ -73,6 +73,7 @@
     "isort",
     "isystem",
     "IWYU",
+    "jsonschema",
     "Kabashima",
     "kaleido",
     "Kenta",

@@ -4,3 +4,8 @@ Configuration Files
 =====================
 
 TODO
+
+.. toctree::
+    :maxdepth: 1
+
+    schema_doc/index
