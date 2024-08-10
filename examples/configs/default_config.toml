@@ -1,0 +1,71 @@
+"$schema" = "https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema.json"
+
+# Default configurations of cpp-msgpack-rpc
+
+# #################################################################################
+# Configurations of loggers.
+# #################################################################################
+# "logging" is a mapping from configuration names to the configurations of loggers.
+[logging.default]
+# Path of the log file.
+# Empty filepath specifies output to console.
+filepath = ""
+# Maximum size of a file in bytes.
+max_file_size = 1048576
+# Maximum number of files.
+max_files = 5
+# Minimum log level to write logs.
+output_log_level = "info"
+
+# #################################################################################
+# Configurations of clients.
+# #################################################################################
+# "client" is a mapping from configuration names to the configurations of clients.
+[client.default]
+# URIs of servers to connect to.
+# URIs can be also added in ClientBuilder class.
+uris = []
+# Timeout of RPCs in seconds.
+call_timeout_sec = 15
+
+# Configurations of parsers of messages.
+[client.default.message_parser]
+# Buffer size to read at once in bytes.
+read_buffer_size = 32768
+
+# Configurations of executors.
+[client.default.executor]
+# Number of threads for transport.
+num_transport_threads = 1
+# Number of threads for callbacks.
+num_callback_threads = 1
+
+# Configurations of reconnection to servers.
+[client.default.reconnection]
+# Initial waiting time.
+initial_waiting_time_sec = 0.125
+# Maximum waiting time.
+max_waiting_time_sec = 32
+# Maximum jitter of waiting time.
+max_jitter_waiting_time_sec = 0.125
+
+# #################################################################################
+# Configurations of servers.
+# #################################################################################
+# "server" is a mapping from configuration names to the configurations of servers.
+[server.default]
+# URIs of a server to listen to.
+# URIs can be also added in ServerBuilder class.
+uris = []
+
+# Configurations of parsers of messages.
+[server.default.message_parser]
+# Buffer size to read at once in bytes.
+read_buffer_size = 32768
+
+# Configurations of executors.
+[server.default.executor]
+# Number of threads for transport.
+num_transport_threads = 1
+# Number of threads for callbacks.
+num_callback_threads = 1

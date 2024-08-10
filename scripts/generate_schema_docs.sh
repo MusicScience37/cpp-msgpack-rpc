@@ -4,6 +4,6 @@ set -e
 
 cd $(dirname $(dirname $0))
 
-mkdir -p doc/sphinx/src/configurations/schema_doc
+mkdir -p doc/sphinx/src/configurations/schemas
 
-poetry run jsonschema2md schemas/config_schema_v1.json doc/sphinx/src/configurations/schema_doc/config_schema_v1.md
+poetry run jsonschema2md schemas/config_schema_v1.json doc/sphinx/src/configurations/schemas/config_schema_v1.md

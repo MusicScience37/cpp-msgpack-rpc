@@ -24,8 +24,8 @@
       - **`initial_waiting_time_sec`** *(number)*: Initial waiting time. Exclusive minimum: `0.0`. Default: `0.125`.
       - **`max_waiting_time_sec`** *(number)*: Maximum waiting time. Exclusive minimum: `0.0`. Default: `32.0`.
       - **`max_jitter_waiting_time_sec`** *(number)*: Maximum jitter of waiting time. Exclusive minimum: `0.0`. Default: `0.125`.
-- **`server`** *(object)*: Cannot contain additional properties.
-  - **`.+`** *(object)*: Cannot contain additional properties.
+- **`server`** *(object)*: Configurations of servers. This is a mapping from configuration names to the configurations of servers. Cannot contain additional properties.
+  - **`.+`** *(object)*: Configurations of servers. Cannot contain additional properties.
     - **`uris`** *(array)*: URIs of a server to listen to. URIs can be also added in ServerBuilder class. Default: `[]`.
       - **Items** *(string)*: A URI of a server to listen to.
     - **`message_parser`** *(object)*: Configurations of parsers of messages. Cannot contain additional properties.

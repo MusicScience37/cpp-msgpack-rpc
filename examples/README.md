@@ -3,4 +3,5 @@
 | Directory | Contents                                        |
 | :-------- | :---------------------------------------------- |
 | simple    | Simple example.                                 |
-| more_apis | Example of various APIs of clients and servers. |
+| more      | Example of various APIs of clients and servers. |
+| configs   | Examples of configuration files.                |

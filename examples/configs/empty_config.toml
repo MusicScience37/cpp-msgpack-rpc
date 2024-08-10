@@ -1,7 +1,7 @@
 "$schema" = "https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema.json"
 
-[logging.example]
+[logging.empty]
 
-[client.example]
+[client.empty]
 
-[server.example]
+[server.empty]

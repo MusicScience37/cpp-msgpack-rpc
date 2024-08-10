@@ -19,7 +19,7 @@
 project = "cpp-msgpack-rpc"
 release = "unknown"  # inserted in command line
 
-copyright = "2023, Kenta Kabashima. "
+copyright = "2023, Kenta Kabashima"
 author = "Kenta Kabashima"
 
 # -- General configuration ---------------------------------------------------
