@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "title": "cpp-msgpack-rpc configuration schema.",
+  "description": "Schema of configuration files in cpp-msgpack-rpc library.",
+  "type": "object",
+  "properties": {
+    "logging": {
+      "title": "Logging configurations.",
+      "description": "Configurations of loggers. This is a mapping from configuration names to the configurations of loggers.",
+      "type": "object",
+      "patternProperties": {
+        ".+": {
+          "title": "Logging configurations.",
+          "description": "Configurations of loggers.",
+          "type": "object",
+          "properties": {
+            "filepath": {
+              "title": "Filepath.",
+              "description": "Path of the log file. Empty filepath specifies output to console.",
+              "type": "string"
+            },
+            "max_file_size": {
+              "title": "Maximum size of a file.",
+              "description": "Maximum size of a file in bytes.",
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_files": {
+              "title": "Maximum number of files.",
+              "description": "Maximum number of files.",
+              "type": "integer",
+              "minimum": 1
+            },
+            "output_log_level": {
+              "title": "Output log level.",
+              "description": "Minimum log level to write logs.",
+              "type": "string",
+              "enum": ["trace", "debug", "info", "warn", "error", "critical"]
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "client": {
+      "type": "object",
+      "patternProperties": {
+        ".+": { "type": "object" }
+      }
+    },
+    "server": {
+      "type": "object",
+      "patternProperties": {
+        ".+": { "type": "object" }
+      }
+    }
+  }
+}

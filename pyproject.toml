@@ -30,6 +30,8 @@ pandas = "^2.2.2"
 plotly = "^5.23.0"
 kaleido = "==0.2.1"
 statsmodels = "^0.14.2"
+fastjsonschema = "^2.20.0"
+pytomlpp = "^1.0.13"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
