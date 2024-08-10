@@ -5,34 +5,34 @@
   "type": "object",
   "properties": {
     "logging": {
-      "title": "Logging configurations.",
+      "title": "Logging configurations",
       "description": "Configurations of loggers. This is a mapping from configuration names to the configurations of loggers.",
       "type": "object",
       "patternProperties": {
         ".+": {
-          "title": "Logging configurations.",
+          "title": "Logging configurations",
           "description": "Configurations of loggers.",
           "type": "object",
           "properties": {
             "filepath": {
-              "title": "Filepath.",
+              "title": "Filepath",
               "description": "Path of the log file. Empty filepath specifies output to console.",
               "type": "string"
             },
             "max_file_size": {
-              "title": "Maximum size of a file.",
+              "title": "Maximum size of a file",
               "description": "Maximum size of a file in bytes.",
               "type": "integer",
               "minimum": 1
             },
             "max_files": {
-              "title": "Maximum number of files.",
+              "title": "Maximum number of files",
               "description": "Maximum number of files.",
               "type": "integer",
               "minimum": 1
             },
             "output_log_level": {
-              "title": "Output log level.",
+              "title": "Output log level",
               "description": "Minimum log level to write logs.",
               "type": "string",
               "enum": ["trace", "debug", "info", "warn", "error", "critical"]
@@ -44,9 +44,93 @@
       "additionalProperties": false
     },
     "client": {
+      "title": "Client configurations",
+      "description": "Configurations of clients. This is a mapping from configuration names to the configurations of clients.",
       "type": "object",
       "patternProperties": {
-        ".+": { "type": "object" }
+        ".+": {
+          "title": "Client configurations",
+          "description": "Configurations of clients.",
+          "type": "object",
+          "properties": {
+            "uris": {
+              "title": "URIs",
+              "description": "URIs of servers to connect to. URIs can be also added in ClientBuilder class.",
+              "type": "array",
+              "items": {
+                "title": "URI",
+                "description": "A URI of a server to connect to.",
+                "type": "string"
+              }
+            },
+            "call_timeout_sec": {
+              "title": "Timeout of RPCs",
+              "description": "Timeout of RPCs in seconds.",
+              "type": "number",
+              "exclusiveMinimum": 0.0
+            },
+            "message_parser": {
+              "title": "Message parser configurations",
+              "description": "Configurations of parsers of messages.",
+              "type": "object",
+              "properties": {
+                "read_buffer_size": {
+                  "title": "Buffer size to read at once",
+                  "description": "Buffer size to read at once in bytes.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "executor": {
+              "title": "Executor configurations",
+              "description": "Configurations of executors.",
+              "type": "object",
+              "properties": {
+                "num_transport_threads": {
+                  "title": "Number of threads for transport",
+                  "description": "Number of threads for transport.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "num_callback_threads": {
+                  "title": "Number of threads for callbacks",
+                  "description": "Number of threads for callbacks.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "reconnection": {
+              "title": "Reconnection configuration",
+              "description": "Configurations of reconnection to servers.",
+              "properties": {
+                "initial_waiting_time_sec": {
+                  "title": "Initial waiting time",
+                  "description": "Initial waiting time.",
+                  "type": "number",
+                  "exclusiveMinimum": 0.0
+                },
+                "max_waiting_time_sec": {
+                  "title": "Maximum waiting time",
+                  "description": "Maximum waiting time.",
+                  "type": "number",
+                  "exclusiveMinimum": 0.0
+                },
+                "max_jitter_waiting_time_sec": {
+                  "title": "Maximum jitter of waiting time",
+                  "description": "Maximum jitter of waiting time.",
+                  "type": "number",
+                  "exclusiveMinimum": 0.0
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": false
     },
