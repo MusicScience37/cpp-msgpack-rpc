@@ -55,6 +55,9 @@ public:
      *
      * \return Result.
      *
+     * \throw ServerException Errors in the server.
+     * \throw MsgpackRPCException Other errors.
+     *
      * \note This function will wait for the result if not received.
      */
     [[nodiscard]] Result get_result() {
@@ -67,6 +70,9 @@ public:
      *
      * \param[in] timeout Timeout.
      * \return Result.
+     *
+     * \throw ServerException Errors in the server.
+     * \throw MsgpackRPCException Other errors including timeout.
      *
      * \note This function will wait for the result if not received, and throw
      * an exception when no result can be received within the given timeout.

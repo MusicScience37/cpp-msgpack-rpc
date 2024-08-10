@@ -28,7 +28,7 @@ int main() {
             // Specify the signature of the method in the template parameter.
             .add_method<int(int, int)>(
                 "add", [](int x, int y) { return x + y; })
-            // Specify the URL of the server.
+            // Specify the URI of the server.
             .listen_to("tcp://localhost:7136")
             // build() creates a server and starts processing of the server.
             .build();

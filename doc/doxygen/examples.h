@@ -27,3 +27,13 @@
  * \example simple_server.cpp
  * Example of a simple server.
  */
+
+/*!
+ * \example more_client.cpp
+ * Example to use various APIs of clients.
+ */
+
+/*!
+ * \example more_server.cpp
+ * Example to use various APIs of servers.
+ */

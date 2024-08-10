@@ -65,9 +65,6 @@ public:
      * \param[in] method_name Name of the method.
      * \param[in] parameters Parameters.
      * \return Future object to get the result of the RPC.
-     *
-     * \throw ServerException Errors in the server.
-     * \throw MsgpackRPCException Other errors.
      */
     template <typename Result, typename... Parameters>
     [[nodiscard]] CallFuture<std::decay_t<Result>> async_call(

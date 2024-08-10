@@ -11,7 +11,18 @@ can be used to call a method.
 ```{literalinclude} ../../../../examples/simple/simple_client.cpp
 :caption: Example of a Simple Client
 :language: cpp
-:lines: 20-
+:start-at: "#include"
+```
+
+## More APIs
+
+An example with more APIs is shown below.
+
+```{literalinclude} ../../../../examples/more/more_client.cpp
+:caption: Example to use various APIs of clients
+:language: cpp
+:start-at: "#include"
+:end-before: "// Helper functions."
 ```
 
 ## APIs of Clients

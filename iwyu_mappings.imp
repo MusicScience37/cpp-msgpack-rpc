@@ -1029,6 +1029,7 @@
   { include: ["<lyra/opt.hpp>", private, "<lyra/lyra.hpp>", public ] },
   { include: ["<lyra/parser.hpp>", private, "<lyra/lyra.hpp>", public ] },
   { include: ["<lyra/args.hpp>", private, "<lyra/lyra.hpp>", public ] },
+  { include: ["<lyra/help.hpp>", private, "<lyra/lyra.hpp>", public ] },
   # Custom (trompeloeil library)
   { include: ["<trompeloeil.hpp>", private, "\"trompeloeil_catch2.h\"", public ] },
   { include: ["@<trompeloeil/.*>", private, "\"trompeloeil_catch2.h\"", public ] },

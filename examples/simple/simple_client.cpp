@@ -26,7 +26,7 @@ int main() {
     // Create a client.
     msgpack_rpc::clients::Client client =
         msgpack_rpc::clients::ClientBuilder()
-            // Specify the URL of the server to connect to.
+            // Specify the URI of the server to connect to.
             .connect_to("tcp://localhost:7136")
             // build() creates a client and starts processing of the client.
             .build();
