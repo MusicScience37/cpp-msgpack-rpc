@@ -17,7 +17,7 @@ Developed at
     :maxdepth: 1
     :caption: Usage
 
-    how_to_use
+    installation
     basic_apis/index
     configurations/index
     API Reference <https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/api/index.html>
