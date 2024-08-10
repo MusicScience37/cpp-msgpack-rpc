@@ -1,10 +1,10 @@
 """Test of logging configurations in the schema of configurations."""
 
-import json
 import typing
 
-import fastjsonschema
 import pytest
+
+from .config_checker import ConfigChecker
 
 
 @pytest.mark.parametrize(
@@ -14,9 +14,7 @@ import pytest
         "file/path.log",
     ],
 )
-def test_validate_correct_filepath(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_correct_filepath(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -24,7 +22,7 @@ def test_validate_correct_filepath(
             }
         }
     }
-    assert config_validator(config_data)
+    config_checker.assert_valid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -34,9 +32,7 @@ def test_validate_correct_filepath(
         123,
     ],
 )
-def test_validate_invalid_filepath(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_invalid_filepath(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -44,7 +40,7 @@ def test_validate_invalid_filepath(
             }
         }
     }
-    assert not config_validator(config_data)
+    config_checker.assert_invalid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -55,9 +51,7 @@ def test_validate_invalid_filepath(
         10,
     ],
 )
-def test_validate_correct_max_file_size(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_correct_max_file_size(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -65,7 +59,7 @@ def test_validate_correct_max_file_size(
             }
         }
     }
-    assert config_validator(config_data)
+    config_checker.assert_valid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -78,9 +72,7 @@ def test_validate_correct_max_file_size(
         -10,
     ],
 )
-def test_validate_invalid_max_file_size(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_invalid_max_file_size(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -88,7 +80,7 @@ def test_validate_invalid_max_file_size(
             }
         }
     }
-    assert not config_validator(config_data)
+    config_checker.assert_invalid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -99,9 +91,7 @@ def test_validate_invalid_max_file_size(
         10,
     ],
 )
-def test_validate_correct_max_files(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_correct_max_files(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -109,7 +99,7 @@ def test_validate_correct_max_files(
             }
         }
     }
-    assert config_validator(config_data)
+    config_checker.assert_valid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -122,9 +112,7 @@ def test_validate_correct_max_files(
         -10,
     ],
 )
-def test_validate_invalid_max_files(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_invalid_max_files(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -132,7 +120,7 @@ def test_validate_invalid_max_files(
             }
         }
     }
-    assert not config_validator(config_data)
+    config_checker.assert_invalid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -146,9 +134,7 @@ def test_validate_invalid_max_files(
         "critical",
     ],
 )
-def test_validate_correct_output_log_level(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_correct_output_log_level(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -156,7 +142,7 @@ def test_validate_correct_output_log_level(
             }
         }
     }
-    assert config_validator(config_data)
+    config_checker.assert_valid(config_data)
 
 
 @pytest.mark.parametrize(
@@ -167,9 +153,7 @@ def test_validate_correct_output_log_level(
         "any",
     ],
 )
-def test_validate_invalid_output_log_level(
-    value: typing.Any, config_validator: typing.Callable[[str], bool]
-):
+def test_invalid_output_log_level(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
@@ -177,4 +161,15 @@ def test_validate_invalid_output_log_level(
             }
         }
     }
-    assert not config_validator(config_data)
+    config_checker.assert_invalid(config_data)
+
+
+def test_invalid_property(config_checker: ConfigChecker):
+    config_data = {
+        "logging": {
+            "example": {
+                "any": "value",
+            }
+        }
+    }
+    config_checker.assert_invalid(config_data)
