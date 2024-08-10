@@ -28,4 +28,3 @@ Developed at
 
     how_to_build_in_repository
     convention
-    design/index
