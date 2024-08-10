@@ -1,3 +1,5 @@
+"$schema" = "https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema.json"
+
 [logging.example]
 output_log_level = "debug"
 
