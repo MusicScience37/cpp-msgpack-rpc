@@ -11,8 +11,8 @@ and parsed using {cpp:class}`msgpack_rpc::config::ConfigParser`.
 :maxdepth: 1
 :caption: JSON Schemas
 
-cpp-msgpack-rpc configuration schema (latest) <https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema.json>
-cpp-msgpack-rpc configuration schema version 1 <https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema_v1.json>
+cpp-msgpack-rpc configuration schema (latest) <https://cppmsgpackrpc.musicscience37.com/schemas/config_schema.json>
+cpp-msgpack-rpc configuration schema version 1 <https://cppmsgpackrpc.musicscience37.com/schemas/config_schema_v1.json>
 ```
 
 ```{toctree}

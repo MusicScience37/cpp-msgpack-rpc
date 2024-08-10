@@ -20,7 +20,7 @@ Developed at
     installation
     basic_apis/index
     configurations/index
-    API Reference <https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/api/index.html>
+    API Reference <https://cppmsgpackrpc.musicscience37.com/api/index.html>
 
 .. toctree::
     :maxdepth: 1

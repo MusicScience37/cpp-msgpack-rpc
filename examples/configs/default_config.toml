@@ -1,4 +1,4 @@
-"$schema" = "https://musicscience37projects.gitlab.io/utility-libraries/cpp-msgpack-rpc/schemas/config_schema.json"
+"$schema" = "https://cppmsgpackrpc.musicscience37.com/schemas/config_schema.json"
 
 # Default configurations of cpp-msgpack-rpc
 
