@@ -1,5 +1,5 @@
 [logging.example]
-output_log_level = "trace"
+output_log_level = "debug"
 
 [client.example]
 
