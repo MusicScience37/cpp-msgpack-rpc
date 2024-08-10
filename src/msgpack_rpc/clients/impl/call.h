@@ -48,8 +48,7 @@ public:
      * \param[in] deadline Deadline of the result of the RPC.
      * \param[in] on_timeout Callback function called when timeout occurs.
      */
-    Call(messages::MessageID id,
-        std::shared_ptr<messages::SerializedMessage> serialized_request,
+    Call(messages::MessageID id, messages::SerializedMessage serialized_request,
         const std::shared_ptr<executors::IExecutor>& executor,
         std::chrono::steady_clock::time_point deadline,
         std::function<void(messages::MessageID)> on_timeout)
@@ -75,8 +74,8 @@ public:
      *
      * \return Serialized request data.
      */
-    [[nodiscard]] const std::shared_ptr<messages::SerializedMessage>&
-    serialized_request() const noexcept {
+    [[nodiscard]] const messages::SerializedMessage& serialized_request()
+        const noexcept {
         return serialized_request_;
     }
 
@@ -108,7 +107,7 @@ private:
     messages::MessageID id_;
 
     //! Serialized request data.
-    std::shared_ptr<messages::SerializedMessage> serialized_request_;
+    messages::SerializedMessage serialized_request_;
 
     //! Object to set the result of this RPC.
     std::shared_ptr<CallPromise> promise_;

@@ -134,9 +134,7 @@ private:
         MSGPACK_RPC_DEBUG(logger_, "{} request {} (id: {})",
             formatted_remote_address_, request.method_name(), request.id());
 
-        auto serialized_response =
-            std::make_shared<messages::SerializedMessage>(
-                processor_->call(request));
+        auto serialized_response = processor_->call(request);
 
         MSGPACK_RPC_DEBUG(logger_, "{} respond {} (id: {})",
             formatted_remote_address_, request.method_name(), request.id());
@@ -225,8 +223,7 @@ private:
     std::string formatted_remote_address_;
 
     //! Messages to be sent.
-    std::queue<std::shared_ptr<const messages::SerializedMessage>>
-        message_queue_{};
+    std::queue<messages::SerializedMessage> message_queue_{};
 
     //! Mutex of message_queue_.
     std::mutex message_queue_mutex_{};

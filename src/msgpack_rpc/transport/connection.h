@@ -26,7 +26,6 @@
 #include <string>
 #include <string_view>
 #include <system_error>
-#include <type_traits>
 #include <utility>
 
 #include <asio/buffer.hpp>
@@ -122,16 +121,14 @@ public:
     }
 
     //! \copydoc msgpack_rpc::transport::IConnection::async_send
-    void async_send(
-        std::shared_ptr<const messages::SerializedMessage> message) override {
+    void async_send(const messages::SerializedMessage& message) override {
         if (!state_machine_.is_processing()) {
             MSGPACK_RPC_TRACE(logger_, "Not processing now.");
             return;
         }
         asio::post(socket_.get_executor(),
-            [self = this->shared_from_this(),
-                message_moved = std::move(message)]() {
-                self->async_send_in_thread(message_moved);
+            [self = this->shared_from_this(), message]() {
+                self->async_send_in_thread(message);
             });
     }
 
@@ -227,16 +224,15 @@ private:
      *
      * \param[in] message Message.
      */
-    void async_send_in_thread(
-        const std::shared_ptr<const messages::SerializedMessage>& message) {
+    void async_send_in_thread(const messages::SerializedMessage& message) {
         asio::async_write(socket_,
-            asio::const_buffer(message->data(), message->size()),
+            asio::const_buffer(message.data(), message.size()),
             [self = this->shared_from_this(), message](
                 const asio::error_code& error, std::size_t /*size*/) {
-                self->on_sent(error, message->size());
+                self->on_sent(error, message.size());
             });
         MSGPACK_RPC_TRACE(
-            logger_, "({}) Sending {} bytes.", log_name_, message->size());
+            logger_, "({}) Sending {} bytes.", log_name_, message.size());
     }
 
     /*!

@@ -33,8 +33,7 @@ public:
         override);
 
     MAKE_MOCK1(async_send,
-        void(std::shared_ptr<const msgpack_rpc::messages::SerializedMessage>),
-        override);
+        void(const msgpack_rpc::messages::SerializedMessage&), override);
 
     MAKE_MOCK0(async_close, void(), override);
 

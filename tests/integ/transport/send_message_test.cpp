@@ -187,8 +187,7 @@ SCENARIO("Send messages") {
                 MessageSerializer::serialize_notification(method_name);
 
             on_connected = [&client_connection, &message] {
-                client_connection->async_send(
-                    std::make_shared<SerializedMessage>(message));
+                client_connection->async_send(message);
             };
 
             THEN("Server-side connection receives the message") {

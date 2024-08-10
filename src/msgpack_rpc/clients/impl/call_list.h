@@ -36,7 +36,6 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_response.h"
-#include "msgpack_rpc/messages/serialized_message.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -71,8 +70,8 @@ public:
         const auto deadline = std::chrono::steady_clock::now() + timeout_;
 
         const messages::MessageID request_id = request_id_generator_.generate();
-        auto serialized_request = std::make_shared<messages::SerializedMessage>(
-            parameters.create_serialized_request(method_name, request_id));
+        auto serialized_request =
+            parameters.create_serialized_request(method_name, request_id);
 
         std::unique_lock<std::mutex> lock(mutex_);
         const auto [iter, is_success] = list_.try_emplace(request_id,

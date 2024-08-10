@@ -20,7 +20,6 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 
 #include "msgpack_rpc/addresses/i_address.h"
 #include "msgpack_rpc/common/status.h"
@@ -77,8 +76,7 @@ public:
      *
      * \param[in] message Message to send.
      */
-    virtual void async_send(
-        std::shared_ptr<const messages::SerializedMessage> message) = 0;
+    virtual void async_send(const messages::SerializedMessage& message) = 0;
 
     /*!
      * \brief Asynchronously close this connection.

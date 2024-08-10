@@ -21,6 +21,6 @@
 
 namespace msgpack_rpc::messages::impl {
 
-struct SharableBinaryHeader;
+struct SharableBinaryHeader;  // IWYU pragma: keep
 
 }  // namespace msgpack_rpc::messages::impl

@@ -54,7 +54,7 @@ public:
      * \param[in] message Message.
      * \param[in] id Message ID (for requests).
      */
-    void send(std::shared_ptr<messages::SerializedMessage> message,
+    void send(messages::SerializedMessage message,
         std::optional<messages::MessageID> id = std::nullopt) {
         sent_messages_.push(std::move(message), id);
         send_next();
@@ -84,7 +84,7 @@ public:
             return;
         }
 
-        connection->async_send(message);
+        connection->async_send(*message);
         MSGPACK_RPC_TRACE(logger_, "Sending next message.");
     }
 
