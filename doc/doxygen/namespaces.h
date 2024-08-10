@@ -278,6 +278,28 @@ namespace msgpack_rpc {
 
     }  // namespace transport
 
+    /*!
+     * \dir include/msgpack_rpc/util
+     * \brief Directory of public headers of utilities.
+     */
+
+    /*!
+     * \dir src/msgpack_rpc/util
+     * \brief Directory of source codes of utilities.
+     */
+
+    /*!
+     * \brief Namespace of utilities.
+     */
+    namespace util {
+
+        /*!
+         * \brief Namespace of internal implementations.
+         */
+        namespace impl {}
+
+    }  // namespace util
+
 }  // namespace msgpack_rpc
 
 /*!
