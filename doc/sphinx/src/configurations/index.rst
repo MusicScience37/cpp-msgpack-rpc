@@ -8,4 +8,4 @@ TODO
 .. toctree::
     :maxdepth: 1
 
-    schema_doc/index
+    schemas/index
