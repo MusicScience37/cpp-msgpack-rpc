@@ -29,6 +29,7 @@ set(SOURCE_FILES
     logging/source_location_view_test.cpp
     messages/call_result_test.cpp
     messages/impl/parse_message_from_object_test.cpp
+    messages/impl/serialization_buffer_test.cpp
     messages/impl/sharable_binary_header_test.cpp
     messages/message_parser_test.cpp
     messages/message_serializer_test.cpp

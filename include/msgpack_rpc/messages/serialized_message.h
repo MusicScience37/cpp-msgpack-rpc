@@ -42,6 +42,15 @@ public:
     SerializedMessage(const char* data, std::size_t size);
 
     /*!
+     * \brief Constructor.
+     *
+     * \param[in] buffer Buffer.
+     *
+     *\warning Users must not use this constructor.
+     */
+    explicit SerializedMessage(impl::SharableBinaryHeader* buffer);
+
+    /*!
      * \brief Copy constructor.
      *
      * \param[in] other Object to copy from.

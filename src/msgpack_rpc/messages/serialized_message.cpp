@@ -34,6 +34,9 @@ SerializedMessage::SerializedMessage(const char* data, std::size_t size)
     std::memcpy(impl::binary_buffer_of(buffer_), data, size);
 }
 
+SerializedMessage::SerializedMessage(impl::SharableBinaryHeader* buffer)
+    : buffer_(buffer) {}
+
 SerializedMessage::SerializedMessage(const SerializedMessage& other) noexcept
     : buffer_(other.buffer_) {
     impl::add_reference_count_of_sharable_binary(buffer_);

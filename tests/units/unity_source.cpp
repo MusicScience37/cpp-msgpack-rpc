@@ -28,6 +28,7 @@
 #include "logging/source_location_view_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/call_result_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/impl/parse_message_from_object_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "messages/impl/serialization_buffer_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/impl/sharable_binary_header_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/message_parser_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "messages/message_serializer_test.cpp"  // NOLINT(bugprone-suspicious-include)

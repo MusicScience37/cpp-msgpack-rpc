@@ -23,6 +23,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
+#include <limits>
 #include <new>
 
 #include "msgpack_rpc/messages/impl/sharable_binary_header_fwd.h"  // IWYU pragma: keep
@@ -39,6 +40,9 @@ public:
 
     //! Size of the binary data.
     std::size_t binary_size;
+
+    //! Capacity of the binary data.
+    std::size_t binary_capacity;
 
     //! Buffer of the object of reference count.
     alignas(alignof(std::atomic<int>))  // NOLINTNEXTLINE
@@ -75,7 +79,74 @@ static_assert(SHARABLE_BINARY_ALIGNMENT <= alignof(std::max_align_t));
     auto* ptr = static_cast<SharableBinaryHeader*>(raw_ptr);
     ptr->total_memory_size = total_memory_size;
     ptr->binary_size = binary_size;
+    ptr->binary_capacity = binary_size;
     ptr->is_reference_count_enabled = false;
+
+    return ptr;
+}
+
+/*!
+ * \brief Allocate a buffer of sharable binary data with automatic initial size.
+ *
+ * \return Buffer of sharable binary data.
+ */
+[[nodiscard]] inline SharableBinaryHeader* allocate_shared_binary() {
+    constexpr std::size_t header_size = sizeof(SharableBinaryHeader);
+    // This value is not tuned.
+    constexpr std::size_t total_memory_size = 128;
+    static_assert(total_memory_size > header_size);
+
+    void* raw_ptr = std::malloc(total_memory_size);  // NOLINT(*-no-malloc)
+    if (raw_ptr == nullptr) {
+        // Since memory allocation has failed, the class of exceptions with
+        // memory allocation like MsgpackRPCException cannot be used.
+        throw std::bad_alloc();
+    }
+
+    auto* ptr = static_cast<SharableBinaryHeader*>(raw_ptr);
+    ptr->total_memory_size = total_memory_size;
+    ptr->binary_size = 0U;
+    ptr->binary_capacity = total_memory_size - header_size;
+    ptr->is_reference_count_enabled = false;
+
+    return ptr;
+}
+
+/*!
+ * \brief Expand a buffer of sharable binary data.
+ *
+ * \param[in,out] buffer Buffer.
+ * \param[in] required_size Required size of binary data.
+ * \return New buffer.
+ */
+[[nodiscard]] inline SharableBinaryHeader* expand_sharable_binary(
+    SharableBinaryHeader* buffer, std::size_t required_size) {
+    // std::realloc is not safe when reference count (use of std::atomic<int>)
+    // is enabled.
+    assert(!buffer->is_reference_count_enabled);
+
+    std::size_t new_capacity = buffer->binary_capacity;
+    while (true) {
+        // TODO Prevent overflow.
+        new_capacity <<= 1U;
+        if (new_capacity >= required_size) {
+            break;
+        }
+    }
+    constexpr std::size_t header_size = sizeof(SharableBinaryHeader);
+    const std::size_t new_total_memory_size = header_size + new_capacity;
+
+    void* raw_ptr =
+        std::realloc(buffer, new_total_memory_size);  // NOLINT(*-no-malloc)
+    if (raw_ptr == nullptr) {
+        // Since memory allocation has failed, the class of exceptions with
+        // memory allocation like MsgpackRPCException cannot be used.
+        throw std::bad_alloc();
+    }
+
+    auto* ptr = static_cast<SharableBinaryHeader*>(raw_ptr);
+    ptr->total_memory_size = new_total_memory_size;
+    ptr->binary_capacity = new_total_memory_size - header_size;
 
     return ptr;
 }
