@@ -65,16 +65,14 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             msgpack_rpc::messages::MethodNameView("method1");
         const auto param1 = std::string("abc");
 
-        Call call =
+        const auto [request_id, serialized_request, future] =
             list->create(method_name, make_parameters_serializer(param1));
 
-        const auto request = parse_request(call.serialized_request());
+        const auto request = parse_request(serialized_request);
         CHECK(request.method_name() == method_name);
-        CHECK(request.id() == call.id());
+        CHECK(request.id() == request_id);
         CHECK(request.parameters().as<std::string>() ==
             std::forward_as_tuple(param1));
-
-        const auto future = call.future();
 
         SECTION("and handle the response") {
             const auto response =
@@ -101,16 +99,14 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             msgpack_rpc::messages::MethodNameView("method1");
         const auto param1 = std::string("abc");
 
-        Call call =
+        const auto [request_id, serialized_request, future] =
             list->create(method_name, make_parameters_serializer(param1));
 
-        const auto request = parse_request(call.serialized_request());
+        const auto request = parse_request(serialized_request);
         CHECK(request.method_name() == method_name);
-        CHECK(request.id() == call.id());
+        CHECK(request.id() == request_id);
         CHECK(request.parameters().as<std::string>() ==
             std::forward_as_tuple(param1));
-
-        const auto future = call.future();
 
         SECTION("and handle timeout") {
             try {
@@ -127,11 +123,11 @@ TEST_CASE("msgpack_rpc::clients::impl::CallList") {
             msgpack_rpc::messages::MethodNameView("method1");
         const auto param1 = std::string("abc");
 
-        const Call call1 =
+        const auto [request_id1, serialized_request1, future1] =
             list->create(method_name, make_parameters_serializer(param1));
-        const Call call2 =
+        const auto [request_id2, serialized_request2, future2] =
             list->create(method_name, make_parameters_serializer(param1));
 
-        CHECK(call1.id() != call2.id());
+        CHECK(request_id1 != request_id2);
     }
 }

@@ -130,14 +130,15 @@ public:
         const IParametersSerializer& parameters) override {
         check_executor_state();
 
-        const auto call = call_list_->create(method_name, parameters);
+        const auto [request_id, serialized_request, future] =
+            call_list_->create(method_name, parameters);
 
-        sender_->send(call.serialized_request(), call.id());
+        sender_->send(serialized_request, request_id);
 
         MSGPACK_RPC_DEBUG(
-            logger_, "Send request {} (id: {})", method_name, call.id());
+            logger_, "Send request {} (id: {})", method_name, request_id);
 
-        return call.future();
+        return future;
     }
 
     //! \copydoc msgpack_rpc::clients::impl::IClientImpl::notify

@@ -23,6 +23,7 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 
@@ -36,6 +37,7 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_response.h"
+#include "msgpack_rpc/messages/serialized_message.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -63,38 +65,41 @@ public:
      *
      * \param[in] method_name Method name.
      * \param[in] parameters Parameters.
-     * \return Registered RPC.
+     * \return Request ID, serialized request, and future object.
      */
-    [[nodiscard]] Call create(messages::MethodNameView method_name,
+    [[nodiscard]] std::tuple<messages::MessageID, messages::SerializedMessage,
+        std::shared_ptr<CallFutureImpl>>
+    create(messages::MethodNameView method_name,
         const IParametersSerializer& parameters) {
         const auto deadline = std::chrono::steady_clock::now() + timeout_;
 
         const messages::MessageID request_id = request_id_generator_.generate();
-        auto serialized_request =
+        const auto serialized_request =
             parameters.create_serialized_request(method_name, request_id);
 
         std::unique_lock<std::mutex> lock(mutex_);
         const auto [iter, is_success] = list_.try_emplace(request_id,
-            std::make_unique<Call>(request_id, std::move(serialized_request),
-                executor(), deadline,
-                [weak_self = this->weak_from_this()](
-                    messages::MessageID request_id) {
-                    const auto self = weak_self.lock();
-                    if (self) {
-                        self->on_timeout(request_id);
-                    }
-                }));
+            request_id, serialized_request, executor(), deadline,
+            [weak_self = this->weak_from_this()](
+                messages::MessageID request_id) {
+                const auto self = weak_self.lock();
+                if (self) {
+                    self->on_timeout(request_id);
+                }
+            });
         if (!is_success) {
             // This won't occur in the ordinary condition.
             throw MsgpackRPCException(
                 StatusCode::UNEXPECTED_ERROR, "Duplicate request ID.");
         }
-        auto call = *(iter->second);
+        // Iterator can be invalidated, but reference won't be invalidated in
+        // std::unordered_map unless the referenced object is destroyed.
+        auto& call = iter->second;
         lock.unlock();
 
         call.start();
 
-        return call;
+        return {request_id, serialized_request, call.future()};
     }
 
     /*!
@@ -111,7 +116,7 @@ public:
                 response.id());
             return;
         }
-        iter->second->handle(response.result());
+        iter->second.handle(response.result());
         list_.erase(iter);
     }
 
@@ -142,7 +147,7 @@ private:
     }
 
     //! List.
-    std::unordered_map<messages::MessageID, std::unique_ptr<Call>> list_{};
+    std::unordered_map<messages::MessageID, Call> list_{};
 
     //! Generator of message IDs of requests.
     RequestIDGenerator request_id_generator_{};
