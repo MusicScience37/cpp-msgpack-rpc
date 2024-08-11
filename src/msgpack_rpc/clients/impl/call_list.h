@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call.h"
+#include "msgpack_rpc/clients/impl/call_future_impl.h"
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/clients/impl/request_id_generator.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
