@@ -20,7 +20,6 @@
 #pragma once
 
 #include <chrono>
-#include <functional>
 #include <memory>
 #include <utility>
 
@@ -28,9 +27,9 @@
 #include "msgpack_rpc/clients/impl/call_promise.h.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/messages/call_result.h"
-#include "msgpack_rpc/messages/message_id.h"
-#include "msgpack_rpc/messages/serialized_message.h"
 
 namespace msgpack_rpc::clients::impl {
 
@@ -42,41 +41,26 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] id Message ID of the request.
-     * \param[in] serialized_request Serialized request data.
      * \param[in] executor Executor.
      * \param[in] deadline Deadline of the result of the RPC.
-     * \param[in] on_timeout Callback function called when timeout occurs.
      */
-    Call(messages::MessageID id, messages::SerializedMessage serialized_request,
-        const std::shared_ptr<executors::IExecutor>& executor,
-        std::chrono::steady_clock::time_point deadline,
-        std::function<void(messages::MessageID)> on_timeout)
-        : id_(id),
-          serialized_request_(std::move(serialized_request)),
-          promise_(std::make_shared<CallPromise>(
-              id, executor, deadline, std::move(on_timeout))) {}
+    Call(const std::shared_ptr<executors::IExecutor>& executor,
+        std::chrono::steady_clock::time_point deadline)
+        : promise_(deadline),
+          timeout_timer_(executor, executors::OperationType::CALLBACK) {}
 
     /*!
-     * \brief Start processing.
-     */
-    void start() { promise_->start(); }
-
-    /*!
-     * \brief Get the Message ID of the request.
+     * \brief Set timeout.
      *
-     * \return Message ID of the request.
+     * \tparam OnTimeout Type of the function to handle timeout.
+     * \param[in] deadline Deadline.
+     * \param[in] on_timeout Function to handle timeout.
      */
-    [[nodiscard]] messages::MessageID id() const noexcept { return id_; }
-
-    /*!
-     * \brief Get the serialized request data.
-     *
-     * \return Serialized request data.
-     */
-    [[nodiscard]] const messages::SerializedMessage& serialized_request()
-        const noexcept {
-        return serialized_request_;
+    template <typename OnTimeout>
+    void set_timeout(std::chrono::steady_clock::time_point deadline,
+        OnTimeout&& on_timeout) {
+        timeout_timer_.async_sleep_until(
+            deadline, std::forward<OnTimeout>(on_timeout));
     }
 
     /*!
@@ -85,32 +69,29 @@ public:
      * \return Future object to set and get the result of this RPC.
      */
     [[nodiscard]] std::shared_ptr<CallFutureImpl> future() const noexcept {
-        return promise_->future();
+        return promise_.future();
     }
 
     /*!
-     * \brief Handle the result.
+     * \brief Set the result.
      *
      * \param[in] result Result.
      */
-    void handle(const messages::CallResult& result) { promise_->set(result); }
+    void set(const messages::CallResult& result) { promise_.set(result); }
 
     /*!
-     * \brief Handle an error.
+     * \brief Set an error.
      *
      * \param[in] error Error.
      */
-    void handle(const Status& error) { promise_->set(error); }
+    void set(const Status& error) { promise_.set(error); }
 
 private:
-    //! Message ID of the request.
-    messages::MessageID id_;
-
-    //! Serialized request data.
-    messages::SerializedMessage serialized_request_;
-
     //! Object to set the result of this RPC.
-    std::shared_ptr<CallPromise> promise_;
+    CallPromise promise_;
+
+    //! Timer of timeout.
+    executors::Timer timeout_timer_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

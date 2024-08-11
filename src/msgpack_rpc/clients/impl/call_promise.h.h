@@ -20,59 +20,27 @@
 #pragma once
 
 #include <chrono>
-#include <functional>
 #include <memory>
 #include <utility>
 
 #include "msgpack_rpc/clients/impl/call_future_impl.h"
 #include "msgpack_rpc/common/status.h"
-#include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/executors/i_executor.h"
-#include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/executors/timer.h"
 #include "msgpack_rpc/messages/call_result.h"
-#include "msgpack_rpc/messages/message_id.h"
 
 namespace msgpack_rpc::clients::impl {
 
 /*!
  * \brief Class to set results of RPCs.
  */
-class CallPromise : public std::enable_shared_from_this<CallPromise> {
+class CallPromise {
 public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] request_id Message ID of the request of the RPC.
-     * \param[in] executor Executor.
      * \param[in] deadline Deadline of the result of the RPC.
-     * \param[in] on_timeout Callback function called when timeout occurs.
      */
-    CallPromise(messages::MessageID request_id,
-        const std::shared_ptr<executors::IExecutor>& executor,
-        std::chrono::steady_clock::time_point deadline,
-        std::function<void(messages::MessageID)> on_timeout)
-        : future_(std::make_shared<CallFutureImpl>(deadline)),
-          request_id_(request_id),
-          timer_(executor, executors::OperationType::CALLBACK),
-          deadline_(deadline),
-          on_timeout_(std::move(on_timeout)) {}
-
-    /*!
-     * \brief Start processing.
-     */
-    void start() {
-        timer_.async_sleep_until(
-            deadline_, [weak_self = this->weak_from_this()] {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->set(Status(StatusCode::TIMEOUT,
-                        "Result of an RPC couldn't be received within a "
-                        "timeout."));
-                    self->on_timeout_(self->request_id_);
-                }
-            });
-    }
+    explicit CallPromise(std::chrono::steady_clock::time_point deadline)
+        : future_(std::make_shared<CallFutureImpl>(deadline)) {}
 
     /*!
      * \brief Set a result.
@@ -100,18 +68,6 @@ public:
 private:
     //! Future.
     std::shared_ptr<CallFutureImpl> future_;
-
-    //! Message ID of the request of the RPC.
-    messages::MessageID request_id_;
-
-    //! Timer to check timeout.
-    executors::Timer timer_;
-
-    //! Deadline of the result of the RPC.
-    std::chrono::steady_clock::time_point deadline_;
-
-    //! Callback function called when timeout occurs.
-    std::function<void(messages::MessageID)> on_timeout_;
 };
 
 }  // namespace msgpack_rpc::clients::impl

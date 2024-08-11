@@ -31,6 +31,7 @@
 #include "msgpack_rpc/clients/impl/parameters_serializer.h"
 #include "msgpack_rpc/clients/impl/request_id_generator.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
@@ -78,15 +79,8 @@ public:
             parameters.create_serialized_request(method_name, request_id);
 
         std::unique_lock<std::mutex> lock(mutex_);
-        const auto [iter, is_success] = list_.try_emplace(request_id,
-            request_id, serialized_request, executor(), deadline,
-            [weak_self = this->weak_from_this()](
-                messages::MessageID request_id) {
-                const auto self = weak_self.lock();
-                if (self) {
-                    self->on_timeout(request_id);
-                }
-            });
+        const auto [iter, is_success] =
+            list_.try_emplace(request_id, executor(), deadline);
         if (!is_success) {
             // This won't occur in the ordinary condition.
             throw MsgpackRPCException(
@@ -97,7 +91,13 @@ public:
         auto& call = iter->second;
         lock.unlock();
 
-        call.start();
+        call.set_timeout(
+            deadline, [weak_self = this->weak_from_this(), request_id] {
+                const auto self = weak_self.lock();
+                if (self) {
+                    self->on_timeout(request_id);
+                }
+            });
 
         return {request_id, serialized_request, call.future()};
     }
@@ -116,7 +116,7 @@ public:
                 response.id());
             return;
         }
-        iter->second.handle(response.result());
+        iter->second.set(response.result());
         list_.erase(iter);
     }
 
@@ -142,8 +142,13 @@ private:
         MSGPACK_RPC_WARN(
             logger_, "Timeout of an RPC (request ID: {}).", request_id);
         std::unique_lock<std::mutex> lock(mutex_);
-        // CallFutureImpl class sets the error to the future object.
-        list_.erase(request_id);
+        const auto iter = list_.find(request_id);
+        if (iter == list_.end()) {
+            return;
+        }
+        iter->second.set(Status(StatusCode::TIMEOUT,
+            "Result of an RPC couldn't be received within a timeout."));
+        list_.erase(iter);
     }
 
     //! List.
