@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 MusicScience37 (Kenta Kabashima)
+ * Copyright 2024 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,15 @@
  */
 /*!
  * \file
- * \brief Definition of constants of schemes.
+ * \brief Definitions of platform-specific macros.
  */
 #pragma once
 
-#include <string_view>
+// clang-format off
 
-namespace msgpack_rpc::addresses {
-
-//! Scheme of TCP.
-constexpr std::string_view TCP_SCHEME = "tcp";
-
-//! Scheme of unix sockets (streaming protocol).
-constexpr std::string_view UNIX_SOCKET_SCHEME = "unix";
-
-}  // namespace msgpack_rpc::addresses
+/*!
+ * \brief Macro to specify whether to enable unix sockets.
+ *
+ * 1 means enabled, 0 means disabled.
+ */
+#define MSGPACK_RPC_ENABLE_UNIX_SOCKETS ${MSGPACK_RPC_ENABLE_UNIX_SOCKETS}  // NOLINT

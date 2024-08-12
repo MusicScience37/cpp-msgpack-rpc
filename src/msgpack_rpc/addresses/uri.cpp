@@ -25,33 +25,40 @@
 #include <fmt/format.h>
 #include <re2/re2.h>
 
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 
 namespace msgpack_rpc::addresses {
 
-URI::URI(std::string_view scheme, std::string_view host,
+URI::URI(std::string_view scheme, std::string_view host_or_filepath,
     std::optional<std::uint16_t> port_number)
-    : scheme_(scheme), host_(host), port_number_(port_number) {}
+    : scheme_(scheme),
+      host_or_filepath_(host_or_filepath),
+      port_number_(port_number) {}
 
 std::string_view URI::scheme() const noexcept { return scheme_; }
 
-std::string_view URI::host() const noexcept { return host_; }
+std::string_view URI::host_or_filepath() const noexcept {
+    return host_or_filepath_;
+}
 
 std::optional<std::uint16_t> URI::port_number() const noexcept {
     return port_number_;
 }
 
 bool URI::operator==(const URI& right) const {
-    return (scheme_ == right.scheme_) && (host_ == right.host_) &&
+    return (scheme_ == right.scheme_) &&
+        (host_or_filepath_ == right.host_or_filepath_) &&
         (port_number_ == right.port_number_);
 }
 
 bool URI::operator!=(const URI& right) const { return !operator==(right); }
 
 URI URI::parse(std::string_view uri_string) {
-    static re2::RE2 full_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
+    static re2::RE2 ip_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
     static re2::RE2 ipv6_regex{R"((tcp)://\[([a-zA-Z0-9+-.:]+)\]:(\d+))"};
+    static re2::RE2 filepath_regex{R"((unix)://(.*))"};
 
     std::string scheme{};
     std::string host{};
@@ -60,13 +67,21 @@ URI URI::parse(std::string_view uri_string) {
     const auto absl_uri_string =
         absl::string_view(uri_string.data(), uri_string.size());
     if (!re2::RE2::FullMatch(
-            absl_uri_string, full_regex, &scheme, &host, &port) &&
+            absl_uri_string, ip_regex, &scheme, &host, &port) &&
         !re2::RE2::FullMatch(
-            absl_uri_string, ipv6_regex, &scheme, &host, &port)) {
+            absl_uri_string, ipv6_regex, &scheme, &host, &port) &&
+        !re2::RE2::FullMatch(absl_uri_string, filepath_regex, &scheme, &host)) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format("Invalid URI string: \"{}\".", uri_string));
     }
-    return URI(scheme, host, port);
+    if (scheme == TCP_SCHEME) {
+        return URI(scheme, host, port);
+    }
+    if (scheme == UNIX_SOCKET_SCHEME) {
+        return URI(scheme, host);
+    }
+    throw MsgpackRPCException(
+        StatusCode::UNEXPECTED_ERROR, "Unexpected line is executed.");
 }
 
 }  // namespace msgpack_rpc::addresses
@@ -78,10 +93,14 @@ formatter<msgpack_rpc::addresses::URI>::format(  // NOLINT
     const msgpack_rpc::addresses::URI& val, format_context& context) const {
     auto out = context.out();
     out = fmt::format_to(out, "{}://", val.scheme());
-    if (val.host().find(':') == std::string_view::npos) {
-        out = fmt::format_to(out, "{}", val.host());
+    if (val.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
+        if (val.host_or_filepath().find(':') == std::string_view::npos) {
+            out = fmt::format_to(out, "{}", val.host_or_filepath());
+        } else {
+            out = fmt::format_to(out, "[{}]", val.host_or_filepath());
+        }
     } else {
-        out = fmt::format_to(out, "[{}]", val.host());
+        out = fmt::format_to(out, "{}", val.host_or_filepath());
     }
     if (val.port_number()) {
         out = fmt::format_to(out, ":{}", *(val.port_number()));

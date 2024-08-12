@@ -1,4 +1,5 @@
 #include "msgpack_rpc/addresses/tcp_address.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/addresses/unix_socket_address.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/addresses/uri.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/clients/impl/client_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/clients/server_exception.cpp"  // NOLINT(bugprone-suspicious-include)

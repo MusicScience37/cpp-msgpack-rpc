@@ -1,4 +1,5 @@
 #include "addresses/tcp_address_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "addresses/unix_socket_address_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "addresses/uri_test.cpp"    // NOLINT(bugprone-suspicious-include)
 #include "catch_event_listener.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "clients/client_test.cpp"   // NOLINT(bugprone-suspicious-include)
