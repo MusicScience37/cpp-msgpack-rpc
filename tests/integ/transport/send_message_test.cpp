@@ -17,6 +17,7 @@
  * \file
  * \brief Test of sending messages..
  */
+#include <cstdio>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -27,9 +28,12 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <fmt/format.h>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/i_address.h"
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
@@ -38,6 +42,8 @@
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
 #include "msgpack_rpc/messages/parsed_message.h"
@@ -72,10 +78,33 @@ SCENARIO("Send messages") {
     const auto executor = std::make_shared<TestExecutor>(
         msgpack_rpc::executors::create_single_thread_executor(logger));
 
-    // TODO Parametrize here when additional protocols are tested.
-    const auto backend = msgpack_rpc::transport::create_tcp_backend(
-        executor, MessageParserConfig(), logger);
-    const URI acceptor_specified_uri = URI::parse("tcp://127.0.0.1:0");
+    const URI acceptor_specified_uri = GENERATE(URI::parse("tcp://127.0.0.1:0")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+                                                    ,
+        URI::parse("unix://integ_transport_send_message_test.sock")
+#endif
+    );
+    INFO("URI: " << fmt::to_string(acceptor_specified_uri));
+    MSGPACK_RPC_INFO(logger, "URI: {}", acceptor_specified_uri);
+
+    std::shared_ptr<msgpack_rpc::transport::IBackend> backend;
+    if (acceptor_specified_uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
+        backend = msgpack_rpc::transport::create_tcp_backend(
+            executor, MessageParserConfig(), logger);
+    }
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+    else if (acceptor_specified_uri.scheme() ==
+        msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
+        (void)std::remove(
+            static_cast<std::string>(acceptor_specified_uri.host_or_filepath())
+                .c_str());
+        backend = msgpack_rpc::transport::create_unix_socket_backend(
+            executor, MessageParserConfig(), logger);
+    }
+#endif
+    else {
+        FAIL("invalid scheme: " << acceptor_specified_uri.scheme());
+    }
 
     ALLOW_CALL(*executor, on_context(OperationType::CALLBACK));
     const auto post = [&executor](std::function<void()> function) {
@@ -142,13 +171,7 @@ SCENARIO("Send messages") {
                                 server_connection->remote_address().to_uri())
             .SIDE_EFFECT(server_connection_callbacks->apply_to(_1));
 
-        REQUIRE_CALL(*executor, on_context(OperationType::TRANSPORT)).TIMES(6);
-        // Calls:
-        // - 1 resolver in client
-        // - 1 socket in client
-        // - 1 resolver in server
-        // - 1 acceptor in server
-        // - 2 sockets in server
+        ALLOW_CALL(*executor, on_context(OperationType::TRANSPORT));
 
         REQUIRE_CALL(*server_connection_callbacks, on_closed(_))
             .TIMES(1)

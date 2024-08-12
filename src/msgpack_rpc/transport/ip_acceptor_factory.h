@@ -43,9 +43,9 @@
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/transport/acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
+#include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
 
 namespace msgpack_rpc::transport {
 
@@ -60,7 +60,7 @@ public:
     using AsioResolver = asio::ip::tcp::resolver;
 
     //! Type of acceptors.
-    using AcceptorType = Acceptor;
+    using AcceptorType = tcp::TCPAcceptor;
 
     //! Type of concrete addresses.
     using ConcreteAddress = addresses::TCPAddress;

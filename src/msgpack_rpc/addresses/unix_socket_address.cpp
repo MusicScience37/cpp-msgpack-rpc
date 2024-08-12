@@ -19,11 +19,11 @@
  */
 #include "msgpack_rpc/addresses/unix_socket_address.h"
 
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
 #include <fmt/format.h>
 
 #include "msgpack_rpc/addresses/schemes.h"
-
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
 namespace msgpack_rpc::addresses {
 

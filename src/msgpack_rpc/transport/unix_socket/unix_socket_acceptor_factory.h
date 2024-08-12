@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 MusicScience37 (Kenta Kabashima)
+ * Copyright 2024 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,21 @@
  */
 /*!
  * \file
- * \brief Definition of TCPConnection type.
+ * \brief Definition of UnixSocketAcceptorFactory type.
  */
 #pragma once
 
-#include <asio/ip/tcp.hpp>
+#include "msgpack_rpc/impl/config.h"
 
-#include "msgpack_rpc/addresses/tcp_address.h"
-#include "msgpack_rpc/transport/connection.h"
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
-namespace msgpack_rpc::transport::tcp {
+#include "msgpack_rpc/transport/filepath_acceptor_factory.h"
 
-//! Type of connections of TCP.
-using TCPConnection = Connection<asio::ip::tcp::socket, addresses::TCPAddress>;
+namespace msgpack_rpc::transport::unix_socket {
 
-}  // namespace msgpack_rpc::transport::tcp
+//! Type of factories of acceptors of Unix sockets.
+using UnixSocketAcceptorFactory = FilepathAcceptorFactory;
+
+}  // namespace msgpack_rpc::transport::unix_socket
+
+#endif
