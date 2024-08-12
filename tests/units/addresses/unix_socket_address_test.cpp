@@ -19,7 +19,13 @@
  */
 #include "msgpack_rpc/addresses/unix_socket_address.h"
 
+#include "msgpack_rpc/impl/config.h"
+
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
+#include <optional>
 #include <sstream>
+#include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
@@ -84,3 +90,5 @@ TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
         CHECK(stream.str() == "unix://file/path.sock");
     }
 }
+
+#endif

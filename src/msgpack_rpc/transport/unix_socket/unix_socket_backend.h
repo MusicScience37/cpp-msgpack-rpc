@@ -24,11 +24,14 @@
 #if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
 #include <memory>
+#include <string_view>
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/i_backend.h"
+#include "msgpack_rpc/transport/i_connector.h"
 
 namespace msgpack_rpc::transport::unix_socket {
 

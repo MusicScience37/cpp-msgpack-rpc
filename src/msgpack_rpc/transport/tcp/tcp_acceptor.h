@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/tcp.hpp>
 
 #include "msgpack_rpc/addresses/tcp_address.h"

@@ -26,7 +26,6 @@
 #include "msgpack_rpc/messages/message_id.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
-#include "msgpack_rpc/messages/serialized_message.h"
 #include "msgpack_rpc/transport/i_connection.h"
 
 namespace msgpack_rpc::transport {

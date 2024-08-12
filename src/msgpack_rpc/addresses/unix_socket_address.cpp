@@ -21,6 +21,9 @@
 
 #if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
+#include <utility>
+
+#include <asio/local/basic_endpoint.hpp>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/addresses/schemes.h"

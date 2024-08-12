@@ -23,6 +23,7 @@
 
 #if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
+#include <asio/local/basic_endpoint.hpp>
 #include <asio/local/stream_protocol.hpp>
 
 #include "msgpack_rpc/addresses/unix_socket_address.h"

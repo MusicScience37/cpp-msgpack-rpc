@@ -19,17 +19,14 @@
  */
 #pragma once
 
-#include <cstdio>
-#include <functional>
+#include <cstdio>  // IWYU pragma: keep
 #include <memory>
 #include <optional>
 #include <string>
 #include <system_error>
-#include <type_traits>
+#include <type_traits>  // IWYU pragma: keep
 #include <utility>
 
-#include <asio/any_io_executor.hpp>
-#include <asio/basic_stream_socket.hpp>
 #include <asio/error.hpp>
 #include <asio/error_code.hpp>
 #include <asio/post.hpp>

@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <asio/error_code.hpp>
+#include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/basic_resolver_entry.hpp>
 #include <asio/ip/basic_resolver_iterator.hpp>
 #include <asio/ip/tcp.hpp>
@@ -43,6 +44,7 @@
 #include "msgpack_rpc/executors/operation_type.h"
 #include "msgpack_rpc/logging/log_level.h"
 #include "msgpack_rpc/logging/logger.h"
+#include "msgpack_rpc/transport/acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
 #include "msgpack_rpc/transport/tcp/tcp_acceptor.h"

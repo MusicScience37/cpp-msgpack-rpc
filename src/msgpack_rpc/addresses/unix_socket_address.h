@@ -23,9 +23,14 @@
 
 #if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
 
+#include <ostream>
+#include <string>
+
 #include <asio/local/stream_protocol.hpp>
+#include <fmt/base.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
+#include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 
 namespace msgpack_rpc::addresses {

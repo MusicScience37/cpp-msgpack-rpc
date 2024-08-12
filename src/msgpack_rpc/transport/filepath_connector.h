@@ -23,9 +23,9 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
-#include <asio/connect.hpp>
 #include <asio/error_code.hpp>
 #include <asio/local/stream_protocol.hpp>
 #include <fmt/format.h>
