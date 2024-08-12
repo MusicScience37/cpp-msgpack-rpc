@@ -27,6 +27,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <fmt/ranges.h>
 
 #include "create_test_logger.h"
@@ -60,8 +61,9 @@ SCENARIO("Call methods to fail") {
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
-    // TODO Parametrize here when additional protocols are tested.
-    const auto server_uri = std::string_view("tcp://localhost:0");
+    const auto server_uri = GENERATE(std::string_view("tcp://localhost:0"),
+        std::string_view("unix://integ_client_call_failure_test.sock"));
+
     GIVEN("A server") {
         ServerBuilder server_builder{logger};
 

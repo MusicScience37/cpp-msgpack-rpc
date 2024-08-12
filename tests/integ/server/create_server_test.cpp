@@ -17,6 +17,7 @@
  * \file
  * \brief Test of servers.
  */
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -24,12 +25,14 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <fmt/ranges.h>
 
 #include "check_connectivity.h"
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/server_config.h"
+#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/servers/server.h"
 #include "msgpack_rpc/servers/server_builder.h"
@@ -41,8 +44,16 @@ SCENARIO("Create a server") {
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
-    // TODO Parametrize here when additional protocols are tested.
-    const auto server_uri = std::string_view("tcp://localhost:0");
+    const auto server_uri = GENERATE(std::string_view("tcp://localhost:0")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+                                         ,
+        std::string_view("unix://integ_server_create_server_test.sock")
+#endif
+    );
+
+    if (server_uri.substr(0, 4) == "unix") {
+        (void)std::remove("integ_server_create_server_test.sock");
+    }
 
     GIVEN("A default configuration") {
         const ServerConfig config;
