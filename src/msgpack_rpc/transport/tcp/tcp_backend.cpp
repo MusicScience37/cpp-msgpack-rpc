@@ -26,8 +26,6 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
-#include "msgpack_rpc/transport/ip_acceptor_factory.h"
-#include "msgpack_rpc/transport/ip_connector.h"
 #include "msgpack_rpc/transport/tcp/tcp_acceptor_factory.h"
 #include "msgpack_rpc/transport/tcp/tcp_connector.h"
 
