@@ -32,8 +32,6 @@
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
 #include "msgpack_rpc/logging/logger.h"
-#include "msgpack_rpc/transport/filepath_acceptor_factory.h"
-#include "msgpack_rpc/transport/filepath_connector.h"
 #include "msgpack_rpc/transport/unix_socket/unix_socket_acceptor_factory.h"
 #include "msgpack_rpc/transport/unix_socket/unix_socket_connector.h"
 
