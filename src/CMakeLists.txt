@@ -35,9 +35,19 @@ generate_export_header(
 
 # Platform-specific configurations.
 if(UNIX)
-    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS 1)
+    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+        1
+        CACHE STRING "enable Unix sockets (1: enable, 0: disable)")
+    set(MSGPACK_RPC_ENABLE_POSIX_SHM
+        1
+        CACHE STRING "enable POSIX shared memory (1: enable, 0: disable)")
 else()
-    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS 0)
+    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+        0
+        CACHE STRING "enable Unix sockets (1: enable, 0: disable)" FORCE)
+    set(MSGPACK_RPC_ENABLE_POSIX_SHM
+        0
+        CACHE STRING "enable POSIX shared memory (1: enable, 0: disable)" FORCE)
 endif()
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/impl/config.h.in

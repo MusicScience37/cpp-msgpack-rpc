@@ -35,7 +35,7 @@
 #include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
-#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/config.h"
 
 /*!
  * \brief Check whether a TCP endpoint is accepting connections.
@@ -59,7 +59,7 @@ void check_connectivity_tcp(const msgpack_rpc::addresses::URI& uri) {
     }
 }
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 /*!
  * \brief Check whether a Unix socket endpoint is accepting connections.
@@ -88,7 +88,7 @@ void check_connectivity(const msgpack_rpc::addresses::URI& uri) {
     if (uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
         check_connectivity_tcp(uri);
     }
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
     else if (uri.scheme() == msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
         check_connectivity_unix_socket(uri);
     }

@@ -29,4 +29,7 @@ constexpr std::string_view TCP_SCHEME = "tcp";
 //! Scheme of unix sockets (streaming protocol).
 constexpr std::string_view UNIX_SOCKET_SCHEME = "unix";
 
+//! Schemes of shared memory.
+constexpr std::string_view SHARED_MEMORY_SCHEME = "shm";
+
 }  // namespace msgpack_rpc::addresses

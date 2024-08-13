@@ -19,9 +19,9 @@
  */
 #include "msgpack_rpc/transport/unix_socket/unix_socket_backend.h"
 
-#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/config.h"
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 #include <memory>
 #include <utility>

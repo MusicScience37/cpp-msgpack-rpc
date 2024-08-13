@@ -15,18 +15,17 @@
  */
 /*!
  * \file
- * \brief Definition of UnixSocketAddress class.
+ * \brief Definition of PosixSharedMemoryAddress class.
  */
 #pragma once
 
 #include "msgpack_rpc/config.h"
 
-#if MSGPACK_RPC_HAS_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_SHM
 
 #include <ostream>
 #include <string>
 
-#include <asio/local/stream_protocol.hpp>
 #include <fmt/base.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
@@ -36,31 +35,23 @@
 namespace msgpack_rpc::addresses {
 
 /*!
- * \brief Type of addresses of Unix sockets in asio library.
+ * \brief Class of addresses of POSIX shared memory.
  */
-using AsioUnixSocketAddress = asio::local::stream_protocol::endpoint;
-
-/*!
- * \brief Class of address of Unix sockets.
- */
-class MSGPACK_RPC_EXPORT UnixSocketAddress final : public IAddress {
+class MSGPACK_RPC_EXPORT PosixSharedMemoryAddress final : public IAddress {
 public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] address Address in asio library.
-     *
-     * \note The argument can be `std::string` or `const char*`, because
-     * AsioUnixSocketAddress can implicitly constructed from them.
+     * \param[in] file_name File name.
      */
-    explicit UnixSocketAddress(AsioUnixSocketAddress address);
+    explicit PosixSharedMemoryAddress(std::string file_name);
 
     /*!
-     * \brief Get the filepath.
+     * \brief Get the file name.
      *
-     * \return Filepath.
+     * \return File name.
      */
-    [[nodiscard]] std::string filepath() const;
+    [[nodiscard]] const std::string& file_name() const noexcept;
 
     //! \copydoc msgpack_rpc::addresses::IAddress::to_uri
     [[nodiscard]] URI to_uri() const override;
@@ -69,20 +60,13 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
     /*!
-     * \brief Get the address in asio library.
-     *
-     * \return Address in asio library.
-     */
-    [[nodiscard]] const AsioUnixSocketAddress& asio_address() const;
-
-    /*!
      * \brief Compare with an address.
      *
      * \param[in] right Right-hand-side address.
      * \retval true Two addresses are same.
      * \retval false Two addresses are different.
      */
-    [[nodiscard]] bool operator==(const UnixSocketAddress& right) const;
+    [[nodiscard]] bool operator==(const PosixSharedMemoryAddress& right) const;
 
     /*!
      * \brief Compare with an address.
@@ -91,12 +75,22 @@ public:
      * \retval true Two addresses are different.
      * \retval false Two addresses are same.
      */
-    [[nodiscard]] bool operator!=(const UnixSocketAddress& right) const;
+    [[nodiscard]] bool operator!=(const PosixSharedMemoryAddress& right) const;
 
 private:
-    //! Address in asio library.
-    AsioUnixSocketAddress address_;
+    //! File name.
+    std::string file_name_;
 };
+
+/*!
+ * \brief Format an address.
+ *
+ * \param[in] stream Stream.
+ * \param[in] address Address.
+ * \return Stream after formatting.
+ */
+MSGPACK_RPC_EXPORT std::ostream& operator<<(std::ostream& stream,
+    const msgpack_rpc::addresses::PosixSharedMemoryAddress& address);
 
 }  // namespace msgpack_rpc::addresses
 
@@ -104,10 +98,10 @@ namespace fmt {
 
 /*!
  * \brief Specialization of fmt::formatter for
- * msgpack_rpc::addresses::UnixSocketAddress.
+ * msgpack_rpc::addresses::PosixSharedMemoryAddress.
  */
 template <>
-class formatter<msgpack_rpc::addresses::UnixSocketAddress> {
+class formatter<msgpack_rpc::addresses::PosixSharedMemoryAddress> {
 public:
     /*!
      * \brief Parse format.
@@ -128,20 +122,10 @@ public:
      * \return Iterator of the buffer.
      */
     MSGPACK_RPC_EXPORT format_context::iterator format(  // NOLINT
-        const msgpack_rpc::addresses::UnixSocketAddress& val,
+        const msgpack_rpc::addresses::PosixSharedMemoryAddress& val,
         format_context& context) const;
 };
 
 }  // namespace fmt
-
-/*!
- * \brief Format an address.
- *
- * \param[in] stream Stream.
- * \param[in] address Address.
- * \return Stream after formatting.
- */
-MSGPACK_RPC_EXPORT std::ostream& operator<<(std::ostream& stream,
-    const msgpack_rpc::addresses::UnixSocketAddress& address);
 
 #endif

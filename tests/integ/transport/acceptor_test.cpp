@@ -33,11 +33,11 @@
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
+#include "msgpack_rpc/config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
@@ -56,7 +56,7 @@ SCENARIO("Start and stop acceptor") {
         msgpack_rpc::executors::create_single_thread_executor(logger);
 
     const URI acceptor_specified_uri = GENERATE(URI::parse("tcp://127.0.0.1:0")
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
                                                     ,
         URI::parse("unix://integ_transport_acceptor_test.sock")
 #endif
@@ -69,7 +69,7 @@ SCENARIO("Start and stop acceptor") {
         backend = msgpack_rpc::transport::create_tcp_backend(
             executor, MessageParserConfig(), logger);
     }
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
     else if (acceptor_specified_uri.scheme() ==
         msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
         (void)std::remove(

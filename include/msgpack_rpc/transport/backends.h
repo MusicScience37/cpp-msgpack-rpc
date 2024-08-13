@@ -21,9 +21,9 @@
 
 #include <memory>
 
+#include "msgpack_rpc/config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
-#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/i_backend.h"
@@ -43,7 +43,7 @@ namespace msgpack_rpc::transport {
     const config::MessageParserConfig& message_parser_config,
     std::shared_ptr<logging::Logger> logger);
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 /*!
  * \brief Create a backend of Unix sockets.

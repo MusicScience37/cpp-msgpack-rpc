@@ -30,7 +30,7 @@
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
-#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/config.h"
 
 class EchoFixture : public stat_bench::FixtureBase {
 public:
@@ -38,7 +38,7 @@ public:
         this->add_param<std::string>("type")
             ->add("TCPv4")
             ->add("TCPv6")
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
             ->add("Unix")
 #endif
             ;

@@ -1,4 +1,5 @@
 set(SOURCE_FILES
+    addresses/posix_shared_memory_address_test.cpp
     addresses/tcp_address_test.cpp
     addresses/unix_socket_address_test.cpp
     addresses/uri_test.cpp

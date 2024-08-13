@@ -22,7 +22,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
 
-#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/config.h"
 
 TEST_CASE("msgpack_rpc::addresses::URI") {
     using msgpack_rpc::addresses::URI;
@@ -45,7 +45,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         CHECK(fmt::format("{}", uri) == "tcp://[fc00::3]:65535");
     }
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
     SECTION("parse a URI of Unix socket") {
         const URI uri = URI::parse("unix:///test/path");

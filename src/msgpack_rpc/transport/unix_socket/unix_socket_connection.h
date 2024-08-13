@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 #include <asio/local/stream_protocol.hpp>
 
