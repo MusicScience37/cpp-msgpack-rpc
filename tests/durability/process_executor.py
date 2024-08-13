@@ -16,7 +16,14 @@ DEFAULT_PROCESS_WAIT_TIME = 10.0
 class ProcessExecutor:
     """Class to execute processes."""
 
-    def __init__(self, cmd: list[str], cwd: str, log_prefix: str) -> None:
+    def __init__(
+        self,
+        cmd: list[str],
+        cwd: str,
+        log_prefix: str,
+        *,
+        write_plots: bool = True,
+    ) -> None:
         self._process = subprocess.Popen(
             cmd,
             cwd=cwd,
@@ -30,6 +37,7 @@ class ProcessExecutor:
             target=self._watch_process_resources
         )
         self._watch_process_resources_thread.start()
+        self._write_plots = write_plots
 
     def stop(self, timeout: float = DEFAULT_PROCESS_WAIT_TIME) -> None:
         if self._process.returncode is None:
@@ -39,7 +47,8 @@ class ProcessExecutor:
             except:
                 self._process.kill()
         self._watch_process_resources_thread.join(timeout=1.0)
-        self._plot_resources()
+        if self._write_plots:
+            self._plot_resources()
 
     def wait(self, timeout: float = DEFAULT_PROCESS_WAIT_TIME) -> None:
         self._process.wait(timeout=timeout)
