@@ -43,9 +43,9 @@ public:
     /*!
      * \brief Parse a file.
      *
-     * \param[in] filepath Filepath.
+     * \param[in] file_path File path.
      */
-    void parse(std::string_view filepath);
+    void parse(std::string_view file_path);
 
     /*!
      * \brief Get a configuration of logging.

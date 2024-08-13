@@ -14,11 +14,11 @@ from .config_checker import ConfigChecker
         "file/path.log",
     ],
 )
-def test_correct_filepath(value: typing.Any, config_checker: ConfigChecker):
+def test_correct_file_path(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
-                "filepath": value,
+                "file_path": value,
             }
         }
     }
@@ -32,11 +32,11 @@ def test_correct_filepath(value: typing.Any, config_checker: ConfigChecker):
         123,
     ],
 )
-def test_invalid_filepath(value: typing.Any, config_checker: ConfigChecker):
+def test_invalid_file_path(value: typing.Any, config_checker: ConfigChecker):
     config_data = {
         "logging": {
             "example": {
-                "filepath": value,
+                "file_path": value,
             }
         }
     }

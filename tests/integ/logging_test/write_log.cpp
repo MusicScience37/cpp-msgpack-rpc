@@ -15,11 +15,11 @@ int main(int argc, char** argv) {
     msgpack_rpc::config::LoggingConfig config;
     std::shared_ptr<msgpack_rpc::logging::ILogSink> log_sink;
     bool quiet = false;
-    std::string config_filepath;
+    std::string config_file_path;
     std::string config_name;
     const auto cli =
         lyra::cli()
-            .add_argument(lyra::opt(config_filepath, "filepath")
+            .add_argument(lyra::opt(config_file_path, "file path")
                               .name("--config-file")
                               .optional()
                               .help("Configuration file."))
@@ -40,12 +40,12 @@ int main(int argc, char** argv) {
     if (quiet) {
         // NOP
     } else {
-        if (config_filepath.empty() || config_name.empty()) {
+        if (config_file_path.empty() || config_name.empty()) {
             const auto max_files = static_cast<std::size_t>(1);
             config.max_files(max_files);
         } else {
             msgpack_rpc::config::ConfigParser parser;
-            parser.parse(config_filepath);
+            parser.parse(config_file_path);
             config = parser.logging_config(config_name);
         }
         log_sink = msgpack_rpc::logging::create_log_sink_from_config(config);

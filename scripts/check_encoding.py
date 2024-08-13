@@ -4,13 +4,13 @@
 from sys import argv
 
 
-def check_encoding(filepath: str) -> str:
+def check_encoding(file_path: str) -> str:
     """Check encoding of a file.
 
     Args:
-        filepath (str): File path.
+        file_path (str): File path.
     """
-    with open(filepath, mode="r", encoding="utf8") as file:
+    with open(file_path, mode="r", encoding="utf8") as file:
         return file.read()
 
 

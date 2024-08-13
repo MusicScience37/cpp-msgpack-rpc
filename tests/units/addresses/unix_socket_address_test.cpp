@@ -36,10 +36,10 @@ TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
     using msgpack_rpc::addresses::UnixSocketAddress;
     using msgpack_rpc::addresses::URI;
 
-    SECTION("get the filepath") {
+    SECTION("get the file path") {
         const UnixSocketAddress address{"file/path.sock"};
 
-        CHECK(address.filepath() == "file/path.sock");
+        CHECK(address.file_path() == "file/path.sock");
     }
 
     SECTION("get the URI") {
@@ -48,7 +48,7 @@ TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
         const URI uri = address.to_uri();
 
         CHECK(uri.scheme() == "unix");
-        CHECK(uri.host_or_filepath() == "file/path.sock");
+        CHECK(uri.host_or_path() == "file/path.sock");
         CHECK(uri.port_number() == std::nullopt);
     }
 

@@ -1,7 +1,7 @@
 "$schema" = "https://cppmsgpackrpc.musicscience37.com/schemas/config_schema.json"
 
 [logging.example]
-filepath = "test.log"
+file_path = "test.log"
 max_file_size = 12345
 max_files = 123
 output_log_level = "error"

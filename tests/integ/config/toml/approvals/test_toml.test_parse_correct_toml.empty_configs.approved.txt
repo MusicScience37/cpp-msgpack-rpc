@@ -2,7 +2,7 @@ File: empty_configs.toml
 
 logging:
   example:
-    filepath: 
+    file_path: 
     max_file_size: 1048576
     max_files: 5
     output_log_level: info

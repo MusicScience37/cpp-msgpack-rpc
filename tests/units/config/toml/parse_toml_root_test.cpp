@@ -58,13 +58,13 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(root node)") {
     SECTION("parse a configuration of logging") {
         const auto root_table = toml::parse(R"(
 [logging.example]
-filepath = "test.log"
+file_path = "test.log"
 )");
 
         parse_toml(root_table, logging_configs, client_configs, server_configs);
 
         CHECK(logging_configs.size() == 1);  // NOLINT
-        CHECK(logging_configs.at("example").filepath() == "test.log");
+        CHECK(logging_configs.at("example").file_path() == "test.log");
 
         CHECK(client_configs.size() == 0);  // NOLINT
         CHECK(server_configs.size() == 0);  // NOLINT
@@ -73,7 +73,7 @@ filepath = "test.log"
     SECTION("parse a configuration of logging with invalid element type") {
         const auto root_table = toml::parse(R"(
 [logging]
-filepath = "test.log"
+file_path = "test.log"
 )");
 
         CHECK_THROWS_WITH(parse_toml(root_table, logging_configs,

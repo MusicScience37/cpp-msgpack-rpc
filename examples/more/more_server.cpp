@@ -35,16 +35,16 @@
 #include "msgpack_rpc/servers/server_builder.h"
 
 void parse_command_line_arguments(int argc, char** argv,
-    std::string& config_filepath, std::string& config_name);
+    std::string& config_file_path, std::string& config_name);
 
 int main(int argc, char** argv) {
-    std::string config_filepath;
+    std::string config_file_path;
     std::string config_name;
-    parse_command_line_arguments(argc, argv, config_filepath, config_name);
+    parse_command_line_arguments(argc, argv, config_file_path, config_name);
 
     // Parse configuration.
     msgpack_rpc::config::ConfigParser parser;
-    parser.parse(config_filepath);
+    parser.parse(config_file_path);
 
     // Create a logger from a configuration.
     const std::shared_ptr<msgpack_rpc::logging::Logger> logger =
@@ -114,13 +114,13 @@ int main(int argc, char** argv) {
 // Helper functions.
 
 void parse_command_line_arguments(int argc, char** argv,
-    std::string& config_filepath, std::string& config_name) {
+    std::string& config_file_path, std::string& config_name) {
     // This function parse command line arguments using lyra library.
-    config_filepath = "./examples/more/config.toml";
+    config_file_path = "./examples/more/config.toml";
     config_name = "example";
     bool show_help = false;
     const auto cli = lyra::cli()
-                         .add_argument(lyra::opt(config_filepath, "filepath")
+                         .add_argument(lyra::opt(config_file_path, "file path")
                                            .name("--config-file")
                                            .name("-f")
                                            .optional()

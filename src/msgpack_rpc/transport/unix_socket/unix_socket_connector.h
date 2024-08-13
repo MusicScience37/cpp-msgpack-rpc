@@ -88,7 +88,7 @@ public:
     //! \copydoc msgpack_rpc::transport::IConnector::async_connect
     void async_connect(
         const addresses::URI& uri, ConnectionCallback on_connected) override {
-        const AsioAddress asio_address{uri.host_or_filepath()};
+        const AsioAddress asio_address{uri.host_or_path()};
 
         auto socket_ptr = std::make_unique<AsioSocket>(
             get_executor()->context(executors::OperationType::TRANSPORT));

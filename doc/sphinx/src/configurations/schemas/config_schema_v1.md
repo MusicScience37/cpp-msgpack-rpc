@@ -6,7 +6,7 @@
 
 - **`logging`** *(object)*: Configurations of loggers. This is a mapping from configuration names to the configurations of loggers. Cannot contain additional properties.
   - **`.+`** *(object)*: Configurations of loggers. Cannot contain additional properties.
-    - **`filepath`** *(string)*: Path of the log file. Empty filepath specifies output to console. Default: `""`.
+    - **`file_path`** *(string)*: Path of the log file. Empty file path specifies output to console. Default: `""`.
     - **`max_file_size`** *(integer)*: Maximum size of a file in bytes. Minimum: `1`. Default: `1048576`.
     - **`max_files`** *(integer)*: Maximum number of files. Minimum: `1`. Default: `5`.
     - **`output_log_level`** *(string)*: Minimum log level to write logs. Must be one of: `["trace", "debug", "info", "warn", "error", "critical"]`. Default: `"info"`.

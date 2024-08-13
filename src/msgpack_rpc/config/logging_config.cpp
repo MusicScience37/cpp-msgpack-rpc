@@ -45,8 +45,8 @@ LoggingConfig::LoggingConfig()
       max_files_(LOGGING_CONFIG_DEFAULT_MAX_FILES),
       output_log_level_(LOGGING_CONFIG_DEFAULT_OUTPUT_LOG_LEVEL) {}
 
-LoggingConfig& LoggingConfig::filepath(std::string_view value) {
-    filepath_ = value;
+LoggingConfig& LoggingConfig::file_path(std::string_view value) {
+    file_path_ = value;
     return *this;
 }
 
@@ -85,7 +85,9 @@ LoggingConfig& LoggingConfig::output_log_level(logging::LogLevel value) {
     return *this;
 }
 
-std::string_view LoggingConfig::filepath() const noexcept { return filepath_; }
+std::string_view LoggingConfig::file_path() const noexcept {
+    return file_path_;
+}
 
 std::size_t LoggingConfig::max_file_size() const noexcept {
     return max_file_size_;

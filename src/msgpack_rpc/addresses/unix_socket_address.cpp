@@ -33,7 +33,7 @@ namespace msgpack_rpc::addresses {
 UnixSocketAddress::UnixSocketAddress(AsioUnixSocketAddress address)
     : address_(std::move(address)) {}
 
-std::string UnixSocketAddress::filepath() const { return address_.path(); }
+std::string UnixSocketAddress::file_path() const { return address_.path(); }
 
 URI UnixSocketAddress::to_uri() const {
     return URI(UNIX_SOCKET_SCHEME, address_.path());
@@ -63,14 +63,14 @@ format_context::iterator
 formatter<msgpack_rpc::addresses::UnixSocketAddress>::format(  // NOLINT
     const msgpack_rpc::addresses::UnixSocketAddress& val,
     format_context& context) const {
-    return fmt::format_to(context.out(), "unix://{}", val.filepath());
+    return fmt::format_to(context.out(), "unix://{}", val.file_path());
 }
 
 }  // namespace fmt
 
 std::ostream& operator<<(std::ostream& stream,
     const msgpack_rpc::addresses::UnixSocketAddress& address) {
-    stream << "unix://" << address.filepath();
+    stream << "unix://" << address.file_path();
     return stream;
 }
 

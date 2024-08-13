@@ -1,5 +1,5 @@
 [logging.example1]
-filepath = "test1.log"
+file_path = "test1.log"
 
 [client.example1]
 uris = ["tcp://localhost:1234"]

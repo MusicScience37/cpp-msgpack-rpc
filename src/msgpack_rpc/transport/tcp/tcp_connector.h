@@ -130,8 +130,7 @@ private:
         const std::string service = fmt::format(
             "{}", uri.port_number().value_or(static_cast<std::uint16_t>(0)));
         asio::error_code error;
-        auto results =
-            resolver_.resolve(uri.host_or_filepath(), service, error);
+        auto results = resolver_.resolve(uri.host_or_path(), service, error);
         if (error) {
             const auto message =
                 fmt::format("Failed to resolve {}: {}", uri, error.message());

@@ -29,9 +29,9 @@ namespace msgpack_rpc::config {
 
 ConfigParser::ConfigParser() = default;
 
-void ConfigParser::parse(std::string_view filepath) {
+void ConfigParser::parse(std::string_view file_path) {
     toml::parse_toml(
-        filepath, logging_configs_, client_configs_, server_configs_);
+        file_path, logging_configs_, client_configs_, server_configs_);
 }
 
 const LoggingConfig& ConfigParser::logging_config(std::string_view name) const {

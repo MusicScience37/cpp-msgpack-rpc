@@ -31,7 +31,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("tcp://example.com:12345");
 
         CHECK(uri.scheme() == "tcp");
-        CHECK(uri.host_or_filepath() == "example.com");
+        CHECK(uri.host_or_path() == "example.com");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(12345));
         CHECK(fmt::format("{}", uri) == "tcp://example.com:12345");
     }
@@ -40,7 +40,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("tcp://[fc00::3]:65535");
 
         CHECK(uri.scheme() == "tcp");
-        CHECK(uri.host_or_filepath() == "fc00::3");
+        CHECK(uri.host_or_path() == "fc00::3");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(65535));
         CHECK(fmt::format("{}", uri) == "tcp://[fc00::3]:65535");
     }
@@ -51,7 +51,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("unix:///test/path");
 
         CHECK(uri.scheme() == "unix");
-        CHECK(uri.host_or_filepath() == "/test/path");
+        CHECK(uri.host_or_path() == "/test/path");
         CHECK(uri.port_number() == std::nullopt);
         CHECK(fmt::format("{}", uri) == "unix:///test/path");
     }
@@ -64,7 +64,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("shm://file_name");
 
         CHECK(uri.scheme() == "shm");
-        CHECK(uri.host_or_filepath() == "file_name");
+        CHECK(uri.host_or_path() == "file_name");
         CHECK(uri.port_number() == std::nullopt);
         CHECK(fmt::format("{}", uri) == "shm://file_name");
     }

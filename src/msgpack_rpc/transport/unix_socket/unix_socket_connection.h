@@ -19,13 +19,14 @@
  */
 #pragma once
 
+#include "msgpack_rpc/config.h"
+
 #if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 #include <asio/local/stream_protocol.hpp>
 
 #include "msgpack_rpc/addresses/unix_socket_address.h"
 #include "msgpack_rpc/transport/connection.h"
-#include "msgpack_rpc/transport/filepath_acceptor_factory.h"
 
 namespace msgpack_rpc::transport::unix_socket {
 

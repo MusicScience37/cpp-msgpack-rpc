@@ -34,7 +34,7 @@ TEST_CASE("msgpack_rpc::config::ConfigParser") {
     SECTION("parse a file") {
         CHECK_NOTHROW(parser.parse("config_parser_test_samples/config1.toml"));
 
-        CHECK(parser.logging_config("example1").filepath() == "test1.log");
+        CHECK(parser.logging_config("example1").file_path() == "test1.log");
 
         CHECK(parser.client_config("example1").uris() ==
             std::vector{URI::parse("tcp://localhost:1234")});
@@ -47,9 +47,9 @@ TEST_CASE("msgpack_rpc::config::ConfigParser") {
         CHECK_NOTHROW(parser.parse("config_parser_test_samples/config1.toml"));
         CHECK_NOTHROW(parser.parse("config_parser_test_samples/config2.toml"));
 
-        CHECK(parser.logging_config("example1").filepath() == "test1.log");
-        CHECK(parser.logging_config("example2").filepath() == "test2.log");
-        CHECK(parser.logging_config("example3").filepath() == "test3.log");
+        CHECK(parser.logging_config("example1").file_path() == "test1.log");
+        CHECK(parser.logging_config("example2").file_path() == "test2.log");
+        CHECK(parser.logging_config("example3").file_path() == "test3.log");
 
         CHECK(parser.client_config("example1").uris() ==
             std::vector{URI::parse("tcp://localhost:1234")});

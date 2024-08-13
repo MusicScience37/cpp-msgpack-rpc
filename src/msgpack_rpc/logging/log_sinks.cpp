@@ -53,10 +53,10 @@ std::shared_ptr<ILogSink> create_stdout_log_sink() {
 }
 
 std::shared_ptr<ILogSink> create_rotating_file_log_sink(
-    std::string_view filepath, std::size_t max_file_size,
+    std::string_view file_path, std::size_t max_file_size,
     std::size_t max_files) {
-    auto spdlog_logger = spdlog::rotating_logger_mt(std::string(filepath),
-        spdlog::filename_t(filepath), max_file_size, max_files, true);
+    auto spdlog_logger = spdlog::rotating_logger_mt(std::string(file_path),
+        spdlog::filename_t(file_path), max_file_size, max_files, true);
     impl::spdlog_backend::configure_spdlog_logger_format_for_files(
         spdlog_logger);
     return std::make_shared<impl::spdlog_backend::SpdlogLogSink>(
@@ -65,11 +65,11 @@ std::shared_ptr<ILogSink> create_rotating_file_log_sink(
 
 std::shared_ptr<ILogSink> create_log_sink_from_config(
     const config::LoggingConfig& config) {
-    if (config.filepath().empty()) {
+    if (config.file_path().empty()) {
         return create_stdout_log_sink();
     }
     return create_rotating_file_log_sink(
-        config.filepath(), config.max_file_size(), config.max_files());
+        config.file_path(), config.max_file_size(), config.max_files());
 }
 
 }  // namespace msgpack_rpc::logging

@@ -77,7 +77,7 @@ public:
     //! \copydoc msgpack_rpc::transport::IAcceptorFactory::create
     std::vector<std::shared_ptr<IAcceptor>> create(
         const addresses::URI& uri) override {
-        const ConcreteAddress local_address(uri.host_or_filepath());
+        const ConcreteAddress local_address(uri.host_or_path());
         return std::vector<std::shared_ptr<IAcceptor>>{
             std::make_shared<AcceptorType>(
                 local_address, executor_, message_parser_config_, logger_)};

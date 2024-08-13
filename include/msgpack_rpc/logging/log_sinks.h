@@ -40,13 +40,13 @@ create_stdout_log_sink();
 /*!
  * \brief Create a log sink to write to a file with rotation.
  *
- * \param[in] filepath Filepath.
+ * \param[in] file_path File path.
  * \param[in] max_file_size Maximum size of a file.
  * \param[in] max_files Maximum number of files.
  * \return Log sink.
  */
 [[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<ILogSink>
-create_rotating_file_log_sink(std::string_view filepath,
+create_rotating_file_log_sink(std::string_view file_path,
     std::size_t max_file_size, std::size_t max_files);
 
 /*!

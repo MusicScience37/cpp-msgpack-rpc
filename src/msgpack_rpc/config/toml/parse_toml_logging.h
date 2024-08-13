@@ -73,8 +73,8 @@ namespace msgpack_rpc::config::toml::impl {
 inline void parse_toml(const ::toml::table& table, LoggingConfig& config) {
     for (const auto& [key, value] : table) {
         const auto key_str = key.str();
-        if (key_str == "filepath") {
-            MSGPACK_RPC_PARSE_TOML_VALUE("filepath", filepath, std::string);
+        if (key_str == "file_path") {
+            MSGPACK_RPC_PARSE_TOML_VALUE("file_path", file_path, std::string);
         } else if (key_str == "max_file_size") {
             MSGPACK_RPC_PARSE_TOML_VALUE(
                 "max_file_size", max_file_size, std::size_t);

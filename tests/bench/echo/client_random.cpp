@@ -38,17 +38,17 @@
 
 int main(int argc, char** argv) {
     std::size_t num_samples = 0;
-    std::string output_filepath;
+    std::string output_file_path;
     const auto cli =
         lyra::cli()
             .add_argument(lyra::opt(num_samples, "Number of samples")
                               .name("--samples")
                               .required()
                               .help("Set the number of samples."))
-            .add_argument(lyra::opt(output_filepath, "Filepath")
+            .add_argument(lyra::opt(output_file_path, "File path")
                               .name("--output")
                               .required()
-                              .help("Set the filepath of the output."));
+                              .help("Set the file path of the output."));
     const auto result = cli.parse({argc, argv});
     if (!result) {
         std::cerr << result.message() << "\n\n" << cli << std::endl;
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
                               .connect_to(msgpack_rpc_test::COMMAND_SERVER_URI)
                               .build();
 
-    std::ofstream output(output_filepath);
+    std::ofstream output(output_file_path);
     fmt::print(output, "Protocol,Data Size [byte],Processing Time [sec]\n");
 
     for (const msgpack_rpc_test::ServerType server_type : server_types) {

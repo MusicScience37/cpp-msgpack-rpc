@@ -56,11 +56,11 @@ public:
     explicit UnixSocketAddress(AsioUnixSocketAddress address);
 
     /*!
-     * \brief Get the filepath.
+     * \brief Get the file path.
      *
-     * \return Filepath.
+     * \return File path.
      */
-    [[nodiscard]] std::string filepath() const;
+    [[nodiscard]] std::string file_path() const;
 
     //! \copydoc msgpack_rpc::addresses::IAddress::to_uri
     [[nodiscard]] URI to_uri() const override;

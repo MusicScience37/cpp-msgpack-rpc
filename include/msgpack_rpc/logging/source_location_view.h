@@ -32,23 +32,23 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] filepath Filepath.
+     * \param[in] file_path File path.
      * \param[in] line Line number.
      * \param[in] function Function name.
      *
-     * \note This class doesn't manage memory of filepaths.
+     * \note This class doesn't manage memory of file paths.
      */
-    constexpr SourceLocationView(std::string_view filepath, std::uint32_t line,
+    constexpr SourceLocationView(std::string_view file_path, std::uint32_t line,
         std::string_view function) noexcept
-        : filepath_(filepath), line_(line), function_(function) {}
+        : file_path_(file_path), line_(line), function_(function) {}
 
     /*!
-     * \brief Get the filepath.
+     * \brief Get the file path.
      *
-     * \return Filepath.
+     * \return File path.
      */
-    [[nodiscard]] constexpr std::string_view filepath() const noexcept {
-        return filepath_;
+    [[nodiscard]] constexpr std::string_view file_path() const noexcept {
+        return file_path_;
     }
 
     /*!
@@ -70,8 +70,8 @@ public:
     }
 
 private:
-    //! Filepath.
-    std::string_view filepath_;
+    //! File path.
+    std::string_view file_path_;
 
     //! Line number.
     std::uint32_t line_;
@@ -82,8 +82,8 @@ private:
 
 }  // namespace msgpack_rpc::logging
 
-//! Macro to get the current filepath.
-#define MSGPACK_RPC_CURRENT_FILEPATH __FILE__
+//! Macro to get the current file path.
+#define MSGPACK_RPC_CURRENT_FILE_PATH __FILE__
 
 //! Macro to get the current line number.
 #define MSGPACK_RPC_CURRENT_LINE __LINE__
@@ -104,8 +104,8 @@ private:
 #endif
 
 //! Macro to get the current location in source codes.
-#define MSGPACK_RPC_CURRENT_SOURCE_LOCATION()                      \
-    ::msgpack_rpc::logging::SourceLocationView(                    \
-        std::string_view(MSGPACK_RPC_CURRENT_FILEPATH), /*NOLINT*/ \
-        static_cast<std::uint32_t>(MSGPACK_RPC_CURRENT_LINE),      \
+#define MSGPACK_RPC_CURRENT_SOURCE_LOCATION()                       \
+    ::msgpack_rpc::logging::SourceLocationView(                     \
+        std::string_view(MSGPACK_RPC_CURRENT_FILE_PATH), /*NOLINT*/ \
+        static_cast<std::uint32_t>(MSGPACK_RPC_CURRENT_LINE),       \
         std::string_view(MSGPACK_RPC_CURRENT_FUNCTION)) /*NOLINT*/
