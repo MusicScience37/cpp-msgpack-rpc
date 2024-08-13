@@ -16,7 +16,7 @@ if(${${UPPER_PROJECT_NAME}_TEST_BENCHMARKS})
         WORKING_DIRECTORY ${${UPPER_PROJECT_NAME}_SOURCE_DIR})
 
     add_test(
-        NAME bench_echo
+        NAME bench_echo_random
         COMMAND
             ${POETRY_EXECUTABLE} run python
             ${CMAKE_CURRENT_SOURCE_DIR}/bench_random.py -b ${CMAKE_BINARY_DIR}
