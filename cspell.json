@@ -97,6 +97,7 @@
     "openmetrics",
     "plantuml",
     "plotly",
+    "plotlyjs",
     "pprof",
     "profdata",
     "profraw",

@@ -48,10 +48,12 @@ public:
             ->add(32)    // NOLINT
             ->add(1024)  // NOLINT
 #ifdef NDEBUG
-            ->add(4 * 1024)    // NOLINT
-            ->add(16 * 1024)   // NOLINT
-            ->add(64 * 1024)   // NOLINT
-            ->add(256 * 1024)  // NOLINT
+            ->add(8 * 1024)     // NOLINT
+            ->add(64 * 1024)    // NOLINT
+            ->add(128 * 1024)   // NOLINT
+            ->add(256 * 1024)   // NOLINT
+            ->add(512 * 1024)   // NOLINT
+            ->add(1024 * 1024)  // NOLINT
 #endif
             ;
     }
