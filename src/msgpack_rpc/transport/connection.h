@@ -176,7 +176,8 @@ private:
                 return;
             }
             if (error == asio::error::eof ||
-                error == asio::error::connection_reset) {
+                error == asio::error::connection_reset ||
+                error == asio::error::broken_pipe) {
                 MSGPACK_RPC_TRACE(
                     logger_, "({}) Connection closed by peer.", log_name_);
                 state_machine_.handle_processing_stopped();
@@ -249,7 +250,8 @@ private:
                 return;
             }
             if (error == asio::error::eof ||
-                error == asio::error::connection_reset) {
+                error == asio::error::connection_reset ||
+                error == asio::error::broken_pipe) {
                 MSGPACK_RPC_TRACE(
                     logger_, "({}) Connection closed by peer.", log_name_);
                 state_machine_.handle_processing_stopped();
