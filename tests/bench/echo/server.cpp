@@ -51,6 +51,9 @@ int main() {
                     case msgpack_rpc_test::ServerType::TCP6:
                         builder.listen_to("tcp://[::1]:0");
                         break;
+                    case msgpack_rpc_test::ServerType::UNIX_SOCKET:
+                        builder.listen_to("unix://bench_echo.sock");
+                        break;
                     default:
                         throw std::runtime_error("Invalid serve type.");
                     }

@@ -30,11 +30,18 @@
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
+#include "msgpack_rpc/impl/config.h"
 
 class EchoFixture : public stat_bench::FixtureBase {
 public:
     EchoFixture() {
-        this->add_param<std::string>("type")->add("TCPv4")->add("TCPv6");
+        this->add_param<std::string>("type")
+            ->add("TCPv4")
+            ->add("TCPv6")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+            ->add("Unix")
+#endif
+            ;
         this->add_param<std::size_t>("size")
             ->add(0)
             ->add(1)
@@ -55,6 +62,8 @@ public:
             server_type_ = msgpack_rpc_test::ServerType::TCP4;
         } else if (server_type_str == "TCPv6") {
             server_type_ = msgpack_rpc_test::ServerType::TCP6;
+        } else if (server_type_str == "Unix") {
+            server_type_ = msgpack_rpc_test::ServerType::UNIX_SOCKET;
         } else {
             // This won't be executed unless a bug exists.
             std::abort();
