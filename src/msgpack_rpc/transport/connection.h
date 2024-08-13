@@ -31,13 +31,11 @@
 #include <asio/buffer.hpp>
 #include <asio/error.hpp>
 #include <asio/error_code.hpp>
-#include <asio/ip/tcp.hpp>
 #include <asio/post.hpp>
 #include <asio/write.hpp>
 #include <fmt/format.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
@@ -55,17 +53,20 @@ namespace msgpack_rpc::transport {
 
 /*!
  * \brief Class of connections.
+ *
+ * \param AsioSocketType Type of sockets in asio library.
+ * \param ConcreteAddressType Type of concrete addresses.
  */
+template <typename AsioSocketType, typename ConcreteAddressType>
 class Connection : public IConnection,
-                   public std::enable_shared_from_this<Connection> {
+                   public std::enable_shared_from_this<
+                       Connection<AsioSocketType, ConcreteAddressType>> {
 public:
-    // TODO Change to template when another protocol is implemented.
-
     //! Type of sockets in asio library.
-    using AsioSocket = asio::ip::tcp::socket;
+    using AsioSocket = AsioSocketType;
 
     //! Type of concrete addresses.
-    using ConcreteAddress = addresses::TCPAddress;
+    using ConcreteAddress = ConcreteAddressType;
 
     /*!
      * \brief Constructor.

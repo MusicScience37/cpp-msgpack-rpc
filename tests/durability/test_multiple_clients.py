@@ -9,19 +9,14 @@ from .process_executor import DEFAULT_PROCESS_WAIT_TIME, ProcessExecutor
 THIS_DIR = pathlib.Path(__file__).absolute().parent
 
 
-def test_multiple_clients_tcp_v4(
+def _check_multiple_clients(
+    *,
     bin_dir_path: pathlib.Path,
-    log_parent_dir_path: pathlib.Path,
+    current_log_dir_path: pathlib.Path,
     test_duration: datetime.timedelta,
+    server_uri: str,
 ) -> None:
-    """Test to request from multiple clients (TCPv4)."""
-    current_log_dir_path = log_parent_dir_path / "test_multiple_clients_tcp_v4"
-    if current_log_dir_path.exists():
-        shutil.rmtree(str(current_log_dir_path))
-    current_log_dir_path.mkdir(exist_ok=True, parents=True)
-
     config_file_path = THIS_DIR / "multiple_clients_config.toml"
-    server_uri = "tcp://127.0.0.1:12345"
 
     with ProcessExecutor(
         [
@@ -106,3 +101,43 @@ def test_multiple_clients_tcp_v4(
 
     assert client1_process.returncode == 0
     assert server_process.returncode == 0
+
+
+def test_multiple_clients_tcp_v4(
+    bin_dir_path: pathlib.Path,
+    log_parent_dir_path: pathlib.Path,
+    test_duration: datetime.timedelta,
+) -> None:
+    """Test to request from multiple clients (TCPv4)."""
+    current_log_dir_path = log_parent_dir_path / "test_multiple_clients_tcp_v4"
+    if current_log_dir_path.exists():
+        shutil.rmtree(str(current_log_dir_path))
+    current_log_dir_path.mkdir(exist_ok=True, parents=True)
+
+    server_uri = "tcp://127.0.0.1:12345"
+    _check_multiple_clients(
+        bin_dir_path=bin_dir_path,
+        current_log_dir_path=current_log_dir_path,
+        test_duration=test_duration,
+        server_uri=server_uri,
+    )
+
+
+def test_multiple_clients_unix(
+    bin_dir_path: pathlib.Path,
+    log_parent_dir_path: pathlib.Path,
+    test_duration: datetime.timedelta,
+) -> None:
+    """Test to request from multiple clients (Unix sockets)."""
+    current_log_dir_path = log_parent_dir_path / "test_multiple_clients_unix"
+    if current_log_dir_path.exists():
+        shutil.rmtree(str(current_log_dir_path))
+    current_log_dir_path.mkdir(exist_ok=True, parents=True)
+
+    server_uri = "unix://durability_multiple_clients.sock"
+    _check_multiple_clients(
+        bin_dir_path=bin_dir_path,
+        current_log_dir_path=current_log_dir_path,
+        test_duration=test_duration,
+        server_uri=server_uri,
+    )

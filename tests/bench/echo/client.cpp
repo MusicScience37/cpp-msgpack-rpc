@@ -30,21 +30,30 @@
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
+#include "msgpack_rpc/impl/config.h"
 
 class EchoFixture : public stat_bench::FixtureBase {
 public:
     EchoFixture() {
-        this->add_param<std::string>("type")->add("TCPv4")->add("TCPv6");
+        this->add_param<std::string>("type")
+            ->add("TCPv4")
+            ->add("TCPv6")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+            ->add("Unix")
+#endif
+            ;
         this->add_param<std::size_t>("size")
             ->add(0)
             ->add(1)
             ->add(32)    // NOLINT
             ->add(1024)  // NOLINT
 #ifdef NDEBUG
-            ->add(4 * 1024)    // NOLINT
-            ->add(16 * 1024)   // NOLINT
-            ->add(64 * 1024)   // NOLINT
-            ->add(256 * 1024)  // NOLINT
+            ->add(8 * 1024)     // NOLINT
+            ->add(64 * 1024)    // NOLINT
+            ->add(128 * 1024)   // NOLINT
+            ->add(256 * 1024)   // NOLINT
+            ->add(512 * 1024)   // NOLINT
+            ->add(1024 * 1024)  // NOLINT
 #endif
             ;
     }
@@ -55,6 +64,8 @@ public:
             server_type_ = msgpack_rpc_test::ServerType::TCP4;
         } else if (server_type_str == "TCPv6") {
             server_type_ = msgpack_rpc_test::ServerType::TCP6;
+        } else if (server_type_str == "Unix") {
+            server_type_ = msgpack_rpc_test::ServerType::UNIX_SOCKET;
         } else {
             // This won't be executed unless a bug exists.
             std::abort();

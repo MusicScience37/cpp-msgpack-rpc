@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 MusicScience37 (Kenta Kabashima)
+ * Copyright 2024 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,15 @@
  */
 /*!
  * \file
- * \brief Common definitions.
+ * \brief Definitions of platform-specific macros.
  */
 #pragma once
 
-#include <string_view>
-
-namespace msgpack_rpc_test {
+// clang-format off
 
 /*!
- * \brief URI of servers for tests.
+ * \brief Macro to specify whether to enable unix sockets.
  *
- * \note THe port number was selected randomly.
+ * 1 means enabled, 0 means disabled.
  */
-constexpr std::string_view SERVER_URL = "tcp://localhost:18612";
-
-}  // namespace msgpack_rpc_test
+#define MSGPACK_RPC_ENABLE_UNIX_SOCKETS ${MSGPACK_RPC_ENABLE_UNIX_SOCKETS}  // NOLINT

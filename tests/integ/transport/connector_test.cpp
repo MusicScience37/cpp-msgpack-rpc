@@ -35,7 +35,7 @@
 #include "msgpack_rpc/transport/i_backend.h"
 #include "msgpack_rpc/transport/i_connector.h"
 
-SCENARIO("Create a connector") {
+SCENARIO("Create a connector of TCP") {
     using msgpack_rpc::addresses::URI;
     using msgpack_rpc::config::MessageParserConfig;
     using msgpack_rpc::executors::OperationType;

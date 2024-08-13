@@ -23,6 +23,7 @@
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/i_backend.h"
@@ -41,5 +42,23 @@ namespace msgpack_rpc::transport {
     const std::shared_ptr<executors::IExecutor>& executor,
     const config::MessageParserConfig& message_parser_config,
     std::shared_ptr<logging::Logger> logger);
+
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
+/*!
+ * \brief Create a backend of Unix sockets.
+ *
+ * \param[in] executor Executor.
+ * \param[in] message_parser_config Configuration of parsers of messages.
+ * \param[in] logger Logger.
+ * \return Backend.
+ */
+[[nodiscard]] MSGPACK_RPC_EXPORT std::shared_ptr<IBackend>
+create_unix_socket_backend(
+    const std::shared_ptr<executors::IExecutor>& executor,
+    const config::MessageParserConfig& message_parser_config,
+    std::shared_ptr<logging::Logger> logger);
+
+#endif
 
 }  // namespace msgpack_rpc::transport

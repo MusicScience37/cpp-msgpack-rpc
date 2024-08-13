@@ -41,12 +41,12 @@ public:
      * \brief Constructor.
      *
      * \param[in] scheme Scheme.
-     * \param[in] host Host.
+     * \param[in] host_or_filepath Host name or filepath.
      * \param[in] port_number Port number.
      *
      * \note For protocols without port numbers, port_number can be omitted.
      */
-    URI(std::string_view scheme, std::string_view host,
+    URI(std::string_view scheme, std::string_view host_or_filepath,
         std::optional<std::uint16_t> port_number =
             std::optional<std::uint16_t>());
 
@@ -58,11 +58,11 @@ public:
     [[nodiscard]] std::string_view scheme() const noexcept;
 
     /*!
-     * \brief Get the host name.
+     * \brief Get the host name or filepath.
      *
-     * \return Host.
+     * \return Host name or filepath.
      */
-    [[nodiscard]] std::string_view host() const noexcept;
+    [[nodiscard]] std::string_view host_or_filepath() const noexcept;
 
     /*!
      * \brief Get the port number.
@@ -101,8 +101,8 @@ private:
     //! Scheme.
     std::string scheme_;
 
-    //! Host.
-    std::string host_;
+    //! Host name or filepath.
+    std::string host_or_filepath_;
 
     //! Port.
     std::optional<std::uint16_t> port_number_;

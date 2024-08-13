@@ -19,14 +19,23 @@
  */
 #include "msgpack_rpc/servers/server.h"
 
+#include <cstdio>
 #include <string>
+#include <string_view>
 
-#include "common.h"
+#include <fmt/base.h>
+
 #include "msgpack_rpc/servers/server_builder.h"
 
-int main() {
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        fmt::print(stderr, "URI must be passed.\n");
+        return 1;
+    }
+    const std::string_view server_uri = argv[1];
+
     auto server = msgpack_rpc::servers::ServerBuilder()
-                      .listen_to(msgpack_rpc_test::SERVER_URL)
+                      .listen_to(server_uri)
                       .add_method<std::string(std::string)>(
                           "echo", [](const std::string& str) { return str; })
                       .build();

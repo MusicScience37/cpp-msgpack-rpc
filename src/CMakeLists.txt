@@ -18,6 +18,7 @@ target_link_libraries(
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
+# Configurations to use as libraries.
 set_target_properties(
     ${PROJECT_NAME}
     PROPERTIES C_VISIBILITY_PRESET hidden
@@ -25,7 +26,6 @@ set_target_properties(
                VISIBILITY_INLINES_HIDDEN 1
                DEBUG_POSTFIX d
                VERSION ${PROJECT_VERSION})
-
 include(GenerateExportHeader)
 generate_export_header(
     ${PROJECT_NAME}
@@ -33,6 +33,17 @@ generate_export_header(
         "${${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR}/${PROJECT_NAME}/impl/${PROJECT_NAME}_export.h"
 )
 
+# Platform-specific configurations.
+if(UNIX)
+    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS 1)
+else()
+    set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS 0)
+endif()
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}/impl/config.h.in
+    ${${UPPER_PROJECT_NAME}_GENERATED_HEADER_DIR}/${PROJECT_NAME}/impl/config.h)
+
+# For clang-tidy.
 add_library(${PROJECT_NAME}_unity EXCLUDE_FROM_ALL unity_source.cpp)
 target_include_directories(
     ${PROJECT_NAME}_unity

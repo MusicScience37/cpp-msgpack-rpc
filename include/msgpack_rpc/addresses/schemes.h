@@ -26,4 +26,7 @@ namespace msgpack_rpc::addresses {
 //! Scheme of TCP.
 constexpr std::string_view TCP_SCHEME = "tcp";
 
+//! Scheme of unix sockets (streaming protocol).
+constexpr std::string_view UNIX_SOCKET_SCHEME = "unix";
+
 }  // namespace msgpack_rpc::addresses

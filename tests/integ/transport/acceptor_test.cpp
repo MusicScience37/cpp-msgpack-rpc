@@ -17,20 +17,28 @@
  * \file
  * \brief Test of acceptors.
  */
+#include <cstdio>
 #include <functional>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <fmt/format.h>
 
 #include "create_test_logger.h"
+#include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/backends.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
@@ -47,10 +55,33 @@ SCENARIO("Start and stop acceptor") {
     const auto executor =
         msgpack_rpc::executors::create_single_thread_executor(logger);
 
-    // TODO Parametrize here when additional protocols are tested.
-    const auto backend = msgpack_rpc::transport::create_tcp_backend(
-        executor, MessageParserConfig(), logger);
-    const URI acceptor_specified_uri = URI::parse("tcp://127.0.0.1:0");
+    const URI acceptor_specified_uri = GENERATE(URI::parse("tcp://127.0.0.1:0")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+                                                    ,
+        URI::parse("unix://integ_transport_acceptor_test.sock")
+#endif
+    );
+    INFO("URI: " << fmt::to_string(acceptor_specified_uri));
+    MSGPACK_RPC_INFO(logger, "URI: {}", acceptor_specified_uri);
+
+    std::shared_ptr<msgpack_rpc::transport::IBackend> backend;
+    if (acceptor_specified_uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
+        backend = msgpack_rpc::transport::create_tcp_backend(
+            executor, MessageParserConfig(), logger);
+    }
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+    else if (acceptor_specified_uri.scheme() ==
+        msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
+        (void)std::remove(
+            static_cast<std::string>(acceptor_specified_uri.host_or_filepath())
+                .c_str());
+        backend = msgpack_rpc::transport::create_unix_socket_backend(
+            executor, MessageParserConfig(), logger);
+    }
+#endif
+    else {
+        FAIL("invalid scheme: " << acceptor_specified_uri.scheme());
+    }
 
     const auto post = [&executor](std::function<void()> function) {
         msgpack_rpc::executors::async_invoke(

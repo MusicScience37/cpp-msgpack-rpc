@@ -27,6 +27,7 @@
 #include <asio/ip/address.hpp>
 #include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/tcp.hpp>
+#include <asio/local/stream_protocol.hpp>
 #include <asio/system_error.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -34,6 +35,7 @@
 #include "msgpack_rpc/addresses/schemes.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/impl/config.h"
 
 /*!
  * \brief Check whether a TCP endpoint is accepting connections.
@@ -43,8 +45,9 @@
 void check_connectivity_tcp(const msgpack_rpc::addresses::URI& uri) {
     asio::io_context context;
     asio::ip::tcp::socket socket{context};
-    const auto endpoint = asio::ip::tcp::endpoint(
-        asio::ip::make_address(uri.host()), uri.port_number().value());
+    const auto endpoint =
+        asio::ip::tcp::endpoint(asio::ip::make_address(uri.host_or_filepath()),
+            uri.port_number().value());
 
     try {
         socket.connect(endpoint);
@@ -56,10 +59,40 @@ void check_connectivity_tcp(const msgpack_rpc::addresses::URI& uri) {
     }
 }
 
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
+/*!
+ * \brief Check whether a Unix socket endpoint is accepting connections.
+ *
+ * \param[in] uri URI of the Unix socket endpoint.
+ */
+void check_connectivity_unix_socket(const msgpack_rpc::addresses::URI& uri) {
+    asio::io_context context;
+    asio::local::stream_protocol::socket socket{context};
+    const auto endpoint =
+        asio::local::stream_protocol::endpoint(uri.host_or_filepath());
+
+    try {
+        socket.connect(endpoint);
+    } catch (const asio::system_error& e) {
+        throw msgpack_rpc::MsgpackRPCException(
+            msgpack_rpc::StatusCode::UNEXPECTED_ERROR,
+            fmt::format("Failed to connect to {}: {}.", fmt::streamed(endpoint),
+                e.what()));
+    }
+}
+
+#endif
+
 void check_connectivity(const msgpack_rpc::addresses::URI& uri) {
     if (uri.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
         check_connectivity_tcp(uri);
     }
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+    else if (uri.scheme() == msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
+        check_connectivity_unix_socket(uri);
+    }
+#endif
 }
 
 void check_connectivity(const std::vector<msgpack_rpc::addresses::URI>& uris) {

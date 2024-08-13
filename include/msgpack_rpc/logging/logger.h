@@ -20,6 +20,7 @@
 #pragma once
 
 // IWYU pragma: no_include <asio/ip/basic_endpoint.hpp>
+// IWYU pragma: no_include <asio/local/basic_endpoint.hpp>
 // IWYU pragma: no_include <asio/ip/detail/impl/endpoint.ipp>
 // IWYU pragma: no_include <catch2/catch_message.hpp>
 

@@ -22,6 +22,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
 
+#include "msgpack_rpc/impl/config.h"
+
 TEST_CASE("msgpack_rpc::addresses::URI") {
     using msgpack_rpc::addresses::URI;
 
@@ -29,7 +31,7 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("tcp://example.com:12345");
 
         CHECK(uri.scheme() == "tcp");
-        CHECK(uri.host() == "example.com");
+        CHECK(uri.host_or_filepath() == "example.com");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(12345));
         CHECK(fmt::format("{}", uri) == "tcp://example.com:12345");
     }
@@ -38,14 +40,29 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
         const URI uri = URI::parse("tcp://[fc00::3]:65535");
 
         CHECK(uri.scheme() == "tcp");
-        CHECK(uri.host() == "fc00::3");
+        CHECK(uri.host_or_filepath() == "fc00::3");
         CHECK(uri.port_number() == static_cast<std::uint16_t>(65535));
         CHECK(fmt::format("{}", uri) == "tcp://[fc00::3]:65535");
     }
 
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
+    SECTION("parse a URI of Unix socket") {
+        const URI uri = URI::parse("unix:///test/path");
+
+        CHECK(uri.scheme() == "unix");
+        CHECK(uri.host_or_filepath() == "/test/path");
+        CHECK(uri.port_number() == std::nullopt);
+        CHECK(fmt::format("{}", uri) == "unix:///test/path");
+    }
+
+#endif
+
     SECTION("parse invalid URIs") {
         CHECK_THROWS((void)URI::parse("tcp://example.com:65536"));
         CHECK_THROWS((void)URI::parse("tcp://[fc00::3]:65536"));
+        CHECK_THROWS((void)URI::parse("invalid://example.com:65535"));
+        CHECK_THROWS((void)URI::parse("invalid://example/path"));
         CHECK_THROWS((void)URI::parse("abc"));
     }
 

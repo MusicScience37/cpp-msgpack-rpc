@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 MusicScience37 (Kenta Kabashima)
+ * Copyright 2024 MusicScience37 (Kenta Kabashima)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,26 @@
  */
 /*!
  * \file
- * \brief Definition of TCPAcceptor type.
+ * \brief Definition of UnixSocketAcceptor type.
  */
 #pragma once
 
-#include <asio/ip/basic_endpoint.hpp>
-#include <asio/ip/tcp.hpp>
+#include "msgpack_rpc/impl/config.h"
 
-#include "msgpack_rpc/addresses/tcp_address.h"
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+
+#include <asio/local/basic_endpoint.hpp>
+#include <asio/local/stream_protocol.hpp>
+
+#include "msgpack_rpc/addresses/unix_socket_address.h"
 #include "msgpack_rpc/transport/acceptor.h"
 
-namespace msgpack_rpc::transport::tcp {
+namespace msgpack_rpc::transport::unix_socket {
 
-//! Type of acceptors of TCP.
-using TCPAcceptor = Acceptor<asio::ip::tcp::acceptor, asio::ip::tcp::socket,
-    addresses::TCPAddress>;
+//! Type of acceptors of Unix sockets.
+using UnixSocketAcceptor = Acceptor<asio::local::stream_protocol::acceptor,
+    asio::local::stream_protocol::socket, addresses::UnixSocketAddress>;
 
-}  // namespace msgpack_rpc::transport::tcp
+}  // namespace msgpack_rpc::transport::unix_socket
+
+#endif

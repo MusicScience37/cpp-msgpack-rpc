@@ -19,24 +19,22 @@
  */
 #pragma once
 
-#include <functional>
+#include <cstdio>  // IWYU pragma: keep
 #include <memory>
 #include <optional>
 #include <string>
 #include <system_error>
+#include <type_traits>  // IWYU pragma: keep
 #include <utility>
 
-#include <asio/any_io_executor.hpp>
-#include <asio/basic_stream_socket.hpp>
 #include <asio/error.hpp>
 #include <asio/error_code.hpp>
-#include <asio/ip/tcp.hpp>
 #include <asio/post.hpp>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "msgpack_rpc/addresses/i_address.h"
-#include "msgpack_rpc/addresses/tcp_address.h"
+#include "msgpack_rpc/addresses/unix_socket_address.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status_code.h"
 #include "msgpack_rpc/config/message_parser_config.h"
@@ -53,22 +51,25 @@ namespace msgpack_rpc::transport {
 /*!
  * \brief Class of acceptors.
  */
-class Acceptor : public IAcceptor,
-                 public std::enable_shared_from_this<Acceptor> {
-public:
-    // TODO Change to template when another protocol is implemented.
 
+template <typename AsioAcceptorType, typename AsioSocketType,
+    typename ConcreteAddressType>
+class Acceptor
+    : public IAcceptor,
+      public std::enable_shared_from_this<
+          Acceptor<AsioAcceptorType, AsioSocketType, ConcreteAddressType>> {
+public:
     //! Type of acceptors in asio library.
-    using AsioAcceptor = asio::ip::tcp::acceptor;
+    using AsioAcceptor = AsioAcceptorType;
 
     //! Type of sockets in asio library.
-    using AsioSocket = asio::ip::tcp::socket;
+    using AsioSocket = AsioSocketType;
 
     //! Type of concrete addresses.
-    using ConcreteAddress = addresses::TCPAddress;
+    using ConcreteAddress = ConcreteAddressType;
 
     //! Type of connections.
-    using ConnectionType = Connection;
+    using ConnectionType = Connection<AsioSocket, ConcreteAddress>;
 
     /*!
      * \brief Constructor.
@@ -171,6 +172,12 @@ private:
         acceptor_.cancel();
         acceptor_.close();
         connection_list_->async_close_all();
+        if constexpr (std::is_same_v<ConcreteAddress,
+                          addresses::UnixSocketAddress>) {
+            // Without removing the file of Unix socket, the socket cannot be
+            // used next time.
+            (void)std::remove(local_address_.filepath().c_str());
+        }
         MSGPACK_RPC_TRACE(logger_, "({}) Stopped this acceptor.", log_name_);
     }
 

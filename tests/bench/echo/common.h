@@ -38,7 +38,10 @@ enum class ServerType {
     TCP4,
 
     //! TCP of IP version 6.
-    TCP6
+    TCP6,
+
+    //! Unix socket.
+    UNIX_SOCKET,
 };
 
 }  // namespace msgpack_rpc_test

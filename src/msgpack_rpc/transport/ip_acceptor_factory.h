@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <asio/error_code.hpp>
+#include <asio/ip/basic_endpoint.hpp>
 #include <asio/ip/basic_resolver_entry.hpp>
 #include <asio/ip/basic_resolver_iterator.hpp>
 #include <asio/ip/tcp.hpp>
@@ -46,6 +47,7 @@
 #include "msgpack_rpc/transport/acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor.h"
 #include "msgpack_rpc/transport/i_acceptor_factory.h"
+#include "msgpack_rpc/transport/tcp/tcp_acceptor.h"
 
 namespace msgpack_rpc::transport {
 
@@ -60,7 +62,7 @@ public:
     using AsioResolver = asio::ip::tcp::resolver;
 
     //! Type of acceptors.
-    using AcceptorType = Acceptor;
+    using AcceptorType = tcp::TCPAcceptor;
 
     //! Type of concrete addresses.
     using ConcreteAddress = addresses::TCPAddress;
@@ -121,7 +123,8 @@ private:
         const std::string service = fmt::format(
             "{}", uri.port_number().value_or(static_cast<std::uint16_t>(0)));
         asio::error_code error;
-        auto results = resolver_.resolve(uri.host(), service, error);
+        auto results =
+            resolver_.resolve(uri.host_or_filepath(), service, error);
         if (error) {
             const auto message =
                 fmt::format("Failed to resolve {}: {}", uri, error.message());

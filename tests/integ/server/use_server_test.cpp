@@ -18,6 +18,7 @@
  * \brief Test of servers.
  */
 #include <chrono>
+#include <cstdio>
 #include <functional>
 #include <future>
 #include <memory>
@@ -30,9 +31,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <fmt/ranges.h>
 
 #include "../transport/transport_helper.h"
+#include "check_connectivity.h"
 #include "create_test_logger.h"
 #include "msgpack_rpc/addresses/uri.h"
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
@@ -43,6 +46,7 @@
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
+#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/call_result.h"
 #include "msgpack_rpc/messages/message_id.h"
@@ -66,8 +70,16 @@ SCENARIO("Use a server") {
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
-    // TODO Parametrize here when additional protocols are tested.
-    const auto server_uri = std::string_view("tcp://localhost:0");
+    const auto server_uri = GENERATE(std::string_view("tcp://localhost:0")
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+                                         ,
+        std::string_view("unix://integ_server_use_server_test.sock")
+#endif
+    );
+
+    if (server_uri.substr(0, 4) == "unix") {
+        (void)std::remove("integ_server_use_server_test.sock");
+    }
 
     GIVEN("A server") {
         ServerBuilder builder{logger};
@@ -90,6 +102,7 @@ SCENARIO("Use a server") {
         const auto uris = server.local_endpoint_uris();
         MSGPACK_RPC_DEBUG(logger, "Server URIs: {}", fmt::join(uris, ", "));
         REQUIRE(uris != std::vector<URI>{});  // NOLINT
+        REQUIRE_NOTHROW(check_connectivity(uris));
 
         WHEN("A client connect to the server") {
             using msgpack_rpc::MsgpackRPCException;
@@ -112,8 +125,21 @@ SCENARIO("Use a server") {
                     executor, OperationType::CALLBACK, std::move(function));
             };
 
-            const auto backend = msgpack_rpc::transport::create_tcp_backend(
-                executor, MessageParserConfig(), logger);
+            std::shared_ptr<msgpack_rpc::transport::IBackend> backend;
+            if (uris.front().scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
+                backend = msgpack_rpc::transport::create_tcp_backend(
+                    executor, MessageParserConfig(), logger);
+            }
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+            else if (uris.front().scheme() ==
+                msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
+                backend = msgpack_rpc::transport::create_unix_socket_backend(
+                    executor, MessageParserConfig(), logger);
+            }
+#endif
+            else {
+                FAIL("invalid scheme: " << uris.front().scheme());
+            }
 
             std::shared_ptr<IConnection> client_connection;
 

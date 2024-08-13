@@ -23,6 +23,7 @@
 
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/i_executor.h"
+#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/transport/backend_list.h"
 #include "msgpack_rpc/transport/backends.h"
@@ -44,6 +45,10 @@ namespace msgpack_rpc::transport {
     BackendList backends;
     backends.append(
         create_tcp_backend(executor, message_parser_config, logger));
+#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+    backends.append(
+        create_unix_socket_backend(executor, message_parser_config, logger));
+#endif
     return backends;
 }
 

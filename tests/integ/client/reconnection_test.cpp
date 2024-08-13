@@ -25,6 +25,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_tostring.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include "create_test_logger.h"
 #include "msgpack_rpc/clients/client.h"
@@ -42,10 +43,13 @@ SCENARIO("Clients reconnect to servers") {
 
     const auto logger = msgpack_rpc_test::create_test_logger();
 
-    // TODO Parametrize here when additional protocols are tested.
     const auto server_uris =
-        std::vector<std::string_view>{"tcp://localhost:23400",
-            "tcp://localhost:23401", "tcp://localhost:23402"};
+        GENERATE((std::vector<std::string_view>{"tcp://localhost:23400",
+                     "tcp://localhost:23401", "tcp://localhost:23402"}),
+            (std::vector<std::string_view>{
+                "unix://integ_client_reconnection_test1.sock",
+                "unix://integ_client_reconnection_test2.sock",
+                "unix://integ_client_reconnection_test3.sock"}));
 
     // reconnect soon for faster test
     constexpr auto min_reconnection_waiting_time =
