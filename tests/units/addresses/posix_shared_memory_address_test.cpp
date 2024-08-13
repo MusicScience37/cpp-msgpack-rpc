@@ -15,13 +15,13 @@
  */
 /*!
  * \file
- * \brief Test of UnixSocketAddress class.
+ * \brief Test of PosixSharedMemoryAddress class.
  */
-#include "msgpack_rpc/addresses/unix_socket_address.h"
+#include "msgpack_rpc/addresses/posix_shared_memory_address.h"
 
 #include "msgpack_rpc/config.h"
 
-#if MSGPACK_RPC_HAS_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_SHM
 
 #include <optional>
 #include <sstream>
@@ -32,43 +32,43 @@
 
 #include "msgpack_rpc/addresses/uri.h"
 
-TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
-    using msgpack_rpc::addresses::UnixSocketAddress;
+TEST_CASE("msgpack_rpc::addresses::PosixSharedMemoryAddress") {
+    using msgpack_rpc::addresses::PosixSharedMemoryAddress;
     using msgpack_rpc::addresses::URI;
 
-    SECTION("get the filepath") {
-        const UnixSocketAddress address{"file/path.sock"};
+    SECTION("check file names") {
+        CHECK_NOTHROW((void)PosixSharedMemoryAddress("file_name"));
+        CHECK_THROWS((void)PosixSharedMemoryAddress("file/path"));
+        CHECK_THROWS((void)PosixSharedMemoryAddress("/file_name"));
+    }
 
-        CHECK(address.filepath() == "file/path.sock");
+    SECTION("get the file name") {
+        const PosixSharedMemoryAddress address{"file_name"};
+
+        CHECK(address.file_name() == "file_name");
     }
 
     SECTION("get the URI") {
-        const UnixSocketAddress address{"file/path.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
         const URI uri = address.to_uri();
 
-        CHECK(uri.scheme() == "unix");
-        CHECK(uri.host_or_filepath() == "file/path.sock");
+        CHECK(uri.scheme() == "shm");
+        CHECK(uri.host_or_filepath() == "file_name");
         CHECK(uri.port_number() == std::nullopt);
     }
 
     SECTION("get the string expression") {
-        const UnixSocketAddress address{"file/path.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
-        CHECK(address.to_string() == "unix://file/path.sock");
-    }
-
-    SECTION("get the address in asio library") {
-        const UnixSocketAddress address{"file/path.sock"};
-
-        CHECK(address.asio_address().path() == "file/path.sock");
+        CHECK(address.to_string() == "shm://file_name");
     }
 
     SECTION("compare with other addresses") {
-        const UnixSocketAddress address1{"file/path1.sock"};
-        const UnixSocketAddress address2{
-            "file/path1.sock"};  // same as address1
-        const UnixSocketAddress address3{"file/path3.sock"};
+        const PosixSharedMemoryAddress address1{"file_name1"};
+        const PosixSharedMemoryAddress address2{
+            "file_name1"};  // same as address1
+        const PosixSharedMemoryAddress address3{"file_name3"};
 
         CHECK(address1 == address2);
         CHECK_FALSE(address1 == address3);
@@ -77,17 +77,17 @@ TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
     }
 
     SECTION("format using fmt library") {
-        const UnixSocketAddress address{"file/path.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
-        CHECK(fmt::format("{}", address) == "unix://file/path.sock");
+        CHECK(fmt::format("{}", address) == "shm://file_name");
     }
 
     SECTION("format using ostream") {
-        const UnixSocketAddress address{"file/path.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
         std::ostringstream stream;
         stream << address;
-        CHECK(stream.str() == "unix://file/path.sock");
+        CHECK(stream.str() == "shm://file_name");
     }
 }
 

@@ -34,7 +34,7 @@
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
-#include "msgpack_rpc/impl/config.h"
+#include "msgpack_rpc/config.h"
 
 int main(int argc, char** argv) {
     std::size_t num_samples = 0;
@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 
     const std::vector<msgpack_rpc_test::ServerType> server_types{
         msgpack_rpc_test::ServerType::TCP4, msgpack_rpc_test::ServerType::TCP6
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
         ,
         msgpack_rpc_test::ServerType::UNIX_SOCKET
 #endif

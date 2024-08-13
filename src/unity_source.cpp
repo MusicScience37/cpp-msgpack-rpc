@@ -1,3 +1,4 @@
+#include "msgpack_rpc/addresses/posix_shared_memory_address.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/addresses/tcp_address.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/addresses/unix_socket_address.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/addresses/uri.cpp"  // NOLINT(bugprone-suspicious-include)

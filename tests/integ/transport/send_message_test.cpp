@@ -39,11 +39,11 @@
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"
 #include "msgpack_rpc/common/status.h"
 #include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/config.h"
 #include "msgpack_rpc/config/message_parser_config.h"
 #include "msgpack_rpc/executors/async_invoke.h"
 #include "msgpack_rpc/executors/i_single_thread_executor.h"
 #include "msgpack_rpc/executors/operation_type.h"
-#include "msgpack_rpc/impl/config.h"
 #include "msgpack_rpc/logging/logger.h"
 #include "msgpack_rpc/messages/message_serializer.h"
 #include "msgpack_rpc/messages/method_name_view.h"
@@ -80,7 +80,7 @@ SCENARIO("Send messages") {
         msgpack_rpc::executors::create_single_thread_executor(logger));
 
     const URI acceptor_specified_uri = GENERATE(URI::parse("tcp://127.0.0.1:0")
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
                                                     ,
         URI::parse("unix://integ_transport_send_message_test.sock")
 #endif
@@ -93,7 +93,7 @@ SCENARIO("Send messages") {
         backend = msgpack_rpc::transport::create_tcp_backend(
             executor, MessageParserConfig(), logger);
     }
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
     else if (acceptor_specified_uri.scheme() ==
         msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
         (void)std::remove(

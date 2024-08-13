@@ -1,4 +1,5 @@
 set(SOURCE_FILES
+    msgpack_rpc/addresses/posix_shared_memory_address.cpp
     msgpack_rpc/addresses/tcp_address.cpp
     msgpack_rpc/addresses/unix_socket_address.cpp
     msgpack_rpc/addresses/uri.cpp

@@ -19,7 +19,7 @@
  */
 #include "msgpack_rpc/addresses/unix_socket_address.h"
 
-#if MSGPACK_RPC_ENABLE_UNIX_SOCKETS
+#if MSGPACK_RPC_HAS_UNIX_SOCKETS
 
 #include <utility>
 

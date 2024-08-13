@@ -58,7 +58,8 @@ bool URI::operator!=(const URI& right) const { return !operator==(right); }
 URI URI::parse(std::string_view uri_string) {
     static re2::RE2 ip_regex{R"((tcp)://([a-zA-Z0-9+-.]+):(\d+))"};
     static re2::RE2 ipv6_regex{R"((tcp)://\[([a-zA-Z0-9+-.:]+)\]:(\d+))"};
-    static re2::RE2 filepath_regex{R"((unix)://(.*))"};
+    static re2::RE2 filepath_regex{R"((unix)://(.+))"};
+    static re2::RE2 file_name_regex{R"((shm)://([^/]+))"};
 
     std::string scheme{};
     std::string host{};
@@ -70,14 +71,16 @@ URI URI::parse(std::string_view uri_string) {
             absl_uri_string, ip_regex, &scheme, &host, &port) &&
         !re2::RE2::FullMatch(
             absl_uri_string, ipv6_regex, &scheme, &host, &port) &&
-        !re2::RE2::FullMatch(absl_uri_string, filepath_regex, &scheme, &host)) {
+        !re2::RE2::FullMatch(absl_uri_string, filepath_regex, &scheme, &host) &&
+        !re2::RE2::FullMatch(
+            absl_uri_string, file_name_regex, &scheme, &host)) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format("Invalid URI string: \"{}\".", uri_string));
     }
     if (scheme == TCP_SCHEME) {
         return URI(scheme, host, port);
     }
-    if (scheme == UNIX_SOCKET_SCHEME) {
+    if (scheme == UNIX_SOCKET_SCHEME || scheme == SHARED_MEMORY_SCHEME) {
         return URI(scheme, host);
     }
     throw MsgpackRPCException(
