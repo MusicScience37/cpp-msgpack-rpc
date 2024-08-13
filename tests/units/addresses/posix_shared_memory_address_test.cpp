@@ -37,38 +37,38 @@ TEST_CASE("msgpack_rpc::addresses::PosixSharedMemoryAddress") {
     using msgpack_rpc::addresses::URI;
 
     SECTION("check file names") {
-        CHECK_NOTHROW((void)PosixSharedMemoryAddress("file_name.sock"));
-        CHECK_THROWS((void)PosixSharedMemoryAddress("file/path.sock"));
-        CHECK_THROWS((void)PosixSharedMemoryAddress("/file_name.sock"));
+        CHECK_NOTHROW((void)PosixSharedMemoryAddress("file_name"));
+        CHECK_THROWS((void)PosixSharedMemoryAddress("file/path"));
+        CHECK_THROWS((void)PosixSharedMemoryAddress("/file_name"));
     }
 
     SECTION("get the file name") {
-        const PosixSharedMemoryAddress address{"file_name.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
-        CHECK(address.file_name() == "file_name.sock");
+        CHECK(address.file_name() == "file_name");
     }
 
     SECTION("get the URI") {
-        const PosixSharedMemoryAddress address{"file_name.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
         const URI uri = address.to_uri();
 
         CHECK(uri.scheme() == "shm");
-        CHECK(uri.host_or_filepath() == "file_name.sock");
+        CHECK(uri.host_or_filepath() == "file_name");
         CHECK(uri.port_number() == std::nullopt);
     }
 
     SECTION("get the string expression") {
-        const PosixSharedMemoryAddress address{"file_name.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
-        CHECK(address.to_string() == "shm://file_name.sock");
+        CHECK(address.to_string() == "shm://file_name");
     }
 
     SECTION("compare with other addresses") {
-        const PosixSharedMemoryAddress address1{"file_name1.sock"};
+        const PosixSharedMemoryAddress address1{"file_name1"};
         const PosixSharedMemoryAddress address2{
-            "file_name1.sock"};  // same as address1
-        const PosixSharedMemoryAddress address3{"file_name3.sock"};
+            "file_name1"};  // same as address1
+        const PosixSharedMemoryAddress address3{"file_name3"};
 
         CHECK(address1 == address2);
         CHECK_FALSE(address1 == address3);
@@ -77,17 +77,17 @@ TEST_CASE("msgpack_rpc::addresses::PosixSharedMemoryAddress") {
     }
 
     SECTION("format using fmt library") {
-        const PosixSharedMemoryAddress address{"file_name.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
-        CHECK(fmt::format("{}", address) == "shm://file_name.sock");
+        CHECK(fmt::format("{}", address) == "shm://file_name");
     }
 
     SECTION("format using ostream") {
-        const PosixSharedMemoryAddress address{"file_name.sock"};
+        const PosixSharedMemoryAddress address{"file_name"};
 
         std::ostringstream stream;
         stream << address;
-        CHECK(stream.str() == "shm://file_name.sock");
+        CHECK(stream.str() == "shm://file_name");
     }
 }
 
