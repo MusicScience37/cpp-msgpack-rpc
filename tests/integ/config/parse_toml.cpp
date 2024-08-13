@@ -77,9 +77,9 @@ int main(int argc, const char** argv) {
     if (argc != 2) {
         return 2;
     }
-    const std::string_view filepath = argv[1];
+    const std::string_view file_path = argv[1];
     fmt::print(stdout, "File: {}\n\n",
-        std::filesystem::path(filepath).filename().string());
+        std::filesystem::path(file_path).filename().string());
 
     try {
         std::unordered_map<std::string, LoggingConfig> logging_configs;
@@ -87,17 +87,17 @@ int main(int argc, const char** argv) {
         std::unordered_map<std::string, ServerConfig> server_configs;
 
         msgpack_rpc::config::toml::parse_toml(
-            filepath, logging_configs, client_configs, server_configs);
+            file_path, logging_configs, client_configs, server_configs);
 
         fmt::print(stdout, "logging:\n");
         for (const auto& [key, config] : logging_configs) {
             fmt::print(stdout,
                 "  {}:\n"
-                "    filepath: {}\n"
+                "    file_path: {}\n"
                 "    max_file_size: {}\n"
                 "    max_files: {}\n"
                 "    output_log_level: {}\n",
-                key, config.filepath(), config.max_file_size(),
+                key, config.file_path(), config.max_file_size(),
                 config.max_files(), format(config.output_log_level()));
         }
 

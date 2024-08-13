@@ -8,8 +8,8 @@
 # "logging" is a mapping from configuration names to the configurations of loggers.
 [logging.default]
 # Path of the log file.
-# Empty filepath specifies output to console.
-filepath = ""
+# Empty file path specifies output to console.
+file_path = ""
 # Maximum size of a file in bytes.
 max_file_size = 1048576
 # Maximum number of files.

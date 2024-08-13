@@ -30,13 +30,13 @@
 namespace msgpack_rpc_test {
 
 std::shared_ptr<msgpack_rpc::logging::Logger> create_test_logger() {
-    static constexpr auto filepath =
+    static constexpr auto file_path =
         std::string_view("msgpack_rpc_test_units.log");
     static constexpr auto max_file_size = static_cast<std::size_t>(1024 * 1024);
     static constexpr auto max_files = static_cast<std::size_t>(3);
     static const auto logger = msgpack_rpc::logging::Logger::create(
         msgpack_rpc::logging::create_rotating_file_log_sink(
-            filepath, max_file_size, max_files),
+            file_path, max_file_size, max_files),
         msgpack_rpc::logging::LogLevel::TRACE);
     return logger;
 }

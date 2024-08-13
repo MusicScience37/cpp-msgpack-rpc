@@ -5,7 +5,7 @@ else()
 endif()
 set(PLANTUML_JAR_PATH
     "${DEFAULT_PLANTUML_JAR_PATH}"
-    CACHE FILEPATH "path of plantuml.jar")
+    CACHE PATH "path of plantuml.jar")
 
 set(${UPPER_PROJECT_NAME}_SPHINX_OPTIONS
     -D "plantuml=java -jar ${PLANTUML_JAR_PATH}" -D

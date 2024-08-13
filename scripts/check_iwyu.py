@@ -46,7 +46,7 @@ def remove_correct_lines(target: str) -> str:
 
 
 async def apply_iwyu_to_file(
-    filepath: str,
+    file_path: str,
     build_dir: str,
     tqdm_obj: tqdm.tqdm,
     limiter: asyncio.Semaphore,
@@ -56,7 +56,7 @@ async def apply_iwyu_to_file(
 
     async with limiter:
         command = (
-            ["iwyu_tool.py", "-p", ".", filepath, "--"]
+            ["iwyu_tool.py", "-p", ".", file_path, "--"]
             + CLANG_INCLUDE_OPTION
             + ["-Xiwyu", "--error"]
             + ["-Xiwyu", f"--mapping_file={str(IWYU_MAPPING_PATH)}"]
@@ -77,15 +77,15 @@ async def apply_iwyu_to_file(
             raise
 
         if process.returncode == 0:
-            tqdm_obj.write(click.style(f"> {filepath}: OK", fg="green"))
+            tqdm_obj.write(click.style(f"> {file_path}: OK", fg="green"))
             tqdm_obj.update()
         else:
             console = stdout.decode("utf8") + "\n" + stderr.decode("utf8")
             console = remove_correct_lines(console)
-            tqdm_obj.write(click.style(f"> {filepath}: NG", fg="red") + "\n" + console)
+            tqdm_obj.write(click.style(f"> {file_path}: NG", fg="red") + "\n" + console)
             IS_SUCCESS = False
             if stop_on_error:
-                raise IwyuProcessError(f"Error in {filepath}.")
+                raise IwyuProcessError(f"Error in {file_path}.")
             tqdm_obj.update()
 
 
@@ -97,22 +97,22 @@ def filter_iwyu_process_error(exc):
 
 
 async def apply_iwyu_to_files(
-    filepaths: list[str],
+    file_paths: list[str],
     build_dir: str,
     num_jobs: int,
     stop_on_error: bool,
 ):
     global IS_SUCCESS
 
-    tqdm_obj = tqdm.tqdm(total=len(filepaths), unit="file")
+    tqdm_obj = tqdm.tqdm(total=len(file_paths), unit="file")
     limiter = asyncio.Semaphore(num_jobs)
     tasks: typing.List[asyncio.Task] = []
     try:
-        for filepath in filepaths:
+        for file_path in file_paths:
             tasks.append(
                 asyncio.create_task(
                     apply_iwyu_to_file(
-                        filepath=filepath,
+                        file_path=file_path,
                         build_dir=build_dir,
                         tqdm_obj=tqdm_obj,
                         limiter=limiter,
@@ -130,14 +130,14 @@ async def apply_iwyu_to_files(
 
 
 def get_files_in(path: pathlib.Path) -> list[str]:
-    filepaths: list[str] = []
+    file_paths: list[str] = []
     for child in path.iterdir():
         if child.is_file():
-            filepaths.append(str(child))
+            file_paths.append(str(child))
         elif child.is_dir():
-            filepaths = filepaths + get_files_in(child)
+            file_paths = file_paths + get_files_in(child)
 
-    return filepaths
+    return file_paths
 
 
 @click.command()
@@ -149,28 +149,28 @@ def check_iwyu(file_or_directory_paths: list[str], build_dir: str, num_jobs: int
 
     global IS_SUCCESS
 
-    filepaths: list[str] = []
+    file_paths: list[str] = []
     for file_or_directory_path in file_or_directory_paths:
         path = pathlib.Path(file_or_directory_path).absolute()
         if path.is_file():
-            filepaths.append(str(path))
+            file_paths.append(str(path))
         elif path.is_dir():
-            filepaths = filepaths + get_files_in(path)
+            file_paths = file_paths + get_files_in(path)
 
-    filepaths = [
-        filepath
-        for filepath in filepaths
-        if filepath.endswith(".cpp") and not filepath.endswith("unity_source.cpp")
+    file_paths = [
+        file_path
+        for file_path in file_paths
+        if file_path.endswith(".cpp") and not file_path.endswith("unity_source.cpp")
     ]
 
     # Check different files first.
     random.seed()
-    random.shuffle(filepaths)
+    random.shuffle(file_paths)
 
     # Currently, stop on error always.
     stop_on_error = True
 
-    asyncio.run(apply_iwyu_to_files(filepaths, build_dir, num_jobs, stop_on_error))
+    asyncio.run(apply_iwyu_to_files(file_paths, build_dir, num_jobs, stop_on_error))
 
     if not IS_SUCCESS:
         click.echo(click.style("Some errors occurred.", fg="red"))

@@ -32,7 +32,7 @@ TEST_CASE("msgpack_rpc::logging::SourceLocationView") {
         const SourceLocationView location =
             MSGPACK_RPC_CURRENT_SOURCE_LOCATION();
 
-        CHECK_THAT(std::string(location.filepath()),
+        CHECK_THAT(std::string(location.file_path()),
             Catch::Matchers::ContainsSubstring(
                 "source_location_view_test.cpp"));
         CHECK(location.line() >= 30U);

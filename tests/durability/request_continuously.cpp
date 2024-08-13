@@ -71,7 +71,7 @@ int main(int argc, const char** argv) {
     const auto logger =
         msgpack_rpc::logging::Logger::create(msgpack_rpc::config::LoggingConfig(
             config_parser.logging_config("durability_test"))
-                                                 .filepath(log_file_path));
+                                                 .file_path(log_file_path));
     MSGPACK_RPC_INFO(
         logger, "Test duration: {} seconds", test_duration.count());
     MSGPACK_RPC_INFO(logger, "Server URI: {}", server_uri);

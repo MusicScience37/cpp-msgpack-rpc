@@ -39,14 +39,14 @@ public:
     LoggingConfig();
 
     /*!
-     * \brief Set the filepath.
+     * \brief Set the file path.
      *
      * \param[in] value Value.
      * \return This.
      *
-     * \note Empty filepath specifies output to console.
+     * \note Empty file path specifies output to console.
      */
-    LoggingConfig& filepath(std::string_view value);
+    LoggingConfig& file_path(std::string_view value);
 
     /*!
      * \brief Set the maximum size of a file.
@@ -73,13 +73,13 @@ public:
     LoggingConfig& output_log_level(logging::LogLevel value);
 
     /*!
-     * \brief Get the filepath.
+     * \brief Get the file path.
      *
-     * \return Filepath.
+     * \return File path.
      *
      * \note An empty string specifies that logs should be written to STDOUT.
      */
-    [[nodiscard]] std::string_view filepath() const noexcept;
+    [[nodiscard]] std::string_view file_path() const noexcept;
 
     /*!
      * \brief Get the maximum size of a file.
@@ -103,8 +103,8 @@ public:
     [[nodiscard]] logging::LogLevel output_log_level() const noexcept;
 
 private:
-    //! Filepath.
-    std::string filepath_;
+    //! File path.
+    std::string file_path_;
 
     //! Maximum size of a file.
     std::size_t max_file_size_;

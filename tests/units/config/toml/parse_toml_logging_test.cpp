@@ -77,27 +77,27 @@ TEST_CASE("msgpack_rpc::config::toml::impl::parse_toml(LoggingConfig)") {
         REQUIRE_NOTHROW(parse_toml(test_table, config));
     }
 
-    SECTION("parse filepath") {
+    SECTION("parse file_path") {
         const auto root_table = toml::parse(R"(
 [test]
-filepath = "test.log"
+file_path = "test.log"
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
 
         REQUIRE_NOTHROW(parse_toml(test_table, config));
 
-        CHECK(config.filepath() == "test.log");
+        CHECK(config.file_path() == "test.log");
     }
 
-    SECTION("parse filepath with invalid type") {
+    SECTION("parse file_path with invalid type") {
         const auto root_table = toml::parse(R"(
 [test]
-filepath = []
+file_path = []
 )");
         const auto test_table = root_table["test"].ref<toml::table>();
 
         CHECK_THROWS_WITH(parse_toml(test_table, config),
-            Catch::Matchers::ContainsSubstring("filepath"));
+            Catch::Matchers::ContainsSubstring("file_path"));
     }
 
     SECTION("parse max_file_size") {

@@ -176,7 +176,7 @@ private:
                           addresses::UnixSocketAddress>) {
             // Without removing the file of Unix socket, the socket cannot be
             // used next time.
-            (void)std::remove(local_address_.filepath().c_str());
+            (void)std::remove(local_address_.file_path().c_str());
         }
         MSGPACK_RPC_TRACE(logger_, "({}) Stopped this acceptor.", log_name_);
     }

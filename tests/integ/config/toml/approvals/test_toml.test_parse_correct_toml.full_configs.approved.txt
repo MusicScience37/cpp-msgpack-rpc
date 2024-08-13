@@ -2,7 +2,7 @@ File: full_configs.toml
 
 logging:
   example:
-    filepath: test.log
+    file_path: test.log
     max_file_size: 12345
     max_files: 123
     output_log_level: error

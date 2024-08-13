@@ -131,7 +131,7 @@ private:
             "{}", uri.port_number().value_or(static_cast<std::uint16_t>(0)));
         asio::error_code error;
         auto results =
-            resolver_.resolve(uri.host_or_filepath(), service, error);
+            resolver_.resolve(uri.host_or_file_path(), service, error);
         if (error) {
             const auto message =
                 fmt::format("Failed to resolve {}: {}", uri, error.message());

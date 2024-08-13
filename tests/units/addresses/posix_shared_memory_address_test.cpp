@@ -54,7 +54,7 @@ TEST_CASE("msgpack_rpc::addresses::PosixSharedMemoryAddress") {
         const URI uri = address.to_uri();
 
         CHECK(uri.scheme() == "shm");
-        CHECK(uri.host_or_filepath() == "file_name");
+        CHECK(uri.host_or_file_path() == "file_name");
         CHECK(uri.port_number() == std::nullopt);
     }
 

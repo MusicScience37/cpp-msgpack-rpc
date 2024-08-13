@@ -29,22 +29,22 @@
 
 namespace msgpack_rpc::config::toml {
 
-void parse_toml(std::string_view filepath,
+void parse_toml(std::string_view file_path,
     std::unordered_map<std::string, LoggingConfig>& logging_configs,
     std::unordered_map<std::string, ClientConfig>& client_configs,
     std::unordered_map<std::string, ServerConfig>& server_configs) {
     try {
-        const auto root_table = ::toml::parse_file(filepath);
+        const auto root_table = ::toml::parse_file(file_path);
         impl::parse_toml(
             root_table, logging_configs, client_configs, server_configs);
     } catch (const MsgpackRPCException& e) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
             fmt::format(
-                "Failed to parse {}: {}", filepath, e.status().message()));
+                "Failed to parse {}: {}", file_path, e.status().message()));
     } catch (const ::toml::parse_error& e) {
         throw MsgpackRPCException(StatusCode::INVALID_ARGUMENT,
-            fmt::format("Failed to parse {}: {} (at {}:{})", filepath,
-                e.description(), filepath, e.source().begin.line));
+            fmt::format("Failed to parse {}: {} (at {}:{})", file_path,
+                e.description(), file_path, e.source().begin.line));
     }
 }
 

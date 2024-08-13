@@ -33,12 +33,12 @@ namespace msgpack_rpc::config::toml {
 /*!
  * \brief Parse configurations from a TOML file.
  *
- * \param[in] filepath Path of the TOML file.
+ * \param[in] file_path Path of the TOML file.
  * \param[in] logging_configs Configurations of logging.
  * \param[in] client_configs Configurations of clients.
  * \param[in] server_configs Configurations of servers.
  */
-MSGPACK_RPC_EXPORT void parse_toml(std::string_view filepath,
+MSGPACK_RPC_EXPORT void parse_toml(std::string_view file_path,
     std::unordered_map<std::string, LoggingConfig>& logging_configs,
     std::unordered_map<std::string, ClientConfig>& client_configs,
     std::unordered_map<std::string, ServerConfig>& server_configs);

@@ -33,19 +33,19 @@ TEST_CASE("msgpack_rpc::config::LoggingConfig") {
     SECTION("can be default constructible with valid configuration") {
         LoggingConfig config;
 
-        CHECK(config.filepath() == "");  // NOLINT
+        CHECK(config.file_path() == "");  // NOLINT
         CHECK(config.max_file_size() > 0U);
         CHECK(config.max_files() > 0U);
         CHECK(config.output_log_level() == LogLevel::INFO);
     }
 
-    SECTION("set the filepath") {
+    SECTION("set the file path") {
         LoggingConfig config;
 
         const auto value = std::string_view("test_logging_config.log");
-        CHECK_NOTHROW(config.filepath(value));
+        CHECK_NOTHROW(config.file_path(value));
 
-        CHECK(config.filepath() == value);
+        CHECK(config.file_path() == value);
     }
 
     SECTION("set the maximum size of a file") {
