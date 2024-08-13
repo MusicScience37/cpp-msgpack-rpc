@@ -31,17 +31,13 @@
 
 namespace msgpack_rpc::addresses {
 
-URI::URI(std::string_view scheme, std::string_view host_or_file_path,
+URI::URI(std::string_view scheme, std::string_view host_or_path,
     std::optional<std::uint16_t> port_number)
-    : scheme_(scheme),
-      host_or_file_path_(host_or_file_path),
-      port_number_(port_number) {}
+    : scheme_(scheme), host_or_path_(host_or_path), port_number_(port_number) {}
 
 std::string_view URI::scheme() const noexcept { return scheme_; }
 
-std::string_view URI::host_or_file_path() const noexcept {
-    return host_or_file_path_;
-}
+std::string_view URI::host_or_path() const noexcept { return host_or_path_; }
 
 std::optional<std::uint16_t> URI::port_number() const noexcept {
     return port_number_;
@@ -49,7 +45,7 @@ std::optional<std::uint16_t> URI::port_number() const noexcept {
 
 bool URI::operator==(const URI& right) const {
     return (scheme_ == right.scheme_) &&
-        (host_or_file_path_ == right.host_or_file_path_) &&
+        (host_or_path_ == right.host_or_path_) &&
         (port_number_ == right.port_number_);
 }
 
@@ -98,13 +94,13 @@ formatter<msgpack_rpc::addresses::URI>::format(  // NOLINT
     auto out = context.out();
     out = fmt::format_to(out, "{}://", val.scheme());
     if (val.scheme() == msgpack_rpc::addresses::TCP_SCHEME) {
-        if (val.host_or_file_path().find(':') == std::string_view::npos) {
-            out = fmt::format_to(out, "{}", val.host_or_file_path());
+        if (val.host_or_path().find(':') == std::string_view::npos) {
+            out = fmt::format_to(out, "{}", val.host_or_path());
         } else {
-            out = fmt::format_to(out, "[{}]", val.host_or_file_path());
+            out = fmt::format_to(out, "[{}]", val.host_or_path());
         }
     } else {
-        out = fmt::format_to(out, "{}", val.host_or_file_path());
+        out = fmt::format_to(out, "{}", val.host_or_path());
     }
     if (val.port_number()) {
         out = fmt::format_to(out, ":{}", *(val.port_number()));

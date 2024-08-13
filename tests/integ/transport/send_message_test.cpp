@@ -97,7 +97,7 @@ SCENARIO("Send messages") {
     else if (acceptor_specified_uri.scheme() ==
         msgpack_rpc::addresses::UNIX_SOCKET_SCHEME) {
         (void)std::remove(
-            static_cast<std::string>(acceptor_specified_uri.host_or_file_path())
+            static_cast<std::string>(acceptor_specified_uri.host_or_path())
                 .c_str());
         backend = msgpack_rpc::transport::create_unix_socket_backend(
             executor, MessageParserConfig(), logger);

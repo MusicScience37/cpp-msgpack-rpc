@@ -45,9 +45,8 @@
 void check_connectivity_tcp(const msgpack_rpc::addresses::URI& uri) {
     asio::io_context context;
     asio::ip::tcp::socket socket{context};
-    const auto endpoint =
-        asio::ip::tcp::endpoint(asio::ip::make_address(uri.host_or_file_path()),
-            uri.port_number().value());
+    const auto endpoint = asio::ip::tcp::endpoint(
+        asio::ip::make_address(uri.host_or_path()), uri.port_number().value());
 
     try {
         socket.connect(endpoint);
@@ -70,7 +69,7 @@ void check_connectivity_unix_socket(const msgpack_rpc::addresses::URI& uri) {
     asio::io_context context;
     asio::local::stream_protocol::socket socket{context};
     const auto endpoint =
-        asio::local::stream_protocol::endpoint(uri.host_or_file_path());
+        asio::local::stream_protocol::endpoint(uri.host_or_path());
 
     try {
         socket.connect(endpoint);

@@ -48,7 +48,7 @@ TEST_CASE("msgpack_rpc::addresses::UnixSocketAddress") {
         const URI uri = address.to_uri();
 
         CHECK(uri.scheme() == "unix");
-        CHECK(uri.host_or_file_path() == "file/path.sock");
+        CHECK(uri.host_or_path() == "file/path.sock");
         CHECK(uri.port_number() == std::nullopt);
     }
 
