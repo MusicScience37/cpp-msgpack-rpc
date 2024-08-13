@@ -24,7 +24,7 @@ def test_inter_process_rpc_tcp(build_dir_path: pathlib.Path) -> None:
     _check_inter_process_rpc(build_dir_path=build_dir_path, uri=uri)
 
 
-def test_inter_process_rpc_tcp(build_dir_path: pathlib.Path) -> None:
-    """Test of RPCs between processes using TCP."""
+def test_inter_process_rpc_unix(build_dir_path: pathlib.Path) -> None:
+    """Test of RPCs between processes using Unix sockets."""
     uri = "unix://integ_inter_process.sock"
     _check_inter_process_rpc(build_dir_path=build_dir_path, uri=uri)
