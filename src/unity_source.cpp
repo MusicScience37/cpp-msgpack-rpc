@@ -26,6 +26,7 @@
 #include "msgpack_rpc/methods/method_exception.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/methods/method_processor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/backends.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_backend.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/unix_socket/backends.cpp"  // NOLINT(bugprone-suspicious-include)

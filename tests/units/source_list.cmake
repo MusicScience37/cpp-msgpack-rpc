@@ -50,6 +50,7 @@ set(SOURCE_FILES
     transport/backend_list_test.cpp
     transport/connection_list_test.cpp
     transport/connection_wrapper_test.cpp
+    transport/posic_shm/posix_shared_memory_test.cpp
     util/format_msgpack_object_test.cpp
     util/format_msgpack_object_to_string_test.cpp
 )
