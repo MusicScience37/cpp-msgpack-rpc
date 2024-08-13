@@ -6,6 +6,7 @@ import subprocess
 import typing
 
 import approvaltests
+
 from .create_scrubber import create_scrubber
 
 THIS_DIR = pathlib.Path(__file__).absolute().parent

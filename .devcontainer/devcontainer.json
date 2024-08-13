@@ -44,6 +44,9 @@
         "redhat.vscode-yaml",
         "ms-python.black-formatter",
         "ms-python.isort",
+        "ms-python.flake8",
+        "ms-python.mypy-type-checker",
+        "ms-python.pylint",
         "mechatroner.rainbow-csv",
         "executablebookproject.myst-highlight"
       ],

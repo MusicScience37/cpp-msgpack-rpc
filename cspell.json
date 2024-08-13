@@ -91,6 +91,7 @@
     "msgpack",
     "msvc",
     "MusicScience37",
+    "mypy",
     "nodecount",
     "NOLINT",
     "NOLINTNEXTLINE",
