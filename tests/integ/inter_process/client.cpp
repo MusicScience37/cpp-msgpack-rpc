@@ -19,17 +19,23 @@
  */
 #include "msgpack_rpc/clients/client.h"
 
+#include <cstdio>
 #include <string>
+#include <string_view>
 
 #include <fmt/base.h>
 
-#include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
 
-int main() {
-    auto client = msgpack_rpc::clients::ClientBuilder()
-                      .connect_to(msgpack_rpc_test::SERVER_URL)
-                      .build();
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        fmt::print(stderr, "URI must be passed.\n");
+        return 1;
+    }
+    const std::string_view server_uri = argv[1];
+
+    auto client =
+        msgpack_rpc::clients::ClientBuilder().connect_to(server_uri).build();
     const auto res = client.call<std::string>("echo", "test");
     fmt::print("Result: {}\n", res);
     if (res != "test") {
