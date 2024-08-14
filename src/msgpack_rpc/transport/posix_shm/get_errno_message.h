@@ -32,7 +32,7 @@ namespace msgpack_rpc::transport::posix_shm {
  *
  * \note This function can accept values set to `errno` variable.
  */
-[[nodiscard]] std::string get_errno_message(int errno_val) {
+[[nodiscard]] inline std::string get_errno_message(int errno_val) {
     return std::generic_category().message(errno_val);
 }
 

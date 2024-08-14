@@ -28,6 +28,7 @@ set(SOURCE_FILES
     msgpack_rpc/methods/method_processor.cpp
     msgpack_rpc/servers/impl/i_server_builder_impl.cpp
     msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp
+    msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.cpp
     msgpack_rpc/transport/tcp/backends.cpp
     msgpack_rpc/transport/tcp/tcp_backend.cpp
     msgpack_rpc/transport/unix_socket/backends.cpp

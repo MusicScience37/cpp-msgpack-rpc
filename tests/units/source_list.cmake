@@ -51,6 +51,7 @@ set(SOURCE_FILES
     transport/connection_list_test.cpp
     transport/connection_wrapper_test.cpp
     transport/posix_shm/posix_shared_memory_test.cpp
+    transport/posix_shm/posix_shm_mutex_view_test.cpp
     util/format_msgpack_object_test.cpp
     util/format_msgpack_object_to_string_test.cpp
 )
