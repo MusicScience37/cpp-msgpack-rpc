@@ -19,13 +19,14 @@
  */
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 
-#include <thread>
-
 #include "msgpack_rpc/config.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <thread>
+
 #include <catch2/catch_test_macros.hpp>
+#include <pthread.h>
 
 TEST_CASE("msgpack_rpc::transport::posix_shm::PosixShmMutexView") {
     using msgpack_rpc::transport::posix_shm::PosixShmMutexView;
@@ -82,6 +83,17 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::PosixShmMutexView") {
         REQUIRE_NOTHROW(view.unlock());
         REQUIRE(view.try_lock());
         REQUIRE_NOTHROW(view.unlock());
+    }
+
+    SECTION("check errors in pthread APIs") {
+        PosixShmMutexView::ActualMutex mutex{};
+        PosixShmMutexView view{&mutex};
+        REQUIRE_NOTHROW(view.initialize());
+        pthread_mutex_destroy(&mutex);
+
+        CHECK_THROWS(view.lock());
+        CHECK_THROWS((void)view.try_lock());
+        CHECK_THROWS(view.unlock());
     }
 }
 
