@@ -37,6 +37,8 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::PosixSharedMemory") {
             "msgpack_rpc_test_units_posix_shared_memory";
         constexpr std::string_view data = "abcdefghijklmnopqrstuvwxyz";
 
+        (void)PosixSharedMemory::remove(file_name);
+
         {
             INFO("Open and write data.");
             PosixSharedMemory shared_memory{
@@ -56,6 +58,27 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::PosixSharedMemory") {
         }
 
         CHECK(PosixSharedMemory::remove(file_name));
+    }
+
+    SECTION("try to open a non-existing shared memory") {
+        constexpr std::string_view file_name =
+            "msgpack_rpc_test_units_posix_shared_memory";
+        (void)PosixSharedMemory::remove(file_name);
+
+        CHECK_THROWS(
+            PosixSharedMemory{file_name, PosixSharedMemory::OPEN_EXISTING});
+    }
+
+    SECTION("try to create an existing shared memory") {
+        constexpr std::string_view file_name =
+            "msgpack_rpc_test_units_posix_shared_memory";
+        (void)PosixSharedMemory::remove(file_name);
+        constexpr std::size_t size = 10;
+        REQUIRE_NOTHROW(
+            PosixSharedMemory(file_name, size, PosixSharedMemory::INITIALIZE));
+
+        CHECK_THROWS(
+            PosixSharedMemory(file_name, size, PosixSharedMemory::INITIALIZE));
     }
 }
 

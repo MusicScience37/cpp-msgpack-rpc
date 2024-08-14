@@ -41,10 +41,10 @@ public:
     //! Tag to specify to open an existing shared memory.
     static inline const OpenExistingTag OPEN_EXISTING{};
 
-    //! Tag to specify to open and initialize a shared memory creating it if not found.
+    //! Tag to specify to open and initialize a shared memory creating it.
     struct InitializeTag {};
 
-    //! Tag to specify to open and initialize a shared memory creating it if not found.
+    //! Tag to specify to open and initialize a shared memory creating it.
     static inline const InitializeTag INITIALIZE{};
 
     /*!
@@ -55,8 +55,7 @@ public:
     PosixSharedMemory(std::string_view file_name, OpenExistingTag /*tag*/);
 
     /*!
-     * \brief Constructor. (Open and initialize a shared memory creating it if
-     * not found.)
+     * \brief Constructor. (Open and initialize a shared memory creating it.)
      *
      * \param[in] file_name File name.
      * \param[in] size Size of the shared memory.

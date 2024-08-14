@@ -99,14 +99,14 @@ PosixSharedMemory::PosixSharedMemory(
 PosixSharedMemory::PosixSharedMemory(
     std::string_view file_name, std::size_t size, InitializeTag /*tag*/) {
     const std::string shm_full_name = fmt::format("/{}", file_name);
-    constexpr int flag = O_RDWR | O_CREAT;
+    constexpr int flag = O_RDWR | O_CREAT | O_EXCL;
     // TODO This may need to be configurable.
     constexpr auto mode = static_cast<mode_t>(0600);
     file_descriptor_ = shm_open(shm_full_name.c_str(), flag, mode);
     if (file_descriptor_ < 0) {
         const int errno_val = errno;
         throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,
-            fmt::format("Failed to open shared memory {}: {}", file_name,
+            fmt::format("Failed to create shared memory {}: {}", file_name,
                 get_errno_message(errno_val)));
     }
 
