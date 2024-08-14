@@ -26,6 +26,7 @@
 #include <cstring>
 #include <string_view>
 
+#include <catch2/catch_message.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("msgpack_rpc::transport::posix_shm::PosixSharedMemory") {

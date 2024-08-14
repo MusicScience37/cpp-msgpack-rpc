@@ -23,6 +23,7 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <cerrno>
 #include <cstddef>
 #include <string>
 #include <string_view>
