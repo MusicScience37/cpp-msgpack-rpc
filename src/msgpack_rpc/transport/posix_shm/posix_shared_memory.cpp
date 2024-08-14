@@ -133,7 +133,7 @@ void* PosixSharedMemory::get() const noexcept { return ptr_; }
 std::size_t PosixSharedMemory::size() const noexcept { return size_; }
 
 void PosixSharedMemory::close() noexcept {
-    if (file_descriptor_ < 0) {
+    if (file_descriptor_ >= 0) {
         munmap(ptr_, size_);
         ::close(file_descriptor_);
         file_descriptor_ = -1;
