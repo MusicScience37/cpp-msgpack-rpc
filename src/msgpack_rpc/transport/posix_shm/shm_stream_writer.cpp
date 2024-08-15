@@ -23,7 +23,9 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
-#include <boost/atomic/ipc_atomic.hpp>
+#include <algorithm>
+#include <cstring>
+
 #include <boost/memory_order.hpp>
 
 #include "msgpack_rpc/common/msgpack_rpc_exception.h"

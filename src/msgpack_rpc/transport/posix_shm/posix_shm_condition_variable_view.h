@@ -26,8 +26,10 @@
 #include <chrono>
 #include <ctime>
 #include <mutex>
+#include <utility>
 
 #include <pthread.h>
+#include <sys/types.h>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"

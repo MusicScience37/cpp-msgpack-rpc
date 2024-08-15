@@ -23,10 +23,10 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <string>
 #include <string_view>
 #include <vector>
 
-#include <boost/atomic/ipc_atomic.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include "msgpack_rpc/messages/buffer_view.h"

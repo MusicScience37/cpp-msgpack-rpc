@@ -26,6 +26,7 @@
 #include <cassert>
 #include <cerrno>
 #include <ctime>
+#include <string>
 
 #include <fmt/format.h>
 #include <pthread.h>
