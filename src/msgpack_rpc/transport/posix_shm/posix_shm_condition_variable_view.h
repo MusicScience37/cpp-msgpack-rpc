@@ -70,28 +70,6 @@ public:
     /*!
      * \brief Wait the condition variable.
      *
-     * \param[in] lock Lock.
-     *
-     * \note This function works as `std::condition_variable::wait` function.
-     */
-    void wait(std::unique_lock<PosixShmMutexView>& lock);
-
-    /*!
-     * \brief Wait the condition variable for the given time.
-     *
-     * \param[in] lock Lock.
-     * \param[in] timeout Timeout.
-     * \retval true Finished waiting before timeout.
-     * \retval false Finished waiting due to timeout.
-     *
-     * \note This function works as `std::condition_variable::wait` function.
-     */
-    bool wait_until(std::unique_lock<PosixShmMutexView>& lock,
-        const std::timespec& timeout);
-
-    /*!
-     * \brief Wait the condition variable.
-     *
      * \tparam Condition Type of the function of the condition.
      * \param[in] lock Lock.
      * \param[in] condition Function of the condition.
@@ -173,6 +151,24 @@ public:
         std::chrono::nanoseconds relative_timeout);
 
 private:
+    /*!
+     * \brief Wait the condition variable.
+     *
+     * \param[in] lock Lock.
+     */
+    void wait(std::unique_lock<PosixShmMutexView>& lock);
+
+    /*!
+     * \brief Wait the condition variable for the given time.
+     *
+     * \param[in] lock Lock.
+     * \param[in] timeout Timeout.
+     * \retval true Finished waiting before timeout.
+     * \retval false Finished waiting due to timeout.
+     */
+    bool wait_until(std::unique_lock<PosixShmMutexView>& lock,
+        const std::timespec& timeout);
+
     //! Pointer to the actual condition variables.
     ActualConditionVariable* condition_variable_;
 };

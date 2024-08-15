@@ -77,33 +77,6 @@ void PosixShmConditionVariableView::initialize() {
     pthread_condattr_destroy(&attributes);
 }
 
-void PosixShmConditionVariableView::wait(
-    std::unique_lock<PosixShmMutexView>& lock) {
-    const int errno_val =
-        pthread_cond_wait(condition_variable_, lock.mutex()->actual_mutex());
-    if (errno_val == 0) {
-        return;
-    }
-    throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,
-        fmt::format("Failed to wait an internal condition variable: {}",
-            get_errno_message(errno_val)));
-}
-
-bool PosixShmConditionVariableView::wait_until(
-    std::unique_lock<PosixShmMutexView>& lock, const std::timespec& timeout) {
-    const int errno_val = pthread_cond_timedwait(
-        condition_variable_, lock.mutex()->actual_mutex(), &timeout);
-    if (errno_val == 0) {
-        return true;
-    }
-    if (errno_val == ETIMEDOUT) {
-        return false;
-    }
-    throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,
-        fmt::format("Failed to wait an internal condition variable: {}",
-            get_errno_message(errno_val)));
-}
-
 void PosixShmConditionVariableView::notify_one() {
     const int errno_val = pthread_cond_signal(condition_variable_);
     if (errno_val == 0) {
@@ -150,6 +123,33 @@ std::timespec PosixShmConditionVariableView::to_absolute_timeout(
     absolute_timeout.tv_nsec %= second_to_nanosecond;
 
     return absolute_timeout;
+}
+
+void PosixShmConditionVariableView::wait(
+    std::unique_lock<PosixShmMutexView>& lock) {
+    const int errno_val =
+        pthread_cond_wait(condition_variable_, lock.mutex()->actual_mutex());
+    if (errno_val == 0) {
+        return;
+    }
+    throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,
+        fmt::format("Failed to wait an internal condition variable: {}",
+            get_errno_message(errno_val)));
+}
+
+bool PosixShmConditionVariableView::wait_until(
+    std::unique_lock<PosixShmMutexView>& lock, const std::timespec& timeout) {
+    const int errno_val = pthread_cond_timedwait(
+        condition_variable_, lock.mutex()->actual_mutex(), &timeout);
+    if (errno_val == 0) {
+        return true;
+    }
+    if (errno_val == ETIMEDOUT) {
+        return false;
+    }
+    throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,
+        fmt::format("Failed to wait an internal condition variable: {}",
+            get_errno_message(errno_val)));
 }
 
 }  // namespace msgpack_rpc::transport::posix_shm
