@@ -70,6 +70,8 @@ void PosixShmMutexView::initialize() {
     pthread_mutexattr_setprotocol(&attributes, PTHREAD_PRIO_INHERIT);
 
     pthread_mutex_init(mutex_, &attributes);
+
+    pthread_mutexattr_destroy(&attributes);
 }
 
 void PosixShmMutexView::lock() {
