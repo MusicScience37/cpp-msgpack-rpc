@@ -29,6 +29,7 @@
 #include "msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/transport/posix_shm/shm_stream_writer.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/backends.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/tcp/tcp_backend.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/unix_socket/backends.cpp"  // NOLINT(bugprone-suspicious-include)

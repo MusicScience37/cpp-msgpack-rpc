@@ -53,6 +53,7 @@ set(SOURCE_FILES
     transport/posix_shm/posix_shared_memory_test.cpp
     transport/posix_shm/posix_shm_condition_variable_view_test.cpp
     transport/posix_shm/posix_shm_mutex_view_test.cpp
+    transport/posix_shm/shm_stream_writer_test.cpp
     util/format_msgpack_object_test.cpp
     util/format_msgpack_object_to_string_test.cpp
 )
