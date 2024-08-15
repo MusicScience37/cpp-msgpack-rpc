@@ -38,7 +38,8 @@ ShmStreamWriter::ShmStreamWriter(AtomicIndex* atomic_next_written_index,
       atomic_next_read_index_(atomic_next_read_index),
       buffer_(buffer.data()),
       buffer_size_(static_cast<Index>(buffer.size())),
-      next_written_index_(atomic_next_written_index->load()) {
+      next_written_index_(
+          atomic_next_written_index->load(boost::memory_order_acquire)) {
     if (buffer.size() > MAX_BUFFER_SIZE) {
         throw MsgpackRPCException(
             StatusCode::INVALID_ARGUMENT, "Too large buffer on shared memory.");

@@ -19,12 +19,11 @@
  */
 #include "msgpack_rpc/transport/posix_shm/shm_stream_writer.h"
 
-#include <string_view>
-
 #include "msgpack_rpc/config.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <string_view>
 #include <vector>
 
 #include <boost/atomic/ipc_atomic.hpp>

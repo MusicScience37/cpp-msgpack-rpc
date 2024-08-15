@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of ShmStreamWriter class.
+ * \brief Definition of ShmStreamReader class.
  */
 #pragma once
 
@@ -35,9 +35,9 @@
 namespace msgpack_rpc::transport::posix_shm {
 
 /*!
- * \brief Class to write data to a stream on shared memory.
+ * \brief Class to read data to a stream on shared memory.
  */
-class MSGPACK_RPC_EXPORT ShmStreamWriter {
+class MSGPACK_RPC_EXPORT ShmStreamReader {
 public:
     //! Type of indices.
     using Index = std::uint32_t;
@@ -61,42 +61,43 @@ public:
      * next byte to read.
      * \param[in] buffer Buffer.
      */
-    ShmStreamWriter(AtomicIndex* atomic_next_written_index,
+    ShmStreamReader(AtomicIndex* atomic_next_written_index,
         AtomicIndex* atomic_next_read_index, messages::BufferView buffer);
 
-    ShmStreamWriter(const ShmStreamWriter&) = delete;
-    ShmStreamWriter(ShmStreamWriter&&) = delete;
-    ShmStreamWriter& operator=(const ShmStreamWriter&) = delete;
-    ShmStreamWriter& operator=(ShmStreamWriter&&) = delete;
+    ShmStreamReader(const ShmStreamReader&) = delete;
+    ShmStreamReader(ShmStreamReader&&) = delete;
+    ShmStreamReader& operator=(const ShmStreamReader&) = delete;
+    ShmStreamReader& operator=(ShmStreamReader&&) = delete;
 
     /*!
      * \brief Destructor.
      */
-    ~ShmStreamWriter() = default;
+    ~ShmStreamReader() = default;
 
     /*!
-     * \brief Write data as much as possible.
+     * \brief Read data as much as possible.
      *
-     * \param[in] data Data.
-     * \param[in] data_size Number of bytes of the data.
-     * \return Number of bytes written.
+     * \param[out] data Buffer to write data.
+     * \param[in] data_size Number of bytes of the buffer.
+     * \return Number of bytes read.
      *
-     * \note This function returns immediately. When no byte can be written,
+     * \note This function returns immediately. When no byte can be read,
      * this function returns zero.
      * \note This function is wait-free on most environments.
      */
-    [[nodiscard]] std::size_t write_some(
-        const char* data, std::size_t data_size) noexcept;
+    [[nodiscard]] std::size_t read_some(
+        char* data, std::size_t data_size) noexcept;
 
 private:
     /*!
-     * \brief Calculate the number of continuous bytes writable currently.
+     * \brief Calculate the number of continuous bytes readable currently.
      *
-     * \param[in] next_read_index Value loaded from atomic_next_read_index_.
+     * \param[in] next_written_index Value loaded from
+     * atomic_next_written_index_.
      * \return Number of bytes.
      */
-    [[nodiscard]] Index calc_continuously_writable_size(
-        Index next_read_index) const noexcept;
+    [[nodiscard]] Index calc_continuously_readable_size(
+        Index next_written_index) const noexcept;
 
     //! Atomic variable of the index of the next byte to write.
     AtomicIndex* atomic_next_written_index_;
@@ -110,8 +111,8 @@ private:
     //! Size of the buffer.
     Index buffer_size_;
 
-    //! Index of the next byte to write.
-    Index next_written_index_;
+    //! Index of the next byte to read.
+    Index next_read_index_;
 };
 
 }  // namespace msgpack_rpc::transport::posix_shm
