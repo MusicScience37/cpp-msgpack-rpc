@@ -14,6 +14,7 @@ target_link_libraries(
            fmt::fmt
            re2::re2
            tomlplusplus::tomlplusplus
+           Boost::atomic
            Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -69,5 +70,7 @@ target_link_libraries(
            fmt::fmt
            re2::re2
            tomlplusplus::tomlplusplus
+           Boost::atomic
+           Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME}_unity PUBLIC cxx_std_17)

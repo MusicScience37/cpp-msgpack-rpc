@@ -78,6 +78,13 @@ public:
      */
     void unlock();
 
+    /*!
+     * \brief Get the pointer to the actual mutex.
+     *
+     * \return Pointer to the actual mutex.
+     */
+    [[nodiscard]] ActualMutex* actual_mutex() const noexcept;
+
 private:
     //! Pointer to the actual mutex.
     ActualMutex* mutex_;

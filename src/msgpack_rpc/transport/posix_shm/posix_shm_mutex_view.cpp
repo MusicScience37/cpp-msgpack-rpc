@@ -116,6 +116,11 @@ void PosixShmMutexView::unlock() {
             get_errno_message(errno_val)));
 }
 
+PosixShmMutexView::ActualMutex* PosixShmMutexView::actual_mutex()
+    const noexcept {
+    return mutex_;
+}
+
 }  // namespace msgpack_rpc::transport::posix_shm
 
 #endif

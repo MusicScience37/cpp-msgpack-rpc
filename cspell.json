@@ -115,6 +115,7 @@
     "rpcd",
     "SAST",
     "sbuffer",
+    "setclock",
     "setrobust",
     "setuptools",
     "spdlog",
