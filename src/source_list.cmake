@@ -27,6 +27,7 @@ set(SOURCE_FILES
     msgpack_rpc/methods/method_exception.cpp
     msgpack_rpc/methods/method_processor.cpp
     msgpack_rpc/servers/impl/i_server_builder_impl.cpp
+    msgpack_rpc/transport/posix_shm/client_memory_address_calculator.cpp
     msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp
     msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.cpp
     msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.cpp

@@ -50,6 +50,8 @@ set(SOURCE_FILES
     transport/backend_list_test.cpp
     transport/connection_list_test.cpp
     transport/connection_wrapper_test.cpp
+    transport/posix_shm/client_memory_address_calculator_test.cpp
+    transport/posix_shm/memory_address_utils_test.cpp
     transport/posix_shm/posix_shared_memory_test.cpp
     transport/posix_shm/posix_shm_condition_variable_view_test.cpp
     transport/posix_shm/posix_shm_mutex_view_test.cpp
