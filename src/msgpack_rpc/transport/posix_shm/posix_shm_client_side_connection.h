@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <chrono>
+
 #include "msgpack_rpc/config.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
@@ -98,8 +100,6 @@ public:
           server_to_client_stream_reader_(
               client_memory_address_calculator
                   .server_to_client_stream_reader()),
-          server_changes_count_(
-              server_memory_address_calculator.changes_count()),
           server_state_(server_memory_address_calculator.server_state()),
           server_event_queue_(
               server_memory_address_calculator.server_event_queue()),
@@ -124,8 +124,7 @@ public:
     ~PosixShmClientSideConnection() override {
         if (read_thread_.joinable()) {
             client_state_->store(ClientState::DISCONNECTED);
-            client_changes_count_->fetch_add(1U, boost::memory_order_release);
-            client_changes_count_->notify_all();
+            client_changes_count_.increment();
             read_thread_.join();
         }
     }
@@ -143,6 +142,7 @@ public:
         state_machine_.handle_processing_started();
 
         client_state_->store(ClientState::RUNNING, boost::memory_order_relaxed);
+
         read_thread_ = std::thread{[this] { read_messages_in_thread(); }};
     }
 
@@ -162,8 +162,7 @@ public:
         state_machine_.handle_processing_stopped();
         client_state_->store(
             ClientState::DISCONNECTED, boost::memory_order_relaxed);
-        client_changes_count_->fetch_add(1U, boost::memory_order_release);
-        client_changes_count_->notify_all();
+        client_changes_count_.increment();
         asio::post(context_, [self = this->shared_from_this()] {
             self->notify_event(ServerEventType::CLIENT_DESTROYED);
             self->notify_closed(Status());
@@ -194,11 +193,12 @@ private:
 
         try {
             while (true) {
-                const auto client_changes_count =
-                    client_changes_count_->load(boost::memory_order_acquire);
+                const auto client_changes_count = client_changes_count_.count();
 
                 if (client_state_->load(boost::memory_order_relaxed) !=
-                    ClientState::RUNNING) {
+                        ClientState::RUNNING ||
+                    server_state_->load(boost::memory_order_relaxed) !=
+                        ServerState::RUNNING) {
                     state_machine_.handle_processing_stopped();
                     notify_closed(Status());
                     break;
@@ -206,8 +206,10 @@ private:
 
                 read_messages_impl();
 
-                client_changes_count_->wait(
-                    client_changes_count, boost::memory_order_relaxed);
+                // TODO configuration for timeout
+                constexpr auto timeout = std::chrono::milliseconds{100};
+                client_changes_count_.wait_for_change_from(
+                    client_changes_count, timeout);
             }
         } catch (const std::exception& e) {
             client_state_->store(
@@ -237,8 +239,10 @@ private:
         MSGPACK_RPC_TRACE(
             logger_, "({}) Read {} bytes.", log_name_, read_bytes);
         message_parser_.consumed(read_bytes);
-        client_changes_count_->fetch_add(1U, boost::memory_order_release);
-        notify_event(ServerEventType::CLIENT_STATE_CHANGED);
+        client_changes_count_.increment();
+        if (!notify_event(ServerEventType::CLIENT_STATE_CHANGED)) {
+            return;
+        }
 
         while (true) {
             std::optional<messages::ParsedMessage> message;
@@ -272,11 +276,12 @@ private:
     void async_send_in_thread(const messages::SerializedMessage& message) {
         std::size_t total_written_bytes = 0;
         while (total_written_bytes < message.size()) {
-            const auto client_changes_count =
-                client_changes_count_->load(boost::memory_order_acquire);
+            const auto client_changes_count = client_changes_count_.count();
 
             if (client_state_->load(boost::memory_order_relaxed) !=
-                ClientState::RUNNING) {
+                    ClientState::RUNNING ||
+                server_state_->load(boost::memory_order_relaxed) !=
+                    ServerState::RUNNING) {
                 state_machine_.handle_processing_stopped();
                 notify_closed(Status());
                 return;
@@ -288,15 +293,21 @@ private:
                     message.size() - total_written_bytes);
             if (written_size > 0) {
                 total_written_bytes += written_size;
-                client_changes_count_->fetch_add(
-                    1U, boost::memory_order_release);
+                client_changes_count_.increment();
             } else {
-                notify_event(ServerEventType::CLIENT_STATE_CHANGED);
-                client_changes_count_->wait(
-                    client_changes_count, boost::memory_order_relaxed);
+                if (!notify_event(ServerEventType::CLIENT_STATE_CHANGED)) {
+                    state_machine_.handle_processing_stopped();
+                    notify_closed(Status());
+                    return;
+                }
+                // TODO configuration for timeout
+                constexpr auto timeout = std::chrono::milliseconds{100};
+                client_changes_count_.wait_for_change_from(
+                    client_changes_count, timeout);
             }
         }
         notify_event(ServerEventType::CLIENT_STATE_CHANGED);
+        on_sent_();
     }
 
     /*!
@@ -331,8 +342,7 @@ private:
         state_machine_.handle_processing_stopped();
         client_state_->store(
             ClientState::DISCONNECTED, boost::memory_order_relaxed);
-        client_changes_count_->fetch_add(1U, boost::memory_order_release);
-        client_changes_count_->notify_all();
+        client_changes_count_.increment();
         notify_event(ServerEventType::CLIENT_DESTROYED);
         notify_closed(status);
     }
@@ -345,14 +355,25 @@ private:
      */
     bool notify_event(ServerEventType type) {
         ServerEvent event{client_id_, type};
-        return server_event_queue_.push(event);
+        while (true) {
+            if (server_state_->load(boost::memory_order_relaxed) !=
+                ServerState::RUNNING) {
+                return false;
+            }
+
+            // TODO configuration for timeout
+            constexpr auto timeout = std::chrono::milliseconds{100};
+            if (server_event_queue_.push(event, timeout)) {
+                return true;
+            }
+        }
     }
 
     //! Shared memory of the client.
     PosixSharedMemory client_shared_memory_;
 
     //! Count of changes of the client.
-    AtomicChangesCount* client_changes_count_;
+    ChangesCount client_changes_count_;
 
     //! State of the client.
     AtomicClientState* client_state_;
@@ -362,9 +383,6 @@ private:
 
     //! Reader of the stream from the server to the client.
     ShmStreamReader server_to_client_stream_reader_;
-
-    //! Count of changes of the server.
-    AtomicChangesCount* server_changes_count_;
 
     //! State of the server.
     AtomicServerState* server_state_;
