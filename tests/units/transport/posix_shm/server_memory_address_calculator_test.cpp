@@ -50,7 +50,7 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
         CHECK(parameters.server_state_address == 64U);
         CHECK(parameters.event_queue_address == 128U);
         CHECK(parameters.event_queue_buffer_size == event_queue_buffer_size);
-        CHECK(parameters.total_memory_size == 288U);
+        CHECK(parameters.total_memory_size == 248U);
 
         std::vector<char> memory(parameters.total_memory_size);
         std::memcpy(memory.data(), &parameters, sizeof(parameters));
@@ -62,7 +62,7 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
             CHECK(result->server_state_address == 64U);
             CHECK(result->event_queue_address == 128U);
             CHECK(result->event_queue_buffer_size == event_queue_buffer_size);
-            CHECK(result->total_memory_size == 288U);
+            CHECK(result->total_memory_size == 248U);
         }
 
         SECTION("get the state of the server") {

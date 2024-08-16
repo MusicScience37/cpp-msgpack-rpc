@@ -80,9 +80,9 @@ public:
     /*!
      * \brief Get the count of changes.
      *
-     * \return Pointer to the count of changes.
+     * \return Counter of changes.
      */
-    [[nodiscard]] AtomicChangesCount* changes_count() const noexcept;
+    [[nodiscard]] ChangesCount changes_count() const noexcept;
 
     /*!
      * \brief Get the state of the client.

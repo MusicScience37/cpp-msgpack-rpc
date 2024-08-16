@@ -19,6 +19,8 @@
  */
 #include "msgpack_rpc/transport/posix_shm/client_memory_address_calculator.h"
 
+#include <chrono>
+
 #include "msgpack_rpc/config.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
@@ -44,11 +46,11 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
                 stream_buffer_size);
 
         CHECK(parameters.changes_count_address == 64U);
-        CHECK(parameters.client_state_address == 128U);
-        CHECK(parameters.client_to_server_stream_address == 192U);
-        CHECK(parameters.server_to_client_stream_address == 256U);
+        CHECK(parameters.client_state_address == 192U);
+        CHECK(parameters.client_to_server_stream_address == 256U);
+        CHECK(parameters.server_to_client_stream_address == 320U);
         CHECK(parameters.stream_buffer_size == stream_buffer_size);
-        CHECK(parameters.total_memory_size == 279U);
+        CHECK(parameters.total_memory_size == 343U);
 
         std::vector<char> memory(parameters.total_memory_size);
         std::memcpy(memory.data(), &parameters, sizeof(parameters));
@@ -58,19 +60,22 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
             const auto* result = calculator.parameters();
 
             CHECK(result->changes_count_address == 64U);
-            CHECK(result->client_state_address == 128U);
-            CHECK(result->client_to_server_stream_address == 192U);
-            CHECK(result->server_to_client_stream_address == 256U);
+            CHECK(result->client_state_address == 192U);
+            CHECK(result->client_to_server_stream_address == 256U);
+            CHECK(result->server_to_client_stream_address == 320U);
             CHECK(result->stream_buffer_size == stream_buffer_size);
-            CHECK(result->total_memory_size == 279U);
+            CHECK(result->total_memory_size == 343U);
         }
 
         SECTION("get count of changes") {
-            auto* result = calculator.changes_count();
+            auto result = calculator.changes_count();
 
-            CHECK(result->load() == 0U);
-            result->store(123U);  // NOLINT(*-magic-numbers)
-            CHECK(result->load() == 123U);
+            REQUIRE_NOTHROW(result.initialize());
+            CHECK(result.count() == 0);
+            REQUIRE_NOTHROW(result.increment());
+            CHECK(result.count() == 1);
+            CHECK_FALSE(
+                result.wait_for_change_from(1, std::chrono::milliseconds{1}));
         }
 
         SECTION("get the state of the client") {

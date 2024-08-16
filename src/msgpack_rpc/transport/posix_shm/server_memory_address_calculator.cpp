@@ -57,7 +57,8 @@ ServerEventQueue ServerMemoryAddressCalculator::server_event_queue()
 
     constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
     constexpr std::size_t mutex_size_with_padding =
-        calc_next_object_address(mutex_size, CACHE_LINE_ALIGNMENT);
+        calc_next_object_address(mutex_size,
+            alignof(PosixShmConditionVariableView::ActualConditionVariable));
     relative_address += mutex_size_with_padding;
     PosixShmConditionVariableView condition_variable(
         static_cast<PosixShmConditionVariableView::ActualConditionVariable*>(
@@ -66,7 +67,8 @@ ServerEventQueue ServerMemoryAddressCalculator::server_event_queue()
     constexpr std::size_t condition_variable_size =
         sizeof(PosixShmConditionVariableView::ActualConditionVariable);
     constexpr std::size_t condition_variable_size_with_padding =
-        calc_next_object_address(condition_variable_size, CACHE_LINE_ALIGNMENT);
+        calc_next_object_address(
+            condition_variable_size, alignof(std::uint32_t));
     relative_address += sizeof(condition_variable_size_with_padding);
     auto* next_written_index =
         static_cast<ServerEventQueue::Index*>(at(relative_address));
@@ -90,11 +92,13 @@ ServerMemoryParameters ServerMemoryAddressCalculator::calculate_parameters(
     constexpr std::size_t integer_size = sizeof(std::uint32_t);
     constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
     constexpr std::size_t mutex_size_with_padding =
-        calc_next_object_address(mutex_size, CACHE_LINE_ALIGNMENT);
+        calc_next_object_address(mutex_size,
+            alignof(PosixShmConditionVariableView::ActualConditionVariable));
     constexpr std::size_t condition_variable_size =
         sizeof(PosixShmConditionVariableView::ActualConditionVariable);
     constexpr std::size_t condition_variable_size_with_padding =
-        calc_next_object_address(condition_variable_size, CACHE_LINE_ALIGNMENT);
+        calc_next_object_address(
+            condition_variable_size, alignof(std::uint32_t));
 
     constexpr std::size_t server_state_address =
         calc_next_object_address(parameters_size, CACHE_LINE_ALIGNMENT);

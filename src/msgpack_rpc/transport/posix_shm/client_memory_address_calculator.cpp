@@ -21,6 +21,8 @@
 
 #include "msgpack_rpc/config.h"
 #include "msgpack_rpc/messages/buffer_view.h"
+#include "msgpack_rpc/transport/posix_shm/changes_count.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 #include "msgpack_rpc/transport/posix_shm/shm_stream_writer.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
@@ -45,10 +47,29 @@ const ClientMemoryParameters* ClientMemoryAddressCalculator::parameters()
     return parameters_;
 }
 
-AtomicChangesCount* ClientMemoryAddressCalculator::changes_count()
-    const noexcept {
-    return static_cast<AtomicChangesCount*>(
-        at(parameters_->changes_count_address));
+ChangesCount ClientMemoryAddressCalculator::changes_count() const noexcept {
+    std::size_t relative_address = parameters_->changes_count_address;
+    PosixShmMutexView mutex(
+        static_cast<PosixShmMutexView::ActualMutex*>(at(relative_address)));
+
+    constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
+    constexpr std::size_t mutex_size_with_padding =
+        calc_next_object_address(mutex_size,
+            alignof(PosixShmConditionVariableView::ActualConditionVariable));
+    relative_address += mutex_size_with_padding;
+    PosixShmConditionVariableView condition_variable(
+        static_cast<PosixShmConditionVariableView::ActualConditionVariable*>(
+            at(relative_address)));
+
+    constexpr std::size_t condition_variable_size =
+        sizeof(PosixShmConditionVariableView::ActualConditionVariable);
+    constexpr std::size_t condition_variable_size_with_padding =
+        calc_next_object_address(
+            condition_variable_size, alignof(std::uint32_t));
+    relative_address += sizeof(condition_variable_size_with_padding);
+    auto* count = static_cast<std::uint32_t*>(at(relative_address));
+
+    return ChangesCount{mutex, condition_variable, count};
 }
 
 AtomicClientState* ClientMemoryAddressCalculator::client_state()
@@ -94,13 +115,25 @@ ClientMemoryParameters ClientMemoryAddressCalculator::calculate_parameters(
     constexpr std::size_t parameters_size = sizeof(ClientMemoryParameters);
     constexpr std::size_t atomic_integer_size =
         sizeof(boost::atomics::ipc_atomic<std::uint32_t>);
+    constexpr std::size_t integer_size = sizeof(std::uint32_t);
     const std::size_t stream_size =
         atomic_integer_size * 2U + stream_buffer_size;
+    constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
+    constexpr std::size_t mutex_size_with_padding =
+        calc_next_object_address(mutex_size,
+            alignof(PosixShmConditionVariableView::ActualConditionVariable));
+    constexpr std::size_t condition_variable_size =
+        sizeof(PosixShmConditionVariableView::ActualConditionVariable);
+    constexpr std::size_t condition_variable_size_with_padding =
+        calc_next_object_address(
+            condition_variable_size, alignof(std::uint32_t));
 
     constexpr std::size_t changes_count_address =
         calc_next_object_address(parameters_size, CACHE_LINE_ALIGNMENT);
     constexpr std::size_t client_state_address = calc_next_object_address(
-        changes_count_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
+        changes_count_address + mutex_size_with_padding +
+            condition_variable_size_with_padding + integer_size,
+        CACHE_LINE_ALIGNMENT);
     constexpr std::size_t client_to_server_stream_address =
         calc_next_object_address(
             client_state_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);

@@ -15,7 +15,7 @@
  */
 /*!
  * \file
- * \brief Definition of ChangesCount type.
+ * \brief Definition of ChangesCount class.
  */
 #pragma once
 
@@ -23,17 +23,72 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <chrono>
 #include <cstdint>
 
-#include <boost/atomic/ipc_atomic.hpp>
+#include "msgpack_rpc/impl/msgpack_rpc_export.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 
 namespace msgpack_rpc::transport::posix_shm {
 
-//! Type of the count of changes.
-using ChangesCount = std::uint32_t;
+/*!
+ * \brief Class to count changes to shared memory.
+ */
+class MSGPACK_RPC_EXPORT ChangesCount {
+public:
+    //! Type of the count.
+    using Count = std::uint32_t;
 
-//! Type of atomic variable for ChangesCount.
-using AtomicChangesCount = boost::atomics::ipc_atomic<ChangesCount>;
+    /*!
+     * \brief Constructor.
+     *
+     * \param[in] mutex Mutex.
+     * \param[in] condition_variable Condition variable.
+     * \param[in] count Count.
+     */
+    ChangesCount(PosixShmMutexView mutex,
+        PosixShmConditionVariableView condition_variable, Count* count);
+
+    /*!
+     * \brief Initialize this counter.
+     */
+    void initialize();
+
+    /*!
+     * \brief Increment the count.
+     *
+     * \note This function notifies threads waiting using wait_for_change_from()
+     * function.
+     */
+    void increment();
+
+    /*!
+     * \brief Get the current count.
+     *
+     * \return Count.
+     */
+    [[nodiscard]] Count count();
+
+    /*!
+     * \brief Wait for change from the given count.
+     *
+     * \param[in] count Count.
+     * \param[in] timeout Timeout.
+     * \return Whether the count is changed.
+     */
+    bool wait_for_change_from(Count count, std::chrono::nanoseconds timeout);
+
+private:
+    //! Mutex.
+    PosixShmMutexView mutex_;
+
+    //! Condition variable.
+    PosixShmConditionVariableView condition_variable_;
+
+    //! Count.
+    Count* count_;
+};
 
 }  // namespace msgpack_rpc::transport::posix_shm
 

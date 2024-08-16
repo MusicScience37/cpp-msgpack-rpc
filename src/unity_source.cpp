@@ -26,6 +26,7 @@
 #include "msgpack_rpc/methods/method_exception.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/methods/method_processor.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/servers/impl/i_server_builder_impl.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "msgpack_rpc/transport/posix_shm/changes_count.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/posix_shm/client_memory_address_calculator.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.cpp"  // NOLINT(bugprone-suspicious-include)
