@@ -36,17 +36,11 @@ enum class ClientState : std::uint32_t {
     //! The client is initializing.
     INITIALIZING = 0,
 
-    //! The client is created.
-    CREATED = 1,
-
-    //! The client is connected.
-    CONNECTED = 2,
+    //! The client is running.
+    RUNNING = 1,
 
     //! The client is disconnected.
-    DISCONNECTED = 3,
-
-    //! The client has an error.
-    ERROR = 4
+    DISCONNECTED = 2
 };
 
 //! Type of atomic variable for ClientState.

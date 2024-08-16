@@ -77,8 +77,8 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
             auto* result = calculator.client_state();
 
             CHECK(result->load() == static_cast<ClientState>(0));
-            result->store(ClientState::CONNECTED);
-            CHECK(result->load() == ClientState::CONNECTED);
+            result->store(ClientState::RUNNING);
+            CHECK(result->load() == ClientState::RUNNING);
         }
 
         SECTION("use stream from client to server") {
