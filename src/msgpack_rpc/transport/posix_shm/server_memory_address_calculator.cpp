@@ -25,8 +25,8 @@
 
 #include <cstddef>
 
-#include "msgpack_rpc/transport/posix_shm/changes_count.h"
 #include "msgpack_rpc/transport/posix_shm/memory_address_utils.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.h"
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 #include "msgpack_rpc/transport/posix_shm/server_event_queue.h"
 #include "msgpack_rpc/transport/posix_shm/server_state.h"
@@ -43,12 +43,6 @@ const ServerMemoryParameters* ServerMemoryAddressCalculator::parameters()
     return parameters_;
 }
 
-AtomicChangesCount* ServerMemoryAddressCalculator::changes_count()
-    const noexcept {
-    return static_cast<AtomicChangesCount*>(
-        at(parameters_->changes_count_address));
-}
-
 AtomicServerState* ServerMemoryAddressCalculator::server_state()
     const noexcept {
     return static_cast<AtomicServerState*>(
@@ -57,21 +51,35 @@ AtomicServerState* ServerMemoryAddressCalculator::server_state()
 
 ServerEventQueue ServerMemoryAddressCalculator::server_event_queue()
     const noexcept {
-    constexpr std::size_t atomic_integer_size =
-        sizeof(boost::atomics::ipc_atomic<std::uint32_t>);
+    std::size_t relative_address = parameters_->event_queue_address;
+    PosixShmMutexView mutex(
+        static_cast<PosixShmMutexView::ActualMutex*>(at(relative_address)));
 
-    PosixShmMutexView writer_mutex(static_cast<PosixShmMutexView::ActualMutex*>(
-        at(parameters_->event_queue_writer_mutex_address)));
-    auto* atomic_next_written_index =
-        static_cast<ServerEventQueue::AtomicIndex*>(
-            at(parameters_->event_queue_rest_address));
-    auto* atomic_next_read_index = static_cast<ServerEventQueue::AtomicIndex*>(
-        at(parameters_->event_queue_rest_address + atomic_integer_size));
-    auto* buffer = static_cast<ServerEvent*>(
-        at(parameters_->event_queue_rest_address + 2 * atomic_integer_size));
+    constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
+    constexpr std::size_t mutex_size_with_padding =
+        calc_next_object_address(mutex_size, CACHE_LINE_ALIGNMENT);
+    relative_address += mutex_size_with_padding;
+    PosixShmConditionVariableView condition_variable(
+        static_cast<PosixShmConditionVariableView::ActualConditionVariable*>(
+            at(relative_address)));
 
-    return ServerEventQueue{writer_mutex, atomic_next_written_index,
-        atomic_next_read_index, buffer, parameters_->event_queue_buffer_size};
+    constexpr std::size_t condition_variable_size =
+        sizeof(PosixShmConditionVariableView::ActualConditionVariable);
+    constexpr std::size_t condition_variable_size_with_padding =
+        calc_next_object_address(condition_variable_size, CACHE_LINE_ALIGNMENT);
+    relative_address += sizeof(condition_variable_size_with_padding);
+    auto* next_written_index =
+        static_cast<ServerEventQueue::Index*>(at(relative_address));
+
+    relative_address += sizeof(ServerEventQueue::Index);
+    auto* next_read_index =
+        static_cast<ServerEventQueue::Index*>(at(relative_address));
+
+    relative_address += sizeof(ServerEventQueue::Index);
+    auto* buffer = static_cast<ServerEvent*>(at(relative_address));
+
+    return ServerEventQueue{mutex, condition_variable, next_written_index,
+        next_read_index, buffer, parameters_->event_queue_buffer_size};
 }
 
 ServerMemoryParameters ServerMemoryAddressCalculator::calculate_parameters(
@@ -79,26 +87,26 @@ ServerMemoryParameters ServerMemoryAddressCalculator::calculate_parameters(
     constexpr std::size_t parameters_size = sizeof(ServerMemoryParameters);
     constexpr std::size_t atomic_integer_size =
         sizeof(boost::atomics::ipc_atomic<std::uint32_t>);
+    constexpr std::size_t integer_size = sizeof(std::uint32_t);
     constexpr std::size_t mutex_size = sizeof(PosixShmMutexView::ActualMutex);
+    constexpr std::size_t mutex_size_with_padding =
+        calc_next_object_address(mutex_size, CACHE_LINE_ALIGNMENT);
+    constexpr std::size_t condition_variable_size =
+        sizeof(PosixShmConditionVariableView::ActualConditionVariable);
+    constexpr std::size_t condition_variable_size_with_padding =
+        calc_next_object_address(condition_variable_size, CACHE_LINE_ALIGNMENT);
 
-    constexpr std::size_t changes_count_address =
+    constexpr std::size_t server_state_address =
         calc_next_object_address(parameters_size, CACHE_LINE_ALIGNMENT);
-    constexpr std::size_t server_state_address = calc_next_object_address(
-        changes_count_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
-    constexpr std::size_t event_queue_writer_mutex_address =
-        calc_next_object_address(
-            server_state_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
-    constexpr std::size_t event_queue_rest_address = calc_next_object_address(
-        event_queue_writer_mutex_address + mutex_size, CACHE_LINE_ALIGNMENT);
-    const std::size_t total_memory_size = event_queue_rest_address +
-        2 * atomic_integer_size + event_queue_buffer_size * sizeof(ServerEvent);
+    constexpr std::size_t event_queue_address = calc_next_object_address(
+        server_state_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
+    const std::size_t total_memory_size = event_queue_address +
+        mutex_size_with_padding + condition_variable_size_with_padding +
+        2 * integer_size + event_queue_buffer_size * sizeof(ServerEvent);
 
     ServerMemoryParameters parameters{};
-    parameters.changes_count_address = changes_count_address;
     parameters.server_state_address = server_state_address;
-    parameters.event_queue_writer_mutex_address =
-        event_queue_writer_mutex_address;
-    parameters.event_queue_rest_address = event_queue_rest_address;
+    parameters.event_queue_address = event_queue_address;
     parameters.event_queue_buffer_size = event_queue_buffer_size;
     parameters.total_memory_size = total_memory_size;
 

@@ -23,6 +23,7 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -32,6 +33,7 @@
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/transport/posix_shm/client_id.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.h"
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 
 namespace msgpack_rpc::transport::posix_shm {
@@ -72,9 +74,6 @@ public:
     //! Type of indices.
     using Index = std::uint32_t;
 
-    //! Type of atomic variables for indices.
-    using AtomicIndex = boost::atomics::ipc_atomic<Index>;
-
     //! Maximum size of the buffer.
     static constexpr Index MAX_BUFFER_SIZE =
         std::numeric_limits<Index>::max() / 2U;
@@ -85,17 +84,16 @@ public:
     /*!
      * \brief Constructor.
      *
-     * \param[in] writer_mutex Mutex for writers.
-     * \param[in] atomic_next_written_index Atomic variable of the index of the
-     * next element to write.
-     * \param[in] atomic_next_read_index Atomic variable of the index of the
-     * next element to read.
+     * \param[in] mutex Mutex.
+     * \param[in] condition_variable Condition variable.
+     * \param[in] next_written_index Index of the next element to write.
+     * \param[in] next_read_index Index of the next element to read.
      * \param[in] buffer Buffer.
      * \param[in] buffer_size Size of the buffer.
      */
-    ServerEventQueue(PosixShmMutexView writer_mutex,
-        AtomicIndex* atomic_next_written_index,
-        AtomicIndex* atomic_next_read_index, ServerEvent* buffer,
+    ServerEventQueue(PosixShmMutexView mutex,
+        PosixShmConditionVariableView condition_variable,
+        Index* next_written_index, Index* next_read_index, ServerEvent* buffer,
         std::size_t buffer_size);
 
     /*!
@@ -107,37 +105,40 @@ public:
      * \brief Push an event.
      *
      * \param[in] event Event.
+     * \param[in] timeout Timeout.
      * \retval true Succeeded.
      * \retval false Failed because the buffer is full.
-     *
-     * \note This function is wait-free on most environments.
      */
-    [[nodiscard]] bool push(const ServerEvent& event) noexcept;
+    [[nodiscard]] bool push(
+        const ServerEvent& event, std::chrono::nanoseconds timeout) noexcept;
 
     /*!
      * \brief Pop an event.
      *
+     * \param[in] timeout Timeout.
      * \return Popped event. Null if the buffer is empty.
-     *
-     * \note This function is wait-free on most environments.
      */
-    [[nodiscard]] std::optional<ServerEvent> pop() noexcept;
+    [[nodiscard]] std::optional<ServerEvent> pop(
+        std::chrono::nanoseconds timeout) noexcept;
 
 private:
-    //! Mutex for writers.
-    PosixShmMutexView writer_mutex_;
+    //! Mutex.
+    PosixShmMutexView mutex_;
 
-    //! Atomic variable of the index of the next element to write.
-    AtomicIndex* atomic_next_written_index_;
+    //! Condition variable.
+    PosixShmConditionVariableView condition_variable_;
 
-    //! Atomic variable of the index of the next element to read.
-    AtomicIndex* atomic_next_read_index_;
+    //! Index of the next element to write.
+    Index* next_written_index_;
+
+    //! Index of the next element to read.
+    Index* next_read_index_;
 
     //! Buffer.
     ServerEvent* buffer_;
 
     //! Size of the buffer.
-    std::size_t buffer_size_;
+    Index buffer_size_;
 };
 
 }  // namespace msgpack_rpc::transport::posix_shm

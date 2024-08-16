@@ -19,39 +19,52 @@
  */
 #include "msgpack_rpc/transport/posix_shm/server_event_queue.h"
 
-#include <vector>
+#include <chrono>
 
 #include "msgpack_rpc/config.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <vector>
+
 #include <catch2/catch_test_macros.hpp>
 
+#include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.h"
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 
 TEST_CASE("msgpack_rpc::transport::posix_shm::ServerEventQueue") {
+    using msgpack_rpc::transport::posix_shm::PosixShmConditionVariableView;
     using msgpack_rpc::transport::posix_shm::PosixShmMutexView;
     using msgpack_rpc::transport::posix_shm::ServerEvent;
     using msgpack_rpc::transport::posix_shm::ServerEventQueue;
     using msgpack_rpc::transport::posix_shm::ServerEventType;
 
-    PosixShmMutexView::ActualMutex actual_writer_mutex;
-    PosixShmMutexView writer_mutex(&actual_writer_mutex);
+    PosixShmMutexView::ActualMutex actual_mutex;
+    PosixShmMutexView mutex(&actual_mutex);
 
-    ServerEventQueue::AtomicIndex atomic_next_written_index;
-    ServerEventQueue::AtomicIndex atomic_next_read_index;
+    ServerEventQueue::Index next_written_index = 0;
+    ServerEventQueue::Index next_read_index = 0;
+
+    PosixShmConditionVariableView::ActualConditionVariable
+        actual_condition_variable;
+    PosixShmConditionVariableView condition_variable(
+        &actual_condition_variable);
+
     std::vector<ServerEvent> buffer(4);  // NOLINT(*-magic-numbers)
 
-    ServerEventQueue queue(writer_mutex, &atomic_next_written_index,
-        &atomic_next_read_index, buffer.data(), buffer.size());
+    ServerEventQueue queue(mutex, condition_variable, &next_written_index,
+        &next_read_index, buffer.data(), buffer.size());
     queue.initialize();
+
+    constexpr std::chrono::seconds long_timeout{1};
+    constexpr std::chrono::milliseconds short_timeout{10};
 
     SECTION("push and pop an event") {
         const ServerEvent event{1, ServerEventType::CLIENT_CREATED};
 
-        REQUIRE(queue.push(event));
+        REQUIRE(queue.push(event, long_timeout));
 
-        const auto popped_event = queue.pop();
+        const auto popped_event = queue.pop(long_timeout);
 
         REQUIRE(popped_event.has_value());
         CHECK(popped_event.value().client_id == event.client_id);
@@ -59,28 +72,36 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerEventQueue") {
     }
 
     SECTION("push too many events") {
-        REQUIRE(queue.push(ServerEvent{1, ServerEventType::CLIENT_CREATED}));
+        REQUIRE(queue.push(
+            ServerEvent{1, ServerEventType::CLIENT_CREATED}, long_timeout));
         REQUIRE(
-            queue.push(ServerEvent{2, ServerEventType::CLIENT_STATE_CHANGED}));
-        REQUIRE(queue.push(ServerEvent{3, ServerEventType::CLIENT_DESTROYED}));
+            queue.push(ServerEvent{2, ServerEventType::CLIENT_STATE_CHANGED},
+                long_timeout));
+        REQUIRE(queue.push(
+            ServerEvent{3, ServerEventType::CLIENT_DESTROYED}, long_timeout));
         REQUIRE_FALSE(
-            queue.push(ServerEvent{4, ServerEventType::CLIENT_STATE_CHANGED}));
+            queue.push(ServerEvent{4, ServerEventType::CLIENT_STATE_CHANGED},
+                short_timeout));
 
-        auto popped_event = queue.pop();
+        auto popped_event = queue.pop(long_timeout);
         REQUIRE(popped_event.has_value());
         CHECK(popped_event.value().client_id == 1);
         CHECK(popped_event.value().type == ServerEventType::CLIENT_CREATED);
 
-        popped_event = queue.pop();
+        popped_event = queue.pop(long_timeout);
         REQUIRE(popped_event.has_value());
         CHECK(popped_event.value().client_id == 2);
         CHECK(
             popped_event.value().type == ServerEventType::CLIENT_STATE_CHANGED);
 
-        popped_event = queue.pop();
+        popped_event = queue.pop(long_timeout);
         REQUIRE(popped_event.has_value());
         CHECK(popped_event.value().client_id == 3);
         CHECK(popped_event.value().type == ServerEventType::CLIENT_DESTROYED);
+    }
+
+    SECTION("pop without events") {
+        REQUIRE_FALSE(queue.pop(short_timeout).has_value());
     }
 }
 

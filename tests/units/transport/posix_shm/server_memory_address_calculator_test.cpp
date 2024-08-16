@@ -20,15 +20,17 @@
 #include "msgpack_rpc/transport/posix_shm/server_memory_address_calculator.h"
 
 #include "msgpack_rpc/config.h"
-#include "msgpack_rpc/transport/posix_shm/server_event_queue.h"
-#include "msgpack_rpc/transport/posix_shm/server_state.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <chrono>
 #include <cstddef>
 #include <cstring>
 
 #include <catch2/catch_test_macros.hpp>
+
+#include "msgpack_rpc/transport/posix_shm/server_event_queue.h"
+#include "msgpack_rpc/transport/posix_shm/server_state.h"
 
 TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
     using msgpack_rpc::transport::posix_shm::ServerEvent;
@@ -45,10 +47,8 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
             ServerMemoryAddressCalculator::calculate_parameters(
                 event_queue_buffer_size);
 
-        CHECK(parameters.changes_count_address == 64U);
-        CHECK(parameters.server_state_address == 128U);
-        CHECK(parameters.event_queue_writer_mutex_address == 192U);
-        CHECK(parameters.event_queue_rest_address == 256U);
+        CHECK(parameters.server_state_address == 64U);
+        CHECK(parameters.event_queue_address == 128U);
         CHECK(parameters.event_queue_buffer_size == event_queue_buffer_size);
         CHECK(parameters.total_memory_size == 288U);
 
@@ -59,17 +59,10 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
         SECTION("get parameters") {
             const auto* result = calculator.parameters();
 
-            CHECK(result->changes_count_address == 64U);
-            CHECK(result->server_state_address == 128U);
-            CHECK(result->event_queue_writer_mutex_address == 192U);
-            CHECK(result->event_queue_rest_address == 256U);
+            CHECK(result->server_state_address == 64U);
+            CHECK(result->event_queue_address == 128U);
             CHECK(result->event_queue_buffer_size == event_queue_buffer_size);
             CHECK(result->total_memory_size == 288U);
-        }
-
-        SECTION("get the count of changes") {
-            const auto* result = calculator.changes_count();
-            CHECK(result->load() == 0U);
         }
 
         SECTION("get the state of the server") {
@@ -82,8 +75,9 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerMemoryAddressCalculator") {
 
             queue.initialize();
             REQUIRE(queue.push(
-                ServerEvent{1, ServerEventType::CLIENT_STATE_CHANGED}));
-            const auto popped_event = queue.pop();
+                ServerEvent{1, ServerEventType::CLIENT_STATE_CHANGED},
+                std::chrono::seconds(1)));
+            const auto popped_event = queue.pop(std::chrono::seconds(1));
             REQUIRE(popped_event.has_value());
             CHECK(popped_event->client_id == 1);
             CHECK(popped_event->type == ServerEventType::CLIENT_STATE_CHANGED);

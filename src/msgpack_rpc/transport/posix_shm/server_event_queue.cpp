@@ -23,6 +23,7 @@
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
+#include <chrono>
 #include <cstddef>
 #include <mutex>
 #include <optional>
@@ -30,59 +31,65 @@
 #include <boost/atomic/ipc_atomic.hpp>
 #include <boost/memory_order.hpp>
 
+#include "msgpack_rpc/common/msgpack_rpc_exception.h"
+#include "msgpack_rpc/common/status_code.h"
+#include "msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.h"
 #include "msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.h"
 
 namespace msgpack_rpc::transport::posix_shm {
 
-ServerEventQueue::ServerEventQueue(PosixShmMutexView writer_mutex,
-    AtomicIndex* atomic_next_written_index, AtomicIndex* atomic_next_read_index,
-    ServerEvent* buffer, std::size_t buffer_size)
-    : writer_mutex_(writer_mutex),
-      atomic_next_written_index_(atomic_next_written_index),
-      atomic_next_read_index_(atomic_next_read_index),
+ServerEventQueue::ServerEventQueue(PosixShmMutexView mutex,
+    PosixShmConditionVariableView condition_variable, Index* next_written_index,
+    Index* next_read_index, ServerEvent* buffer, std::size_t buffer_size)
+    : mutex_(mutex),
+      condition_variable_(condition_variable),
+      next_written_index_(next_written_index),
+      next_read_index_(next_read_index),
       buffer_(buffer),
-      buffer_size_(buffer_size) {}
-
-void ServerEventQueue::initialize() {
-    writer_mutex_.initialize();
-    atomic_next_written_index_->store(0);
-    atomic_next_read_index_->store(0);
+      buffer_size_(static_cast<Index>(buffer_size)) {
+    if (buffer_size > MAX_BUFFER_SIZE) {
+        throw MsgpackRPCException(
+            StatusCode::INVALID_ARGUMENT, "Too large size of the buffer.");
+    }
 }
 
-bool ServerEventQueue::push(const ServerEvent& event) noexcept {
-    std::unique_lock<PosixShmMutexView> lock(writer_mutex_);
+void ServerEventQueue::initialize() {
+    mutex_.initialize();
+    condition_variable_.initialize();
+    *next_written_index_ = 0;
+    *next_read_index_ = 0;
+}
 
-    const Index next_written_index =
-        atomic_next_written_index_->load(boost::memory_order_acquire);
-    const Index next_read_index =
-        atomic_next_read_index_->load(boost::memory_order_acquire);
-    const Index incremented_next_written_index =
-        (next_written_index + 1) % buffer_size_;
-    if (incremented_next_written_index == next_read_index) {
+bool ServerEventQueue::push(
+    const ServerEvent& event, std::chrono::nanoseconds timeout) noexcept {
+    std::unique_lock<PosixShmMutexView> lock(mutex_);
+
+    if (!condition_variable_.wait_for(lock, timeout, [this] {
+            return ((*next_written_index_ + 1) % buffer_size_) !=
+                *next_read_index_;
+        })) {
         return false;
     }
 
-    buffer_[next_written_index] = event;
+    buffer_[*next_written_index_] = event;
 
-    atomic_next_written_index_->store(
-        incremented_next_written_index, boost::memory_order_release);
+    *next_written_index_ = (*next_written_index_ + 1) % buffer_size_;
 
     return true;
 }
 
-std::optional<ServerEvent> ServerEventQueue::pop() noexcept {
-    const Index next_read_index =
-        atomic_next_read_index_->load(boost::memory_order_acquire);
-    const Index next_written_index =
-        atomic_next_written_index_->load(boost::memory_order_acquire);
-    if (next_read_index == next_written_index) {
+std::optional<ServerEvent> ServerEventQueue::pop(
+    std::chrono::nanoseconds timeout) noexcept {
+    std::unique_lock<PosixShmMutexView> lock(mutex_);
+
+    if (!condition_variable_.wait_for(lock, timeout,
+            [this] { return *next_read_index_ != *next_written_index_; })) {
         return std::nullopt;
     }
 
-    const ServerEvent event = buffer_[next_read_index];
+    const ServerEvent event = buffer_[*next_read_index_];
 
-    atomic_next_read_index_->store(
-        (next_read_index + 1) % buffer_size_, boost::memory_order_release);
+    *next_read_index_ = (*next_read_index_ + 1) % buffer_size_;
 
     return event;
 }

@@ -26,7 +26,6 @@
 #include <cstddef>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
-#include "msgpack_rpc/transport/posix_shm/changes_count.h"
 #include "msgpack_rpc/transport/posix_shm/server_event_queue.h"
 #include "msgpack_rpc/transport/posix_shm/server_state.h"
 
@@ -36,17 +35,11 @@ namespace msgpack_rpc::transport::posix_shm {
  * \brief Struct of parameters of shared memory of servers.
  */
 struct ServerMemoryParameters {
-    //! Relative address of the count of changes.
-    std::size_t changes_count_address;
-
     //! Relative address of the state of the server.
     std::size_t server_state_address;
 
-    //! Relative address of the mutex of writers in the event queue.
-    std::size_t event_queue_writer_mutex_address;
-
-    //! Relative address of the remaining variables in the event queue.
-    std::size_t event_queue_rest_address;
+    //! Relative address of the event queue.
+    std::size_t event_queue_address;
 
     //! Size of the buffer in the event queue.
     std::size_t event_queue_buffer_size;
@@ -73,13 +66,6 @@ public:
      * \return Pointer to the parameters.
      */
     [[nodiscard]] const ServerMemoryParameters* parameters() const noexcept;
-
-    /*!
-     * \brief Get the count of changes.
-     *
-     * \return Pointer to the count of changes.
-     */
-    [[nodiscard]] AtomicChangesCount* changes_count() const noexcept;
 
     /*!
      * \brief Get the state of the server.
