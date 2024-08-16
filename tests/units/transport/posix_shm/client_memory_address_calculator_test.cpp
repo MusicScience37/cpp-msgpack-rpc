@@ -23,6 +23,7 @@
 #include <string_view>
 
 #include "msgpack_rpc/config.h"
+#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
@@ -33,6 +34,7 @@
 TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
     using msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator;
     using msgpack_rpc::transport::posix_shm::ClientMemoryParameters;
+    using msgpack_rpc::transport::posix_shm::ClientState;
 
     SECTION("calculate parameters") {
         constexpr std::size_t stream_buffer_size = 15;
@@ -42,10 +44,11 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
                 stream_buffer_size);
 
         CHECK(parameters.changes_count_address == 64U);
-        CHECK(parameters.client_to_server_stream_address == 128U);
-        CHECK(parameters.server_to_client_stream_address == 192U);
+        CHECK(parameters.client_state_address == 128U);
+        CHECK(parameters.client_to_server_stream_address == 192U);
+        CHECK(parameters.server_to_client_stream_address == 256U);
         CHECK(parameters.stream_buffer_size == stream_buffer_size);
-        CHECK(parameters.total_memory_size == 215U);
+        CHECK(parameters.total_memory_size == 279U);
 
         std::vector<char> memory(parameters.total_memory_size);
         std::memcpy(memory.data(), &parameters, sizeof(parameters));
@@ -55,10 +58,11 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
             const auto* result = calculator.parameters();
 
             CHECK(result->changes_count_address == 64U);
-            CHECK(result->client_to_server_stream_address == 128U);
-            CHECK(result->server_to_client_stream_address == 192U);
+            CHECK(result->client_state_address == 128U);
+            CHECK(result->client_to_server_stream_address == 192U);
+            CHECK(result->server_to_client_stream_address == 256U);
             CHECK(result->stream_buffer_size == stream_buffer_size);
-            CHECK(result->total_memory_size == 215U);
+            CHECK(result->total_memory_size == 279U);
         }
 
         SECTION("get count of changes") {
@@ -67,6 +71,14 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
             CHECK(result->load() == 0U);
             result->store(123U);  // NOLINT(*-magic-numbers)
             CHECK(result->load() == 123U);
+        }
+
+        SECTION("get the state of the client") {
+            auto* result = calculator.client_state();
+
+            CHECK(result->load() == static_cast<ClientState>(0));
+            result->store(ClientState::CONNECTED);
+            CHECK(result->load() == ClientState::CONNECTED);
         }
 
         SECTION("use stream from client to server") {

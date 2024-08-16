@@ -45,10 +45,16 @@ const ClientMemoryParameters* ClientMemoryAddressCalculator::parameters()
     return parameters_;
 }
 
-boost::atomics::ipc_atomic<std::uint32_t>*
-ClientMemoryAddressCalculator::changes_count() const noexcept {
-    return static_cast<boost::atomics::ipc_atomic<std::uint32_t>*>(
+AtomicChangesCount* ClientMemoryAddressCalculator::changes_count()
+    const noexcept {
+    return static_cast<AtomicChangesCount*>(
         at(parameters_->changes_count_address));
+}
+
+AtomicClientState* ClientMemoryAddressCalculator::client_state()
+    const noexcept {
+    return static_cast<AtomicClientState*>(
+        at(parameters_->client_state_address));
 }
 
 ShmStreamWriter ClientMemoryAddressCalculator::client_to_server_stream_writer()
@@ -93,9 +99,11 @@ ClientMemoryParameters ClientMemoryAddressCalculator::calculate_parameters(
 
     constexpr std::size_t changes_count_address =
         calc_next_object_address(parameters_size, CACHE_LINE_ALIGNMENT);
+    constexpr std::size_t client_state_address = calc_next_object_address(
+        changes_count_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
     constexpr std::size_t client_to_server_stream_address =
         calc_next_object_address(
-            changes_count_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
+            client_state_address + atomic_integer_size, CACHE_LINE_ALIGNMENT);
     const std::size_t server_to_client_stream_address =
         calc_next_object_address(client_to_server_stream_address + stream_size,
             CACHE_LINE_ALIGNMENT);
@@ -104,6 +112,7 @@ ClientMemoryParameters ClientMemoryAddressCalculator::calculate_parameters(
 
     ClientMemoryParameters parameters{};
     parameters.changes_count_address = changes_count_address;
+    parameters.client_state_address = client_state_address;
     parameters.client_to_server_stream_address =
         client_to_server_stream_address;
     parameters.server_to_client_stream_address =

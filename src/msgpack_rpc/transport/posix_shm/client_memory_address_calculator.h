@@ -20,17 +20,16 @@
 #pragma once
 
 #include "msgpack_rpc/config.h"
+#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
 #include <cstddef>
-#include <cstdint>
 #include <tuple>
-
-#include <boost/atomic/ipc_atomic.hpp>
 
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/messages/buffer_view.h"
+#include "msgpack_rpc/transport/posix_shm/changes_count.h"
 #include "msgpack_rpc/transport/posix_shm/shm_stream_reader.h"
 #include "msgpack_rpc/transport/posix_shm/shm_stream_writer.h"
 
@@ -42,6 +41,9 @@ namespace msgpack_rpc::transport::posix_shm {
 struct ClientMemoryParameters {
     //! Relative address of the count of changes.
     std::size_t changes_count_address;
+
+    //! Relative address of the state of client.
+    std::size_t client_state_address;
 
     //! Relative address of the stream from the client to the server.
     std::size_t client_to_server_stream_address;
@@ -80,8 +82,14 @@ public:
      *
      * \return Pointer to the count of changes.
      */
-    [[nodiscard]] boost::atomics::ipc_atomic<std::uint32_t>* changes_count()
-        const noexcept;
+    [[nodiscard]] AtomicChangesCount* changes_count() const noexcept;
+
+    /*!
+     * \brief Get the state of the client.
+     *
+     * \return Pointer to the state of the client.
+     */
+    [[nodiscard]] AtomicClientState* client_state() const noexcept;
 
     /*!
      * \brief Create a writer of the stream from the client to the server.
