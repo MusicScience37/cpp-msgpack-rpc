@@ -55,6 +55,7 @@
 #include "transport/posix_shm/posix_shm_condition_variable_view_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/posix_shm/posix_shm_mutex_view_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/posix_shm/server_event_queue_test.cpp"  // NOLINT(bugprone-suspicious-include)
+#include "transport/posix_shm/server_memory_address_calculator_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/posix_shm/shm_stream_reader_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "transport/posix_shm/shm_stream_writer_test.cpp"  // NOLINT(bugprone-suspicious-include)
 #include "util/format_msgpack_object_test.cpp"  // NOLINT(bugprone-suspicious-include)

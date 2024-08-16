@@ -32,6 +32,7 @@ set(SOURCE_FILES
     msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.cpp
     msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.cpp
     msgpack_rpc/transport/posix_shm/server_event_queue.cpp
+    msgpack_rpc/transport/posix_shm/server_memory_address_calculator.cpp
     msgpack_rpc/transport/posix_shm/shm_stream_reader.cpp
     msgpack_rpc/transport/posix_shm/shm_stream_writer.cpp
     msgpack_rpc/transport/tcp/backends.cpp

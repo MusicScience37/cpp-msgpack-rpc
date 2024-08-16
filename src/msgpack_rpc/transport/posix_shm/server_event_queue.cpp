@@ -43,6 +43,12 @@ ServerEventQueue::ServerEventQueue(PosixShmMutexView writer_mutex,
       buffer_(buffer),
       buffer_size_(buffer_size) {}
 
+void ServerEventQueue::initialize() {
+    writer_mutex_.initialize();
+    atomic_next_written_index_->store(0);
+    atomic_next_read_index_->store(0);
+}
+
 bool ServerEventQueue::push(const ServerEvent& event) noexcept {
     std::unique_lock<PosixShmMutexView> lock(writer_mutex_);
 

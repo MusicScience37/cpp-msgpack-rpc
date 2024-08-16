@@ -20,7 +20,6 @@
 #pragma once
 
 #include "msgpack_rpc/config.h"
-#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
@@ -30,6 +29,7 @@
 #include "msgpack_rpc/impl/msgpack_rpc_export.h"
 #include "msgpack_rpc/messages/buffer_view.h"
 #include "msgpack_rpc/transport/posix_shm/changes_count.h"
+#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 #include "msgpack_rpc/transport/posix_shm/shm_stream_reader.h"
 #include "msgpack_rpc/transport/posix_shm/shm_stream_writer.h"
 

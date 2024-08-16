@@ -37,7 +37,6 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerEventQueue") {
 
     PosixShmMutexView::ActualMutex actual_writer_mutex;
     PosixShmMutexView writer_mutex(&actual_writer_mutex);
-    writer_mutex.initialize();
 
     ServerEventQueue::AtomicIndex atomic_next_written_index;
     ServerEventQueue::AtomicIndex atomic_next_read_index;
@@ -45,6 +44,7 @@ TEST_CASE("msgpack_rpc::transport::posix_shm::ServerEventQueue") {
 
     ServerEventQueue queue(writer_mutex, &atomic_next_written_index,
         &atomic_next_read_index, buffer.data(), buffer.size());
+    queue.initialize();
 
     SECTION("push and pop an event") {
         const ServerEvent event{1, ServerEventType::CLIENT_CREATED};

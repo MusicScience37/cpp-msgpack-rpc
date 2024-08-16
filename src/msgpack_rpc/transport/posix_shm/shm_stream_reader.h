@@ -64,16 +64,6 @@ public:
     ShmStreamReader(AtomicIndex* atomic_next_written_index,
         AtomicIndex* atomic_next_read_index, messages::BufferView buffer);
 
-    ShmStreamReader(const ShmStreamReader&) = delete;
-    ShmStreamReader(ShmStreamReader&&) = delete;
-    ShmStreamReader& operator=(const ShmStreamReader&) = delete;
-    ShmStreamReader& operator=(ShmStreamReader&&) = delete;
-
-    /*!
-     * \brief Destructor.
-     */
-    ~ShmStreamReader() = default;
-
     /*!
      * \brief Read data as much as possible.
      *

@@ -19,17 +19,17 @@
  */
 #include "msgpack_rpc/transport/posix_shm/client_memory_address_calculator.h"
 
-#include <cstring>
-#include <string_view>
-
 #include "msgpack_rpc/config.h"
-#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 
 #if MSGPACK_RPC_HAS_POSIX_SHM
 
 #include <cstddef>
+#include <cstring>
+#include <string_view>
 
 #include <catch2/catch_test_macros.hpp>
+
+#include "msgpack_rpc/transport/posix_shm/clint_state.h"
 
 TEST_CASE("msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator") {
     using msgpack_rpc::transport::posix_shm::ClientMemoryAddressCalculator;

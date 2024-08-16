@@ -33,6 +33,9 @@ namespace msgpack_rpc::transport::posix_shm {
  * \brief Enumeration of states of clients.
  */
 enum class ClientState : std::uint32_t {
+    //! The client is initializing.
+    INITIALIZING = 0,
+
     //! The client is created.
     CREATED = 1,
 

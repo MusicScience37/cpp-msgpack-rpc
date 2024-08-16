@@ -99,6 +99,11 @@ public:
         std::size_t buffer_size);
 
     /*!
+     * \brief Initialize this queue.
+     */
+    void initialize();
+
+    /*!
      * \brief Push an event.
      *
      * \param[in] event Event.

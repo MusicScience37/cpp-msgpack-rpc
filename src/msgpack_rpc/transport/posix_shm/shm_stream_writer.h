@@ -64,16 +64,6 @@ public:
     ShmStreamWriter(AtomicIndex* atomic_next_written_index,
         AtomicIndex* atomic_next_read_index, messages::BufferView buffer);
 
-    ShmStreamWriter(const ShmStreamWriter&) = delete;
-    ShmStreamWriter(ShmStreamWriter&&) = delete;
-    ShmStreamWriter& operator=(const ShmStreamWriter&) = delete;
-    ShmStreamWriter& operator=(ShmStreamWriter&&) = delete;
-
-    /*!
-     * \brief Destructor.
-     */
-    ~ShmStreamWriter() = default;
-
     /*!
      * \brief Write data as much as possible.
      *
