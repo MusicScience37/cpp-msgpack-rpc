@@ -39,6 +39,7 @@ TEST_CASE("using msgpack_rpc::format_status_code") {
                 {StatusCode::TYPE_ERROR, "TYPE_ERROR"},
                 {StatusCode::PRECONDITION_NOT_MET, "PRECONDITION_NOT_MET"},
                 {StatusCode::OPERATION_ABORTED, "OPERATION_ABORTED"},
+                {StatusCode::OPERATION_FAILURE, "OPERATION_FAILURE"},
                 {StatusCode::HOST_UNRESOLVED, "HOST_UNRESOLVED"},
                 {StatusCode::CONNECTION_FAILURE, "CONNECTION_FAILURE"},
                 {StatusCode::TIMEOUT, "TIMEOUT"},

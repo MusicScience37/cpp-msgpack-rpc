@@ -49,6 +49,9 @@ enum class StatusCode : std::uint8_t {
     //! Operation was aborted by user.
     OPERATION_ABORTED,
 
+    //! Operation failed. (Mainly for OS calls.)
+    OPERATION_FAILURE,
+
     //! Failure in resolving a host.
     HOST_UNRESOLVED,
 

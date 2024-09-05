@@ -14,6 +14,7 @@ target_link_libraries(
            fmt::fmt
            re2::re2
            tomlplusplus::tomlplusplus
+           Boost::atomic
            Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
@@ -39,7 +40,7 @@ if(UNIX)
         1
         CACHE STRING "enable Unix sockets (1: enable, 0: disable)")
     set(MSGPACK_RPC_ENABLE_POSIX_SHM
-        1
+        0 # TODO enable this
         CACHE STRING "enable POSIX shared memory (1: enable, 0: disable)")
 else()
     set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS
@@ -69,5 +70,7 @@ target_link_libraries(
            fmt::fmt
            re2::re2
            tomlplusplus::tomlplusplus
+           Boost::atomic
+           Threads::Threads
            $<BUILD_INTERFACE:${PROJECT_NAME}_cpp_warnings>)
 target_compile_features(${PROJECT_NAME}_unity PUBLIC cxx_std_17)

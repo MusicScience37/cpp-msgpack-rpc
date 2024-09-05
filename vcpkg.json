@@ -7,6 +7,7 @@
     "fmt",
     "re2",
     "tomlplusplus",
+    "boost-atomic",
     "catch2",
     "trompeloeil",
     "approval-tests-cpp",
