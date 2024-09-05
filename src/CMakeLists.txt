@@ -40,7 +40,7 @@ if(UNIX)
         1
         CACHE STRING "enable Unix sockets (1: enable, 0: disable)")
     set(MSGPACK_RPC_ENABLE_POSIX_SHM
-        1
+        0 # TODO enable this
         CACHE STRING "enable POSIX shared memory (1: enable, 0: disable)")
 else()
     set(MSGPACK_RPC_ENABLE_UNIX_SOCKETS
