@@ -20,13 +20,13 @@ int main(int argc, char** argv) {
     const auto cli =
         lyra::cli()
             .add_argument(lyra::opt(config_file_path, "file path")
-                              .name("--config-file")
-                              .optional()
-                              .help("Configuration file."))
+                    .name("--config-file")
+                    .optional()
+                    .help("Configuration file."))
             .add_argument(lyra::opt(config_name, "name")
-                              .name("--config-name")
-                              .optional()
-                              .help("Configuration name."))
+                    .name("--config-name")
+                    .optional()
+                    .help("Configuration name."))
             .add_argument(
                 lyra::opt(quiet).name("--quiet").name("-q").optional().help(
                     "Do not show logs."));

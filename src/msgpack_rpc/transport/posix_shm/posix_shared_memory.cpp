@@ -51,7 +51,7 @@ namespace msgpack_rpc::transport::posix_shm {
  */
 [[nodiscard]] std::size_t get_shared_memory_size(
     int file_descriptor, std::string_view file_name) {
-    struct stat data {};
+    struct stat data{};
     if (fstat(file_descriptor, &data) != 0) {
         const int errno_val = errno;
         throw MsgpackRPCException(StatusCode::OPERATION_FAILURE,

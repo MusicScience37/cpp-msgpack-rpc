@@ -42,13 +42,13 @@ int main(int argc, char** argv) {
     const auto cli =
         lyra::cli()
             .add_argument(lyra::opt(num_samples, "Number of samples")
-                              .name("--samples")
-                              .required()
-                              .help("Set the number of samples."))
+                    .name("--samples")
+                    .required()
+                    .help("Set the number of samples."))
             .add_argument(lyra::opt(output_file_path, "File path")
-                              .name("--output")
-                              .required()
-                              .help("Set the file path of the output."));
+                    .name("--output")
+                    .required()
+                    .help("Set the file path of the output."));
     const auto result = cli.parse({argc, argv});
     if (!result) {
         std::cerr << result.message() << "\n\n" << cli << std::endl;

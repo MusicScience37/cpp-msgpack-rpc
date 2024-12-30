@@ -41,22 +41,22 @@ int main(int argc, const char** argv) {
     std::string log_file_path = "request_continuously.log";
     const auto cli = lyra::cli()
                          .add_argument(lyra::opt(test_seconds, "seconds")
-                                           .name("--seconds")
-                                           .name("-s")
-                                           .optional()
-                                           .help("Number of test seconds."))
+                                 .name("--seconds")
+                                 .name("-s")
+                                 .optional()
+                                 .help("Number of test seconds."))
                          .add_argument(lyra::opt(config_file_path, "path")
-                                           .name("--config")
-                                           .required()
-                                           .help("Configuration file path."))
+                                 .name("--config")
+                                 .required()
+                                 .help("Configuration file path."))
                          .add_argument(lyra::opt(server_uri, "URI")
-                                           .name("--uri")
-                                           .required()
-                                           .help("Server URI."))
+                                 .name("--uri")
+                                 .required()
+                                 .help("Server URI."))
                          .add_argument(lyra::opt(log_file_path, "path")
-                                           .name("--log")
-                                           .optional()
-                                           .help("Log file path."));
+                                 .name("--log")
+                                 .optional()
+                                 .help("Log file path."));
     const auto result = cli.parse({argc, argv});
     if (!result) {
         std::cerr << result.message() << "\n\n";
@@ -71,7 +71,7 @@ int main(int argc, const char** argv) {
     const auto logger =
         msgpack_rpc::logging::Logger::create(msgpack_rpc::config::LoggingConfig(
             config_parser.logging_config("durability_test"))
-                                                 .file_path(log_file_path));
+                .file_path(log_file_path));
     MSGPACK_RPC_INFO(
         logger, "Test duration: {} seconds", test_duration.count());
     MSGPACK_RPC_INFO(logger, "Server URI: {}", server_uri);

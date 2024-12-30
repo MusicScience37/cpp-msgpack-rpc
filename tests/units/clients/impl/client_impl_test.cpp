@@ -103,11 +103,10 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     SECTION("connect successfully") {
         const auto connection = std::make_shared<MockConnection>();
         IConnection::MessageReceivedCallback on_received =
-            [](auto /*message*/) { FAIL(); };
+            [](const auto& /*message*/) { FAIL(); };
         IConnection::MessageSentCallback on_sent = [] { FAIL(); };
-        IConnection::ConnectionClosedCallback on_closed = [](auto /*status*/) {
-            FAIL();
-        };
+        IConnection::ConnectionClosedCallback on_closed =
+            [](const auto& /*status*/) { FAIL(); };
         REQUIRE_CALL(*connection, start(_, _, _))
             .TIMES(1)
             .LR_SIDE_EFFECT(on_received = _1)
@@ -180,11 +179,10 @@ TEST_CASE("msgpack_rpc::clients::impl::ClientImpl") {
     SECTION("reconnect") {
         const auto connection = std::make_shared<MockConnection>();
         IConnection::MessageReceivedCallback on_received =
-            [](auto /*message*/) { FAIL(); };
+            [](const auto& /*message*/) { FAIL(); };
         IConnection::MessageSentCallback on_sent = [] { FAIL(); };
-        IConnection::ConnectionClosedCallback on_closed = [](auto /*status*/) {
-            FAIL();
-        };
+        IConnection::ConnectionClosedCallback on_closed =
+            [](const auto& /*status*/) { FAIL(); };
         REQUIRE_CALL(*connection, start(_, _, _))
             .TIMES(1)
             .LR_SIDE_EFFECT(on_received = _1)

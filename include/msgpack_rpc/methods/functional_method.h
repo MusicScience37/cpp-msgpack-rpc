@@ -262,7 +262,9 @@ private:
  */
 template <typename Signature, typename Function>
 [[nodiscard]] inline std::unique_ptr<FunctionalMethod<Signature, Function>>
-create_functional_method(messages::MethodName name, Function&& function,
+create_functional_method(
+    // NOLINTNEXTLINE(performance-unnecessary-value-param) : false positive
+    messages::MethodName name, Function&& function,
     std::shared_ptr<logging::Logger> logger) {
     return std::make_unique<
         FunctionalMethod<Signature, std::decay_t<Function>>>(
