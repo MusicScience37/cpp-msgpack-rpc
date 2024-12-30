@@ -121,15 +121,15 @@ void parse_command_line_arguments(int argc, char** argv,
     bool show_help = false;
     const auto cli = lyra::cli()
                          .add_argument(lyra::opt(config_file_path, "file path")
-                                           .name("--config-file")
-                                           .name("-f")
-                                           .optional()
-                                           .help("Configuration file."))
+                                 .name("--config-file")
+                                 .name("-f")
+                                 .optional()
+                                 .help("Configuration file."))
                          .add_argument(lyra::opt(config_name, "name")
-                                           .name("--config-name")
-                                           .name("-n")
-                                           .optional()
-                                           .help("Configuration name."))
+                                 .name("--config-name")
+                                 .name("-n")
+                                 .optional()
+                                 .help("Configuration name."))
                          .add_argument(lyra::help(show_help));
 
     const auto result = cli.parse({argc, argv});

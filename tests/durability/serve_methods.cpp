@@ -36,17 +36,17 @@ int main(int argc, const char** argv) {
     std::string log_file_path = "serve_methods.log";
     const auto cli = lyra::cli()
                          .add_argument(lyra::opt(config_file_path, "path")
-                                           .name("--config")
-                                           .required()
-                                           .help("Configuration file path."))
+                                 .name("--config")
+                                 .required()
+                                 .help("Configuration file path."))
                          .add_argument(lyra::opt(server_uris, "URI")
-                                           .name("--uri")
-                                           .cardinality(1, 10)
-                                           .help("Server URI."))
+                                 .name("--uri")
+                                 .cardinality(1, 10)
+                                 .help("Server URI."))
                          .add_argument(lyra::opt(log_file_path, "path")
-                                           .name("--log")
-                                           .optional()
-                                           .help("Log file path."));
+                                 .name("--log")
+                                 .optional()
+                                 .help("Log file path."));
     const auto result = cli.parse({argc, argv});
     if (!result) {
         std::cerr << result.message() << "\n\n";
@@ -60,7 +60,7 @@ int main(int argc, const char** argv) {
     const auto logger =
         msgpack_rpc::logging::Logger::create(msgpack_rpc::config::LoggingConfig(
             config_parser.logging_config("durability_test"))
-                                                 .file_path(log_file_path));
+                .file_path(log_file_path));
     MSGPACK_RPC_INFO(logger, "Server URIs: {}", fmt::join(server_uris, ", "));
 
     msgpack_rpc::servers::ServerBuilder builder{

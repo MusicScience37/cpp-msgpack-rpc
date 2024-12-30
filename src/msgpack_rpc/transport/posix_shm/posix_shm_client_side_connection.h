@@ -94,11 +94,9 @@ public:
           client_changes_count_(
               client_memory_address_calculator.changes_count()),
           client_state_(client_memory_address_calculator.client_state()),
-          client_to_server_stream_writer_(
-              client_memory_address_calculator
+          client_to_server_stream_writer_(client_memory_address_calculator
                   .client_to_server_stream_writer()),
-          server_to_client_stream_reader_(
-              client_memory_address_calculator
+          server_to_client_stream_reader_(client_memory_address_calculator
                   .server_to_client_stream_reader()),
           server_state_(server_memory_address_calculator.server_state()),
           server_event_queue_(
