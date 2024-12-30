@@ -103,7 +103,7 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
             std::move(processor), executor_wrapper, logger);
 
         IAcceptor::ConnectionCallback on_connection{
-            [](auto /*connection*/) { FAIL(); }};
+            [](const auto& /*connection*/) { FAIL(); }};
         REQUIRE_CALL(*acceptor, start(_))
             .TIMES(1)
             .LR_SIDE_EFFECT(on_connection = _1);
@@ -121,10 +121,10 @@ TEST_CASE("msgpack_rpc::servers::ServerImpl") {
                 [&on_connection, &connection] { on_connection(connection); });
 
             IConnection::MessageReceivedCallback on_received{
-                [](auto /*message*/) { FAIL(); }};
+                [](const auto& /*message*/) { FAIL(); }};
             IConnection::MessageSentCallback on_sent{[]() { FAIL(); }};
             IConnection::ConnectionClosedCallback on_closed{
-                [](auto /*status*/) { FAIL(); }};
+                [](const auto& /*status*/) { FAIL(); }};
             std::function<void()> on_connection_handling_started{[] {}};
             REQUIRE_CALL(*connection, start(_, _, _))
                 .TIMES(1)
