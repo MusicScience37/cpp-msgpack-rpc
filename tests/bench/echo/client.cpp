@@ -27,6 +27,7 @@
 #include <stat_bench/fixture_base.h>
 #include <stat_bench/invocation_context.h>
 #include <stat_bench/param/parameter_value_vector.h>
+#include <stat_bench/plot_option.h>
 
 #include "common.h"
 #include "msgpack_rpc/clients/client_builder.h"
@@ -102,6 +103,11 @@ private:
     //! Size of the data.
     std::size_t data_size_{};
 };
+
+STAT_BENCH_GROUP("echo")
+    .add_parameter_to_time_line_plot(
+        "size", stat_bench::PlotOption::log_parameter)
+    .add_parameter_to_time_violin_plot("size");
 
 STAT_BENCH_CASE_F(EchoFixture, "echo", "echo") {
     auto client = prepare_client();
