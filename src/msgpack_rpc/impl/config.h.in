@@ -27,10 +27,3 @@
  * 1 means enabled, 0 means disabled.
  */
 #define MSGPACK_RPC_ENABLE_UNIX_SOCKETS ${MSGPACK_RPC_ENABLE_UNIX_SOCKETS}  // NOLINT
-
-/*!
- * \brief Macro to specify whether to enable POSIX shared memory.
- *
- * 1 means enabled, 0 means disabled.
- */
-#define MSGPACK_RPC_ENABLE_POSIX_SHM ${MSGPACK_RPC_ENABLE_POSIX_SHM}  // NOLINT

@@ -28,19 +28,3 @@
  * 1 means enabled, 0 means disabled.
  */
 #define MSGPACK_RPC_HAS_UNIX_SOCKETS MSGPACK_RPC_ENABLE_UNIX_SOCKETS
-
-/*!
- * \brief Macro to check whether this build of cpp-msgpack-rpc library has the
- * feature of RPC on POSIX shared memory.
- *
- * 1 means enabled, 0 means disabled.
- */
-#define MSGPACK_RPC_HAS_POSIX_SHM MSGPACK_RPC_ENABLE_POSIX_SHM
-
-/*!
- * \brief Macro to check whether this build of cpp-msgpack-rpc library has the
- * feature of RPC on shared memory.
- *
- * 1 means enabled, 0 means disabled.
- */
-#define MSGPACK_RPC_HAS_SHM MSGPACK_RPC_ENABLE_POSIX_SHM

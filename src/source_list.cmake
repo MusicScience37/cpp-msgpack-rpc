@@ -1,5 +1,4 @@
 set(SOURCE_FILES
-    msgpack_rpc/addresses/posix_shared_memory_address.cpp
     msgpack_rpc/addresses/tcp_address.cpp
     msgpack_rpc/addresses/unix_socket_address.cpp
     msgpack_rpc/addresses/uri.cpp
@@ -27,15 +26,6 @@ set(SOURCE_FILES
     msgpack_rpc/methods/method_exception.cpp
     msgpack_rpc/methods/method_processor.cpp
     msgpack_rpc/servers/impl/i_server_builder_impl.cpp
-    msgpack_rpc/transport/posix_shm/changes_count.cpp
-    msgpack_rpc/transport/posix_shm/client_memory_address_calculator.cpp
-    msgpack_rpc/transport/posix_shm/posix_shared_memory.cpp
-    msgpack_rpc/transport/posix_shm/posix_shm_condition_variable_view.cpp
-    msgpack_rpc/transport/posix_shm/posix_shm_mutex_view.cpp
-    msgpack_rpc/transport/posix_shm/server_event_queue.cpp
-    msgpack_rpc/transport/posix_shm/server_memory_address_calculator.cpp
-    msgpack_rpc/transport/posix_shm/shm_stream_reader.cpp
-    msgpack_rpc/transport/posix_shm/shm_stream_writer.cpp
     msgpack_rpc/transport/tcp/backends.cpp
     msgpack_rpc/transport/tcp/tcp_backend.cpp
     msgpack_rpc/transport/unix_socket/backends.cpp
