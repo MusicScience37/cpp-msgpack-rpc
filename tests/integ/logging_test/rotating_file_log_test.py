@@ -1,5 +1,4 @@
-"""Test of logs using rotating file log sink.
-"""
+"""Test of logs using rotating file log sink."""
 
 import pathlib
 import subprocess
