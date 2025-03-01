@@ -58,25 +58,10 @@ TEST_CASE("msgpack_rpc::addresses::URI") {
 
 #endif
 
-#if MSGPACK_RPC_HAS_SHM
-
-    SECTION("parse a URI of shared memory") {
-        const URI uri = URI::parse("shm://file_name");
-
-        CHECK(uri.scheme() == "shm");
-        CHECK(uri.host_or_path() == "file_name");
-        CHECK(uri.port_number() == std::nullopt);
-        CHECK(fmt::format("{}", uri) == "shm://file_name");
-    }
-
-#endif
-
     SECTION("parse invalid URIs") {
         CHECK_THROWS((void)URI::parse("tcp://example.com:65536"));
         CHECK_THROWS((void)URI::parse("tcp://[fc00::3]:65536"));
         CHECK_THROWS((void)URI::parse("unix://"));
-        CHECK_THROWS((void)URI::parse("shm://"));
-        CHECK_THROWS((void)URI::parse("shm:///file/path"));
         CHECK_THROWS((void)URI::parse("invalid://example.com:65535"));
         CHECK_THROWS((void)URI::parse("invalid://example/path"));
         CHECK_THROWS((void)URI::parse("abc"));

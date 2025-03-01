@@ -58,8 +58,6 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
 add_library(tomlplusplus::tomlplusplus ALIAS PkgConfig::tomlplusplus)
 
-find_package(Boost REQUIRED COMPONENTS atomic)
-
 find_package(Threads REQUIRED)
 if(${UPPER_PROJECT_NAME}_TESTING)
     find_package(Catch2 REQUIRED)
