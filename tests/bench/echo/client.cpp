@@ -107,7 +107,8 @@ private:
 STAT_BENCH_GROUP("echo")
     .add_parameter_to_time_line_plot(
         "size", stat_bench::PlotOption::log_parameter)
-    .add_parameter_to_time_violin_plot("size");
+    .add_parameter_to_time_violin_plot("size")
+    .add_parameter_to_time_box_plot("size");
 
 STAT_BENCH_CASE_F(EchoFixture, "echo", "echo") {
     auto client = prepare_client();
