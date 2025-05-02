@@ -50,7 +50,7 @@ pre-commit:
   image: musicscience37/clang-ci:clang19
   script:
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.12
+    - poetry env use 3.13
     - poetry install
     - poetry run pre-commit run --all-files
   cache:
@@ -107,7 +107,7 @@ test release:
     POETRY_CACHE_DIR: ${CI_PROJECT_DIR}/.poetry-cache
   before_script:
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.12
+    - poetry env use 3.13
     - poetry install
     - mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
     - mkdir $BUILD_DIR
@@ -229,7 +229,7 @@ complexity:
   image: musicscience37/clang-ci:clang19
   script:
     - poetry config virtualenvs.in-project true
-    - poetry env use 3.12
+    - poetry env use 3.13
     - poetry install
     - mkdir -p complexity
     - poetry run lizard -o complexity/complexity_per_function.html include src
