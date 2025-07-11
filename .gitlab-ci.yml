@@ -109,6 +109,7 @@ test release:
     - poetry config virtualenvs.in-project true
     - poetry env use 3.13
     - poetry install
+    - poetry run kaleido_get_chrome
     - mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
     - mkdir $BUILD_DIR
   script:

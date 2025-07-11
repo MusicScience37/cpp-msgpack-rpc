@@ -18,3 +18,5 @@ git config commit.gpgsign true
 git config tag.gpgsign true
 
 echo "source /usr/share/bash-completion/completions/git" >>~/.bashrc
+
+poetry run kaleido_get_chrome || true

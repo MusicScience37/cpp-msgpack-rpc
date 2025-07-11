@@ -10,7 +10,7 @@ package-mode = false
 [tool.poetry.dependencies]
 python = ">=3.12,<3.14"
 # Some tools implicitly require setuptools.
-setuptools = "^80.1.0"
+setuptools = "^80.9.0"
 
 [tool.poetry.group.doc.dependencies]
 myst-parser = "^4.0.1"
@@ -21,34 +21,34 @@ sphinx-orange-book-theme = "^0.15.0"
 breathe = "^4.36.0"
 
 [tool.poetry.group.test.dependencies]
-pytest = "^8.3.5"
+pytest = "^8.4.1"
 pytest-approvaltests = "^0.2.4"
-msgpack = "^1.1.0"
-pytest-asyncio = "^0.26.0"
+msgpack = "^1.1.1"
+pytest-asyncio = "^1.0.0"
 psutil = "^7.0.0"
-pandas = "^2.2.3"
-plotly = "^6.0.1"
-kaleido = "==0.2.1"
-statsmodels = "^0.14.4"
+pandas = "^2.3.1"
+plotly = "^6.2.0"
+kaleido = "^1.0.0"
+statsmodels = "^0.14.5"
 fastjsonschema = "^2.21.1"
 pytomlpp = "^1.0.13"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
-click = "^8.1.8"
+click = "^8.2.1"
 cmakelang = "^0.6.13"
-doc8 = "^1.1.2"
+doc8 = "^2.0.0"
 pre-commit = "^4.2.0"
 clang-tidy-checker = "^0.6.0"
 lcov_cobertura = "^2.1.1"
 tqdm = "^4.67.1"
-lizard = "^1.17.28"
+lizard = "^1.17.31"
 isort = "^6.0.1"
 jsonschema2md = "^1.5.2"
-pylint = "^3.3.6"
-flake8 = "^7.2.0"
-mypy = "^1.15.0"
-pandas-stubs = "^2.2.3.250308"
+pylint = "^3.3.7"
+flake8 = "^7.3.0"
+mypy = "^1.16.1"
+pandas-stubs = "^2.3.0.250703"
 
 [build-system]
 requires = ["poetry-core"]
