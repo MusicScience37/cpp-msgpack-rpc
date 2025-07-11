@@ -26,6 +26,7 @@
 #include <stat_bench/do_not_optimize.h>
 #include <stat_bench/fixture_base.h>
 #include <stat_bench/invocation_context.h>
+#include <stat_bench/measurement_config.h>
 #include <stat_bench/param/parameter_value_vector.h>
 #include <stat_bench/plot_option.h>
 
@@ -108,7 +109,12 @@ STAT_BENCH_GROUP("echo")
     .add_parameter_to_time_line_plot(
         "size", stat_bench::PlotOption::log_parameter)
     .add_parameter_to_time_violin_plot("size")
-    .add_parameter_to_time_box_plot("size");
+    .add_parameter_to_time_box_plot("size")
+    .clear_measurement_configs()
+    .add_measurement_config(stat_bench::MeasurementConfig()
+            .type("Processing Time")
+            .iterations(1)
+            .warming_up_samples(0));
 
 STAT_BENCH_CASE_F(EchoFixture, "echo", "echo") {
     auto client = prepare_client();
