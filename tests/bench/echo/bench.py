@@ -28,8 +28,6 @@ def run(build_dir_str: str, samples: int) -> None:
         subprocess.run(
             [
                 str(client_path),
-                "--mean_samples",
-                "1",
                 "--samples",
                 str(samples),
                 "--json",
@@ -52,7 +50,7 @@ def run(build_dir_str: str, samples: int) -> None:
     data_size_list = []
     duration_list = []
     for measurement in output_data["measurements"]:
-        if measurement["measurer_name"] != "Processing Time":
+        if measurement["measurement_type"] != "Processing Time":
             continue
         protocol = str(measurement["params"]["type"])
         data_size = str(measurement["params"]["size"])

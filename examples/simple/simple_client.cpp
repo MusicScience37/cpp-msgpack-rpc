@@ -18,6 +18,7 @@
  * \brief Example of a simple client.
  */
 #include <cassert>
+#include <iostream>
 
 #include "msgpack_rpc/clients/client.h"
 #include "msgpack_rpc/clients/client_builder.h"
@@ -34,6 +35,7 @@ int main() {
     // Call a method in the server.
     // Specify the result type in the template parameter.
     const int result = client.call<int>("add", 2, 3);
+    std::cout << "Result: " << result << std::endl;  // NOLINT
     assert(result == 5);
 
     // Stop the client by destructing the client.
